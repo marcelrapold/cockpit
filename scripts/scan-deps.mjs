@@ -5,11 +5,13 @@
  */
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join, basename } from 'path';
+import { execSync } from 'child_process';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const ORG = 'zvvch';
 const LOCAL_ROOT = process.env.SCAN_ROOT || '';
 const SKIP = new Set(['tamagui', '.github', 'node_modules']);
+const MY_AUTHORS = ['muraschal', 'marcelrapold'];
 
 const CATEGORIES = {
   'next': 'Framework', 'react': 'Framework', 'react-dom': 'Framework', 'vue': 'Framework',
@@ -49,6 +51,17 @@ function scanLocal(root) {
 
   for (const dir of dirs) {
     const name = dir.name;
+    const gitDir = join(root, name, '.git');
+    if (existsSync(gitDir)) {
+      try {
+        const authorCheck = MY_AUTHORS.map(a => `--author=${a}`).join(' ');
+        const out = execSync(
+          `git log ${authorCheck} --max-count=1 --format=%H`,
+          { cwd: join(root, name), timeout: 5000, encoding: 'utf8', stdio: ['pipe','pipe','pipe'] }
+        ).trim();
+        if (!out) { continue; }
+      } catch { continue; }
+    }
     const pkgPaths = [
       join(root, name, 'package.json'),
       join(root, name, name, 'package.json'),
@@ -123,6 +136,17 @@ async function scanGitHub() {
   for (const repo of (Array.isArray(repoList) ? repoList : [])) {
     if (SKIP.has(repo.name)) continue;
     try {
+      const contribRes = await fetch(
+        `https://api.github.com/repos/${ORG}/${repo.name}/contributors?per_page=100`,
+        { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' } }
+      );
+      if (contribRes.ok) {
+        const contribs = await contribRes.json();
+        const logins = (Array.isArray(contribs) ? contribs : []).map(c => c.login?.toLowerCase());
+        if (!MY_AUTHORS.some(a => logins.includes(a.toLowerCase()))) {
+          continue;
+        }
+      }
       const content = await fetch(
         `https://api.github.com/repos/${ORG}/${repo.name}/contents/package.json`,
         { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.raw+json' } }
