@@ -240,6 +240,25 @@
     }
     .tl-row:hover { z-index: 2; }
     .tl-row:hover .tl-label { color: var(--blue); }
+    .tl-project-tip {
+      position: fixed; z-index: 110; pointer-events: none;
+      background: #1c2128; color: #e6edf3; border: 1px solid #30363d;
+      border-radius: 8px; padding: 0.6rem 0.75rem; max-width: 340px; width: max-content;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35); opacity: 0; transition: opacity 0.15s;
+      font-size: 0.7rem; line-height: 1.5;
+    }
+    .tl-project-tip.show { opacity: 1; }
+    .tl-project-tip-name { font-weight: 700; font-size: 0.78rem; margin-bottom: 0.2rem; color: #fff; }
+    .tl-project-tip-impact { color: #58a6ff; font-weight: 600; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+    .tl-project-tip-desc { color: #c9d1d9; margin-bottom: 0.35rem; }
+    .tl-project-tip-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .tl-project-tip-tag {
+      font-size: 0.58rem; padding: 0.12rem 0.4rem; border-radius: 3px;
+      background: #21262d; color: #8b949e; border: 1px solid #30363d;
+    }
+    .tl-project-tip-tag.tag-pt { color: #f0883e; border-color: #f0883e33; }
+    .tl-project-tip-tag.tag-mode { color: #3fb950; border-color: #3fb95033; }
+    .tl-project-tip-tag.tag-lc { color: #a371f7; border-color: #a371f733; }
     @keyframes tlSlideIn {
       to { opacity: 1; transform: translateX(0); }
     }
@@ -1371,9 +1390,9 @@ function buildTimeline() {
     const badge = LC_BADGE[d.lc];
 
     html += `<div class="tl-row" style="grid-template-columns:${colTemplate};animation-delay:${rowIdx * 40}ms">
-      <div class="tl-label">
+      <div class="tl-label" data-project="${d.name}" data-pt="${d.pt}" data-mode="${d.modeLabel}" data-lc="${d.lcLabel}" data-forecast="${d.forecast || ''}">
         <div class="tl-cat-bar" style="background:${color}"></div>
-        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;" title="${d.name}">${d.name}</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${d.name}</span>
         ${badge ? `<span class="tl-lc-badge" style="background:${badge[1]};color:${badge[2]}">${badge[0]}</span>` : ''}
       </div>`;
 
@@ -1430,7 +1449,67 @@ function buildTimeline() {
 }
 buildTimeline();
 
-// Tooltip logic
+const PROJECT_BRIEFINGS = {
+  'ZVV Mailer': { impact: 'Revenue & Kundenbindung', desc: 'Zentrale Kommunikationsplattform für Kampagnen und Newsletter an 200k+ ZVV-Kund:innen. Direkt umsatzrelevant durch Abo-Verlängerungen und Angebotsvermarktung.' },
+  'ZVV TAMA': { impact: 'Regulatorisch & Tarifsteuerung', desc: 'Dashboard zur Vernehmlassung von Tarifmassnahmen — ermöglicht datenbasierte Entscheidungsgrundlagen für Tarifanpassungen im Verbund.' },
+  'AEM-Ausschreibung': { impact: 'Strategische Beschaffung', desc: 'Öffentliche Vergabe der Weiterentwicklung von zvv.ch — grösstes Digitalprojekt des ZVV mit direktem Impact auf 1M+ Nutzer:innen.' },
+  'NOVA Kundenspiegel': { impact: 'Datenarchitektur & Strategie', desc: 'Architektur-Blueprint für die Spiegelung von NOVA-Kundendaten — Grundlage für CRM, Analytics und personalisierte Services.' },
+  'Fahrzeugdatenbank 2.0': { impact: 'Legacy-Ablösung & Effizienz', desc: 'Spezifikation zur Ablösung der bestehenden MS-Access-Fahrzeugdatenbank — Make-or-Buy-Entscheidung für kritisches Betriebsinventar.' },
+  'ZVV Kundenkonto': { impact: 'Customer Experience', desc: 'UI-Prototyp für den Relaunch des Kundenkontos — Self-Service-Portal mit direktem Einfluss auf Kundenzufriedenheit und Support-Volumen.' },
+  'ZVV Info / Fahrplan': { impact: 'Innovation & AI', desc: 'AI-gestützter Fahrplan-Informationsdienst mit natürlichsprachlicher Abfrage — Proof of Concept für Next-Gen-Kundeninteraktion.' },
+  'ZVV Entdeckungsreise': { impact: 'Saisonales Kernprodukt', desc: 'Ticketcode-Validierung und Schul-Anmeldemanagement — bedient jährlich tausende Schulklassen und generiert direkte Ticketeinnahmen.' },
+  'ZVV Kontrollapp': { impact: 'Operativer Betrieb', desc: 'PWA für Billett-Kontrolle und Zeiterfassung der Kontrollteams im Feld — geschäftskritisch für Revenue Protection.' },
+  'ZVV KontoRadar': { impact: 'Finanzcontrolling', desc: 'Prototyp eines Budget- und Objektkredit-Dashboards — ermöglicht Echtzeit-Überblick über Projektbudgets und Kostenentwicklung.' },
+  'ZVV Medienspiegel': { impact: 'Reputationsmanagement', desc: 'Vollautomatisierte AI-Medienbeobachtung — aggregiert, analysiert und klassifiziert täglich ZVV-relevante Medienberichte mit GPT-4o.' },
+  'ZVV PDF2Text': { impact: 'Infrastruktur-Service', desc: 'Self-hosted PDF-Extraktions-API — kritischer Baustein der Medienspiegel-Pipeline, verarbeitet täglich hunderte PDF-Dokumente.' },
+  'ZVV App Modal': { impact: 'Digitale Kanäle & Conversion', desc: 'Feature-Showcase auf zvv.ch zur Promotion der ZVV-App — direkt conversion-relevant für App-Downloads und Digital-Shift.' },
+  'ZVV App Banner': { impact: 'Marketing & Digital Shift', desc: 'Micro-Frontend für App-Promotion auf zvv.ch — A/B-testbarer Touchpoint im wichtigsten digitalen Kanal des ZVV.' },
+  'n8n Workflows': { impact: 'Automatisierung & Effizienz', desc: 'Zentrale Workflow-Engine für Automatisierungen — verbindet Supabase, OpenAI, Resend und interne APIs ohne manuelle Eingriffe.' },
+  'MCP-GTFS': { impact: 'AI & Open Data', desc: 'Model Context Protocol Server für ÖV-Fahrplandaten — ermöglicht AI-Agenten den strukturierten Zugriff auf GTFS-Echtzeitdaten.' },
+  'ZVV Lottie': { impact: 'Brand Experience', desc: '34 animierte Header-Illustrationen für zvv.ch — prägt die visuelle Identität der meistbesuchten ZVV-Plattform.' },
+  'ZVV Statuspage': { impact: 'Betriebstransparenz', desc: 'Öffentliche Statusseite aller ZVV-Digitaldienste — reduziert Support-Anfragen und schafft Vertrauen bei Stakeholdern.' },
+  'ZVV FundPilot': { impact: 'Kundenservice', desc: 'Offlinefähiges Fundbüro-Informationssystem — unterstützt den täglichen Kundenkontakt an den ZVV-Servicestellen.' },
+  'ZVV Testimonials': { impact: 'Employer Branding', desc: 'Mitarbeiter-Testimonial-Slider — HR-Instrument zur Stärkung der Arbeitgebermarke im kompetitiven ÖV-Arbeitsmarkt.' },
+  'iCal Confluence': { impact: 'Interne Tooling', desc: 'On-Call-Kalender-Integration in Confluence — sichert die Erreichbarkeit und Transparenz der Pikett-Organisation.' },
+  'VS Code Theme': { impact: 'Developer Experience', desc: 'Custom ZVV-Branding für die Entwicklungsumgebung — stärkt die Team-Identität und Wiedererkennung im Dev-Tooling.' },
+  'Jahreshochrechnung': { impact: 'Datenlieferung & Compliance', desc: 'R-basierte Datenaufbereitung für HOP-Lieferungen — regulatorisch erforderliche jährliche Hochrechnung der Verkehrsdaten.' },
+  'Security / CVE-Mgmt': { impact: 'Sicherheit & Compliance', desc: 'Kontinuierliches Dependency-Monitoring und Patching über alle 30 Repositories — reduziert das Angriffsflächen-Risiko systematisch.' },
+  'Stakeholder-Koord.': { impact: 'Governance & Alignment', desc: 'Abstimmung zwischen Fachbereichen, Dienstleistern und Management — sichert Priorisierung und strategische Kohärenz des Portfolios.' },
+  'Kreditorenworkflow': { impact: 'Finanzprozesse', desc: 'Dashboard für Kreditorenworkflows und Budgetübersicht — beschleunigt die Freigabeprozesse im Finanzwesen.' },
+};
+
+const projectTip = document.createElement('div');
+projectTip.className = 'tl-project-tip';
+document.body.appendChild(projectTip);
+
+document.getElementById('timelineContainer').addEventListener('mouseover', e => {
+  const label = e.target.closest('.tl-label[data-project]');
+  if (!label) return;
+  const name = label.dataset.project;
+  const info = PROJECT_BRIEFINGS[name];
+  if (!info) return;
+  projectTip.innerHTML = `
+    <div class="tl-project-tip-name">${name}</div>
+    <div class="tl-project-tip-impact">${info.impact}</div>
+    <div class="tl-project-tip-desc">${info.desc}</div>
+    <div class="tl-project-tip-meta">
+      <span class="tl-project-tip-tag tag-pt">${label.dataset.pt} PT/Jahr</span>
+      <span class="tl-project-tip-tag tag-mode">${label.dataset.mode}</span>
+      <span class="tl-project-tip-tag tag-lc">${label.dataset.lc}</span>
+    </div>`;
+  projectTip.classList.add('show');
+});
+document.getElementById('timelineContainer').addEventListener('mousemove', e => {
+  if (!projectTip.classList.contains('show') || !e.target.closest('.tl-label[data-project]')) return;
+  projectTip.style.left = Math.min(e.clientX + 14, window.innerWidth - 360) + 'px';
+  projectTip.style.top = (e.clientY + 16) + 'px';
+});
+document.getElementById('timelineContainer').addEventListener('mouseout', e => {
+  if (!e.target.closest('.tl-label[data-project]')) return;
+  projectTip.classList.remove('show');
+});
+
+// Tooltip logic (heatmap cells)
 const tooltip = document.getElementById('tlTooltip');
 document.getElementById('timelineContainer').addEventListener('mouseover', e => {
   const heat = e.target.closest('.tl-heat:not(.future)');
