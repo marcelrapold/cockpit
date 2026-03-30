@@ -139,6 +139,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 1.5rem;
+      overflow: hidden;
     }
     .card-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.75rem; }
     .card-sub { font-size: 0.82rem; color: var(--text-sec); line-height: 1.65; max-width: 85ch; }
@@ -559,7 +560,8 @@
     }
 
     /* Hourly Heatmap */
-    .hm-grid { display: grid; grid-template-columns: 22px repeat(24, minmax(0, 1fr)); gap: 1px; width: 100%; overflow: hidden; box-sizing: border-box; }
+    .hm-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .hm-grid { display: grid; grid-template-columns: 22px repeat(24, minmax(0, 1fr)); gap: 1px; width: 100%; min-width: 360px; box-sizing: border-box; }
     .hm-label { font-size: 0.48rem; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 2px; white-space: nowrap; }
     .hm-hlabel { font-size: 0.42rem; color: var(--text-muted); text-align: center; overflow: hidden; }
     .hm-cell {
@@ -1154,16 +1156,23 @@
 
       .viz-2col { gap: 1rem; }
 
-      .cal-day { width: 10px; height: 10px; }
-      .cal-day-labels span { font-size: 0.45rem; height: 10px; line-height: 10px; width: 18px; }
-      .cal-months span { font-size: 0.5rem; }
+      .cal-wrap { margin: 0 -0.25rem; padding: 0.25rem; }
+      .cal-day { width: 9px; height: 9px; }
+      .cal-day-labels span { font-size: 0.42rem; height: 9px; line-height: 9px; width: 16px; }
+      .cal-day-labels { margin-right: 2px; }
+      .cal-grid { gap: 1.5px; }
+      .cal-week { gap: 1.5px; }
+      .cal-months { padding-left: 20px; }
+      .cal-months span { font-size: 0.45rem; }
       .cal-total { font-size: 0.75rem; }
       .cal-legend { font-size: 0.52rem; }
+      .cal-legend-squares .cal-day { width: 9px; height: 9px; }
 
-      .hm-grid { grid-template-columns: 18px repeat(24, minmax(0, 1fr)); }
-      .hm-cell { height: 11px; }
-      .hm-label { font-size: 0.42rem; }
-      .hm-hlabel { font-size: 0.36rem; }
+      .hm-wrap { margin: 0 -0.25rem; padding: 0 0.25rem; }
+      .hm-grid { grid-template-columns: 16px repeat(24, minmax(0, 1fr)); gap: 1px; min-width: 300px; }
+      .hm-cell { height: 10px; }
+      .hm-label { font-size: 0.38rem; padding-right: 1px; }
+      .hm-hlabel { font-size: 0.32rem; }
 
       .dep-svg { min-height: 280px; }
 
@@ -1230,6 +1239,19 @@
       .header h1 { font-size: 1.1rem; }
       .live-stats { gap: 0.5rem; }
       .live-val { font-size: 0.82rem; }
+
+      .cal-day { width: 7px; height: 7px; }
+      .cal-day-labels span { font-size: 0.38rem; height: 7px; line-height: 7px; width: 14px; }
+      .cal-grid { gap: 1px; }
+      .cal-week { gap: 1px; }
+      .cal-months { padding-left: 16px; }
+      .cal-months span { font-size: 0.4rem; }
+      .cal-legend-squares .cal-day { width: 7px; height: 7px; }
+
+      .hm-grid { min-width: 260px; grid-template-columns: 14px repeat(24, minmax(0, 1fr)); }
+      .hm-cell { height: 8px; }
+      .hm-label { font-size: 0.34rem; }
+      .hm-hlabel { font-size: 0.28rem; }
     }
     @media print {
       body { background: white !important; color: #1c2b3a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1509,7 +1531,7 @@
       <div class="card">
         <h2 class="card-title">Arbeitszeiten-Heatmap</h2>
         <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.75rem;">Commit-Verteilung nach Wochentag und Uhrzeit (CET/CEST)</p>
-        <div class="hm-grid" id="hmGrid"></div>
+        <div class="hm-wrap"><div class="hm-grid" id="hmGrid"></div></div>
       </div>
     </div>
   </section>
