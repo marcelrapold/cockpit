@@ -23,16 +23,16 @@ function startOfWeek(d) {
 }
 
 async function checkSupabaseHealth(project) {
-  const url = `https://${project.id}.supabase.co/auth/v1/health`;
+  const url = `https://${project.id}.supabase.co/rest/v1/`;
   try {
     const start = Date.now();
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    return {
-      name: project.name,
-      ok: res.ok,
-      latency: Date.now() - start,
-      status: res.ok ? 'healthy' : 'degraded',
-    };
+    const res = await fetch(url, {
+      headers: { apikey: 'placeholder' },
+      signal: AbortSignal.timeout(5000),
+    });
+    const latency = Date.now() - start;
+    const ok = res.status < 500;
+    return { name: project.name, ok, latency, status: ok ? 'healthy' : 'degraded' };
   } catch {
     return { name: project.name, ok: false, latency: null, status: 'unreachable' };
   }
