@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate=300');
 
-  const vercelToken = process.env.VERCEL_TOKEN;
+  const vercelToken = process.env.VERCEL_API_KEY;
 
   const result = {
     timestamp: new Date().toISOString(),
