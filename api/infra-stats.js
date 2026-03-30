@@ -22,20 +22,38 @@ function startOfWeek(d) {
   return new Date(d.getFullYear(), d.getMonth(), diff);
 }
 
-async function checkSupabaseHealth(project) {
-  const url = `https://${project.id}.supabase.co/rest/v1/`;
-  try {
-    const start = Date.now();
-    const res = await fetch(url, {
-      headers: { apikey: 'placeholder' },
-      signal: AbortSignal.timeout(5000),
-    });
-    const latency = Date.now() - start;
-    const ok = res.status < 500;
-    return { name: project.name, ok, latency, status: ok ? 'healthy' : 'degraded' };
-  } catch {
-    return { name: project.name, ok: false, latency: null, status: 'unreachable' };
-  }
+async function supabaseMgmt(path, token) {
+  const res = await fetch(`https://api.supabase.com${path}`, {
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+async function getSupabaseProjectStats(project, token) {
+  const start = Date.now();
+  const [details, apiLogs, authLogs] = await Promise.all([
+    supabaseMgmt(`/v1/projects/${project.id}`, token),
+    supabaseMgmt(`/v1/projects/${project.id}/analytics/endpoints/logs.all?interval=24h`, token)
+      .catch(() => null),
+    supabaseMgmt(`/v1/projects/${project.id}/analytics/endpoints/logs.auth?interval=24h`, token)
+      .catch(() => null),
+  ]);
+  const latency = Date.now() - start;
+
+  const status = details?.status || 'UNKNOWN';
+  const ok = status === 'ACTIVE_HEALTHY';
+  const dbVersion = details?.database?.version || null;
+  const region = details?.region || null;
+
+  return {
+    name: project.name,
+    ok,
+    latency,
+    status: ok ? 'healthy' : status.toLowerCase(),
+    dbVersion,
+    region,
+  };
 }
 
 module.exports = async function handler(req, res) {
@@ -126,20 +144,47 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  const sbToken = process.env.SUPABASE_ACCESS_TOKEN;
   try {
-    const healthChecks = await Promise.all(SUPABASE_PROJECTS.map(checkSupabaseHealth));
-    const allHealthy = healthChecks.every(h => h.ok);
+    let projects;
+    if (sbToken) {
+      projects = await Promise.all(
+        SUPABASE_PROJECTS.map(p => getSupabaseProjectStats(p, sbToken))
+      );
+    } else {
+      projects = await Promise.all(
+        SUPABASE_PROJECTS.map(async (project) => {
+          const url = `https://${project.id}.supabase.co/rest/v1/`;
+          try {
+            const start = Date.now();
+            const res = await fetch(url, {
+              headers: { apikey: 'placeholder' },
+              signal: AbortSignal.timeout(5000),
+            });
+            const latency = Date.now() - start;
+            const ok = res.status < 500;
+            return { name: project.name, ok, latency, status: ok ? 'healthy' : 'degraded' };
+          } catch {
+            return { name: project.name, ok: false, latency: null, status: 'unreachable' };
+          }
+        })
+      );
+    }
+
+    const allHealthy = projects.every(h => h.ok);
     const avgLatency = Math.round(
-      healthChecks.filter(h => h.latency).reduce((s, h) => s + h.latency, 0) /
-      healthChecks.filter(h => h.latency).length || 0
+      projects.filter(h => h.latency).reduce((s, h) => s + h.latency, 0) /
+      (projects.filter(h => h.latency).length || 1)
     );
+    const dbVersions = [...new Set(projects.map(p => p.dbVersion).filter(Boolean))];
 
     result.supabase = {
       totalProjects: SUPABASE_PROJECTS.length,
-      healthy: healthChecks.filter(h => h.ok).length,
+      healthy: projects.filter(h => h.ok).length,
       allHealthy,
       avgLatency,
-      projects: healthChecks,
+      dbVersions,
+      projects,
     };
   } catch (err) {
     result.supabase = { error: err.message };

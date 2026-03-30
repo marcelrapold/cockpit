@@ -691,7 +691,23 @@
       display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
       box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
-    .infra-bar { margin-top: -0.75rem; border-top: 1px dashed var(--border); }
+    .infra-bar { margin-top: -0.75rem; border-top: 1px dashed var(--border); flex-wrap: wrap; }
+    .infra-supa-detail {
+      width: 100%; display: flex; flex-wrap: wrap; gap: 0.5rem; padding-top: 0.4rem;
+      border-top: 1px dashed var(--border); margin-top: 0.35rem;
+    }
+    .supa-proj-pill {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.65rem; padding: 0.2rem 0.55rem; border-radius: 4px;
+      background: rgba(34,197,94,0.08); color: var(--text);
+      border: 1px solid rgba(34,197,94,0.18);
+    }
+    .supa-proj-pill.degraded { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); }
+    .supa-proj-pill.unreachable { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); }
+    .supa-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+    .supa-proj-pill.degraded .supa-dot { background: #f59e0b; }
+    .supa-proj-pill.unreachable .supa-dot { background: #ef4444; }
+    .supa-proj-meta { color: var(--muted); font-size: 0.58rem; }
     .live-indicator {
       display: flex; align-items: center; gap: 0.4rem;
       font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em;
@@ -1016,6 +1032,7 @@
     <div class="live-sep"></div>
     <div class="live-last" id="infraLastDeploy">Letztes Deployment wird geladen…</div>
     <div class="live-repos" id="infraActiveProjects"></div>
+    <div class="infra-supa-detail" id="infraSupaDetail"></div>
   </div>
 
   <!-- Summary -->
@@ -1964,6 +1981,22 @@ async function fetchInfraStats() {
         `${d.supabase.healthy}/${d.supabase.totalProjects}`;
       document.getElementById('infraSupaLatency').textContent =
         d.supabase.avgLatency + 'ms';
+
+      const detailEl = document.getElementById('infraSupaDetail');
+      if (detailEl && d.supabase.projects) {
+        detailEl.innerHTML = d.supabase.projects.map(p => {
+          const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
+          const meta = [
+            p.region ? p.region : null,
+            p.latency ? p.latency + 'ms' : null,
+          ].filter(Boolean).join(' · ');
+          return `<span class="supa-proj-pill${cls}">
+            <span class="supa-dot"></span>
+            ${p.name}
+            ${meta ? `<span class="supa-proj-meta">${meta}</span>` : ''}
+          </span>`;
+        }).join('');
+      }
     }
   } catch {}
 }
