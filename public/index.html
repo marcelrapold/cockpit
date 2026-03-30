@@ -706,9 +706,40 @@
       0%, 100% { opacity: 0.3; transform: scale(0.8); }
       50% { opacity: 1; transform: scale(1.2); }
     }
+    .live-feed { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.5rem; width: 100%; }
+    .live-feed-toggle {
+      background: none; border: none; cursor: pointer; font-family: var(--font);
+      font-size: 0.65rem; color: var(--blue); padding: 0; display: flex; align-items: center; gap: 0.3rem;
+    }
+    .live-feed-toggle:hover { text-decoration: underline; }
+    .live-feed-toggle svg { width: 12px; height: 12px; transition: transform 0.2s; }
+    .live-feed-toggle.open svg { transform: rotate(180deg); }
+    .live-feed-list {
+      display: none; margin-top: 0.4rem; padding: 0; list-style: none;
+      max-height: 260px; overflow-y: auto;
+    }
+    .live-feed-list.show { display: block; }
+    .live-feed-item {
+      display: grid; grid-template-columns: 56px 90px 1fr auto; gap: 0.5rem;
+      align-items: center; padding: 0.3rem 0; border-bottom: 1px solid var(--border);
+      font-size: 0.68rem; animation: feedIn 0.25s ease;
+    }
+    .live-feed-item:last-child { border-bottom: none; }
+    @keyframes feedIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+    .feed-sha {
+      font-family: var(--mono); font-size: 0.6rem; color: var(--blue);
+      text-decoration: none; background: var(--blue-light); padding: 0.1rem 0.3rem; border-radius: 3px;
+    }
+    .feed-sha:hover { text-decoration: underline; }
+    .feed-repo { font-size: 0.6rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed-msg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed-time { font-size: 0.6rem; color: var(--text-muted); white-space: nowrap; }
+
     @media (max-width: 768px) {
       .live-bar { gap: 0.6rem; }
       .live-repos, .live-last { display: none; }
+      .live-feed-item { grid-template-columns: 56px 1fr auto; }
+      .live-feed-item .feed-repo { display: none; }
     }
 
     /* Back to top */
@@ -861,6 +892,13 @@
       <span id="liveStreakVal"></span>
     </div>
     <div class="live-repos" id="liveRepos"></div>
+    <div class="live-feed" id="liveFeed" style="display:none">
+      <button class="live-feed-toggle" id="feedToggle" onclick="toggleFeed()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        Letzte Commits anzeigen
+      </button>
+      <ul class="live-feed-list" id="feedList"></ul>
+    </div>
   </div>
 
   <!-- Summary -->
@@ -1653,6 +1691,8 @@ async function fetchLiveKPIs() {
       reposEl.appendChild(chip);
     });
 
+    renderFeed(d.recentCommits || []);
+
   } catch (err) {
     document.getElementById('liveLast').innerHTML =
       '<span class="live-error">Verbindung zum API fehlgeschlagen</span>';
@@ -1660,6 +1700,29 @@ async function fetchLiveKPIs() {
       document.getElementById(id).textContent = '–';
     });
   }
+}
+
+function toggleFeed() {
+  const btn = document.getElementById('feedToggle');
+  const list = document.getElementById('feedList');
+  const open = list.classList.toggle('show');
+  btn.classList.toggle('open', open);
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>${open ? 'Changelog ausblenden' : 'Letzte Commits anzeigen'}`;
+}
+
+function renderFeed(commits) {
+  const feed = document.getElementById('liveFeed');
+  const list = document.getElementById('feedList');
+  if (!commits || !commits.length) { feed.style.display = 'none'; return; }
+  feed.style.display = '';
+  list.innerHTML = commits.map(c =>
+    `<li class="live-feed-item">
+      ${c.url ? `<a href="${c.url}" target="_blank" rel="noopener" class="feed-sha">${c.sha}</a>` : `<span class="feed-sha">${c.sha}</span>`}
+      <span class="feed-repo">${c.repo}</span>
+      <span class="feed-msg">${c.message}</span>
+      <span class="feed-time">${timeAgo(c.time)}</span>
+    </li>`
+  ).join('');
 }
 
 fetchLiveKPIs();

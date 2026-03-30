@@ -72,6 +72,27 @@ module.exports = async function handler(req, res) {
       time: lastPush.created_at,
     } : null;
 
+    const recentCommits = [];
+    const seen = new Set();
+    for (const ev of pushEvents) {
+      const repo = ev.repo.name.replace(`${ORG}/`, '');
+      for (const c of (ev.payload.commits || []).reverse()) {
+        const msg = (c.message || '').split('\n')[0];
+        const key = `${c.sha?.slice(0, 8)}`;
+        if (seen.has(key) || msg.startsWith('Merge') || msg.startsWith('chore: update dashboard')) continue;
+        seen.add(key);
+        recentCommits.push({
+          sha: c.sha?.slice(0, 7),
+          message: msg.length > 72 ? msg.slice(0, 69) + '…' : msg,
+          repo,
+          time: ev.created_at,
+          url: c.url ? `https://github.com/${ORG}/${repo}/commit/${c.sha}` : null,
+        });
+        if (recentCommits.length >= 10) break;
+      }
+      if (recentCommits.length >= 10) break;
+    }
+
     const weekRepos = {};
     pushEvents.forEach(e => {
       const d = e.created_at?.split('T')[0];
@@ -101,6 +122,7 @@ module.exports = async function handler(req, res) {
       week: weekData.total_count || 0,
       month: monthData.total_count || 0,
       lastCommit,
+      recentCommits,
       activeRepos: Object.entries(weekRepos)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)
