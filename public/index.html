@@ -451,6 +451,74 @@
     .dm-toggle:hover { background: rgba(255,255,255,0.25); }
     .dm-toggle svg { width: 14px; height: 14px; }
 
+    /* Live Bar */
+    .live-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.65rem 1rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .live-indicator {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #10b981; flex-shrink: 0;
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #10b981;
+      animation: livePulse 2s ease-in-out infinite;
+      box-shadow: 0 0 6px rgba(16,185,129,0.5);
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .live-sep { width: 1px; height: 24px; background: var(--border); flex-shrink: 0; }
+    .live-stats { display: flex; gap: 1.2rem; }
+    .live-stat { display: flex; flex-direction: column; align-items: center; }
+    .live-val {
+      font-family: var(--mono); font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.2;
+      min-width: 28px; text-align: center;
+    }
+    .live-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .live-last {
+      font-size: 0.72rem; color: var(--text-sec); flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .live-last code {
+      background: var(--blue-light); color: var(--blue); padding: 0.1rem 0.35rem;
+      border-radius: 3px; font-family: var(--mono); font-size: 0.68rem;
+    }
+    .live-repos { display: flex; gap: 0.3rem; flex-shrink: 0; }
+    .live-repo-chip {
+      background: var(--blue-light); color: var(--blue); padding: 0.15rem 0.45rem;
+      border-radius: 4px; font-size: 0.6rem; font-weight: 600; white-space: nowrap;
+    }
+    .live-repo-chip .lr-count {
+      background: var(--blue); color: white; padding: 0.05rem 0.3rem;
+      border-radius: 3px; margin-left: 0.3rem; font-size: 0.55rem;
+    }
+    .live-streak {
+      display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;
+      font-size: 0.72rem; font-weight: 600; color: var(--accent-amber);
+    }
+    .live-streak svg { width: 14px; height: 14px; }
+    .live-error { font-size: 0.68rem; color: var(--text-muted); font-style: italic; }
+    .live-loading { display: flex; gap: 0.3rem; align-items: center; }
+    .live-loading span {
+      width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted);
+      animation: ldot 1.2s ease-in-out infinite;
+    }
+    .live-loading span:nth-child(2) { animation-delay: 0.2s; }
+    .live-loading span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes ldot {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    @media (max-width: 768px) {
+      .live-bar { gap: 0.6rem; }
+      .live-repos, .live-last { display: none; }
+    }
+
     /* Back to top */
     .btt {
       position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40;
@@ -568,6 +636,36 @@
       <div class="stat-value">19 + 5</div>
       <div class="stat-detail">Vercel-Projekte + Supabase-DBs</div>
     </div>
+  </div>
+
+  <!-- Live KPIs -->
+  <div class="live-bar" id="liveBar">
+    <div class="live-indicator">
+      <span class="live-dot"></span>
+      <span>Live</span>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-stats">
+      <div class="live-stat">
+        <span class="live-val" id="liveToday"><div class="live-loading"><span></span><span></span><span></span></div></span>
+        <span class="live-label">Heute</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="liveWeek"><div class="live-loading"><span></span><span></span><span></span></div></span>
+        <span class="live-label">Woche</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="liveMonth"><div class="live-loading"><span></span><span></span><span></span></div></span>
+        <span class="live-label">Monat</span>
+      </div>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-last" id="liveLast">Letzter Commit wird geladen…</div>
+    <div class="live-streak" id="liveStreak" style="display:none">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 23a7.5 7.5 0 0 0 7.5-7.5c0-2.8-1.5-5.2-2.8-7.2C15.3 6.1 14 4.2 14 2a1 1 0 0 0-1.74-.67C10.4 3.44 7.5 7.5 7.5 12 6 12 4.5 10.7 4.5 9a1 1 0 0 0-1.76-.65A10.1 10.1 0 0 0 .5 15.5 7.5 7.5 0 0 0 12 23z"/></svg>
+      <span id="liveStreakVal"></span>
+    </div>
+    <div class="live-repos" id="liveRepos"></div>
   </div>
 
   <!-- Summary -->
@@ -1205,6 +1303,73 @@ const gaugeObs = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.3 });
 gaugeObs.observe(document.getElementById('capacity'));
+
+// === FEATURE: Live KPIs ===
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'gerade eben';
+  if (m < 60) return `vor ${m} Min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `vor ${h} Std`;
+  const d = Math.floor(h / 24);
+  return `vor ${d} Tag${d > 1 ? 'en' : ''}`;
+}
+
+async function fetchLiveKPIs() {
+  try {
+    const res = await fetch('/api/github-stats');
+    const d = await res.json();
+
+    if (d.error && d.today === 0 && !d.lastCommit) {
+      document.getElementById('liveLast').innerHTML =
+        '<span class="live-error">API nicht verfügbar — statische Daten werden angezeigt</span>';
+      ['liveToday','liveWeek','liveMonth'].forEach(id => {
+        document.getElementById(id).textContent = '–';
+      });
+      return;
+    }
+
+    document.getElementById('liveToday').textContent = d.today;
+    document.getElementById('liveWeek').textContent = d.week;
+    document.getElementById('liveMonth').textContent = d.month;
+
+    if (d.lastCommit) {
+      const msg = d.lastCommit.message.length > 50
+        ? d.lastCommit.message.slice(0, 47) + '…'
+        : d.lastCommit.message;
+      document.getElementById('liveLast').innerHTML =
+        `<code>${d.lastCommit.repo}</code> ${msg} — <em>${timeAgo(d.lastCommit.time)}</em>`;
+    } else {
+      document.getElementById('liveLast').textContent = 'Keine aktuellen Commits';
+    }
+
+    if (d.streak > 0) {
+      const el = document.getElementById('liveStreak');
+      el.style.display = 'flex';
+      document.getElementById('liveStreakVal').textContent = `${d.streak} Tage`;
+    }
+
+    const reposEl = document.getElementById('liveRepos');
+    reposEl.innerHTML = '';
+    (d.activeRepos || []).slice(0, 3).forEach(r => {
+      const chip = document.createElement('span');
+      chip.className = 'live-repo-chip';
+      chip.innerHTML = `${r.name}<span class="lr-count">${r.commits}</span>`;
+      reposEl.appendChild(chip);
+    });
+
+  } catch (err) {
+    document.getElementById('liveLast').innerHTML =
+      '<span class="live-error">Verbindung zum API fehlgeschlagen</span>';
+    ['liveToday','liveWeek','liveMonth'].forEach(id => {
+      document.getElementById(id).textContent = '–';
+    });
+  }
+}
+
+fetchLiveKPIs();
+setInterval(fetchLiveKPIs, 5 * 60 * 1000);
 </script>
 
 </body>
