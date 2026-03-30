@@ -864,34 +864,34 @@
 
     .fs-chrome {
       position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column;
-      padding: 1.25rem 2rem;
+      padding: 1.5vmin 2.5vmin;
     }
     .fs-topbar {
       display: flex; align-items: center; justify-content: space-between;
-      padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 1vmin; border-bottom: 1px solid rgba(255,255,255,0.08);
       flex-shrink: 0;
     }
-    .fs-logo { display: flex; align-items: center; gap: 0.6rem; }
+    .fs-logo { display: flex; align-items: center; gap: 1vmin; }
     .fs-logo-mark {
-      width: 32px; height: 32px; background: linear-gradient(135deg, #005093, #00a5e5);
-      border-radius: 6px; display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 0.7rem; color: white; letter-spacing: -0.02em;
+      width: 4.5vmin; height: 4.5vmin; background: linear-gradient(135deg, #005093, #00a5e5);
+      border-radius: 0.8vmin; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.4vmin; color: white; letter-spacing: -0.02em;
     }
-    .fs-logo-text { color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 600; }
-    .fs-logo-sub { color: rgba(255,255,255,0.35); font-size: 0.62rem; font-weight: 400; }
+    .fs-logo-text { color: rgba(255,255,255,0.9); font-size: 1.6vmin; font-weight: 600; }
+    .fs-logo-sub { color: rgba(255,255,255,0.35); font-size: 1.1vmin; font-weight: 400; }
     .fs-clock {
-      font-family: var(--mono); font-size: 2rem; font-weight: 300;
+      font-family: var(--mono); font-size: 3.5vmin; font-weight: 300;
       color: rgba(255,255,255,0.85); letter-spacing: 0.04em;
     }
-    .fs-clock-date { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-align: right; margin-top: -0.15rem; }
+    .fs-clock-date { font-size: 1.1vmin; color: rgba(255,255,255,0.35); text-align: right; margin-top: -0.2vmin; }
     .fs-close-btn {
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.5); border-radius: 6px; padding: 0.35rem 0.7rem;
-      font-size: 0.65rem; cursor: pointer; font-family: var(--font); transition: 0.2s;
+      color: rgba(255,255,255,0.5); border-radius: 0.6vmin; padding: 0.5vmin 1.2vmin;
+      font-size: 1.1vmin; cursor: pointer; font-family: var(--font); transition: 0.2s;
     }
     .fs-close-btn:hover { background: rgba(255,255,255,0.12); color: white; cursor: default; }
 
-    .fs-stage { flex: 1; position: relative; overflow: hidden; margin-top: 0.75rem; }
+    .fs-stage { flex: 1; position: relative; overflow: hidden; margin-top: 1vmin; }
 
     .fs-slide {
       position: absolute; inset: 0; display: flex; flex-direction: column;
@@ -907,9 +907,9 @@
     }
 
     .fs-slide-title {
-      font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
-      color: rgba(255,255,255,0.3); margin-bottom: 0.75rem;
-      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 1.2vmin; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.3); margin-bottom: 1.5vmin;
+      display: flex; align-items: center; gap: 1vmin;
     }
     .fs-slide-title::after {
       content: ''; flex: 1; height: 1px;
@@ -917,82 +917,122 @@
     }
 
     .fs-kpi-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 0.75rem; margin-bottom: 1rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(14vmin, 1fr));
+      gap: 1.2vmin; margin-bottom: 1.5vmin;
     }
     .fs-kpi-card {
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 10px; padding: 1.2rem 1rem; text-align: center;
-      backdrop-filter: blur(8px); transition: transform 0.3s, border-color 0.3s;
-      opacity: 0; animation: fsCardIn 0.6s ease-out forwards;
+      border-radius: 1.2vmin; padding: 2vmin 1.5vmin; text-align: center;
+      backdrop-filter: blur(8px); transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), border-color 0.3s, box-shadow 0.3s;
+      opacity: 0; animation: fsCardIn 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
     }
-    .fs-kpi-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.15); cursor: default; }
+    .fs-kpi-card:hover { transform: translateY(-0.4vmin) scale(1.02); border-color: rgba(255,255,255,0.15); box-shadow: 0 0.8vmin 3vmin rgba(0,80,147,0.2); cursor: default; }
     @keyframes fsCardIn {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(2.5vmin) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .fs-kpi-val {
-      font-family: var(--mono); font-size: 2.4rem; font-weight: 700;
-      color: white; line-height: 1; margin-bottom: 0.2rem;
+      font-family: var(--mono); font-size: 4.5vmin; font-weight: 700;
+      color: white; line-height: 1; margin-bottom: 0.5vmin;
     }
     .fs-kpi-val.green { color: #4ade80; }
     .fs-kpi-val.amber { color: #fbbf24; }
     .fs-kpi-val.red { color: #f87171; }
     .fs-kpi-label {
-      font-size: 0.62rem; font-weight: 500; text-transform: uppercase;
+      font-size: 1.1vmin; font-weight: 500; text-transform: uppercase;
       letter-spacing: 0.08em; color: rgba(255,255,255,0.4);
     }
     .fs-kpi-accent {
-      width: 28px; height: 2px; border-radius: 1px; margin: 0.35rem auto 0;
+      width: 3.5vmin; height: 2px; border-radius: 1px; margin: 0.6vmin auto 0;
       background: linear-gradient(90deg, var(--blue), var(--blue-secondary));
     }
 
     .fs-supa-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(22vmin, 1fr)); gap: 1.2vmin;
     }
     .fs-supa-card {
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 8px; padding: 0.75rem 0.85rem; border-left: 3px solid #4ade80;
-      opacity: 0; animation: fsCardIn 0.6s ease-out forwards;
+      border-radius: 1vmin; padding: 1.5vmin 2vmin; border-left: 0.4vmin solid #4ade80;
+      opacity: 0; animation: fsCardIn 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
     }
     .fs-supa-card.degraded { border-left-color: #fbbf24; }
     .fs-supa-card.unreachable { border-left-color: #f87171; }
-    .fs-supa-name { font-weight: 600; font-size: 0.78rem; color: rgba(255,255,255,0.85); }
-    .fs-supa-meta { color: rgba(255,255,255,0.35); font-size: 0.6rem; margin-top: 0.15rem; }
-    .fs-supa-status { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.3rem; color: #4ade80; }
+    .fs-supa-name { font-weight: 600; font-size: 1.6vmin; color: rgba(255,255,255,0.85); }
+    .fs-supa-meta { color: rgba(255,255,255,0.35); font-size: 1.1vmin; margin-top: 0.3vmin; }
+    .fs-supa-status { font-size: 1vmin; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.6vmin; color: #4ade80; }
     .fs-supa-card.degraded .fs-supa-status { color: #fbbf24; }
     .fs-supa-card.unreachable .fs-supa-status { color: #f87171; }
 
     .fs-uptime-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(22vmin, 1fr)); gap: 1vmin;
     }
     .fs-uptime-card {
-      display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.7rem;
+      display: flex; align-items: center; gap: 1vmin; padding: 1.2vmin 1.5vmin;
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 6px; font-size: 0.72rem; color: rgba(255,255,255,0.7);
-      opacity: 0; animation: fsCardIn 0.5s ease-out forwards;
+      border-radius: 0.8vmin; font-size: 1.4vmin; color: rgba(255,255,255,0.7);
+      opacity: 0; animation: fsCardIn 0.6s cubic-bezier(.34,1.56,.64,1) forwards;
     }
     .fs-up-dot {
-      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-      background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.5);
+      width: 1.2vmin; height: 1.2vmin; border-radius: 50%; flex-shrink: 0;
+      background: #4ade80; box-shadow: 0 0 1vmin rgba(74,222,128,0.5);
+      animation: fsUpPulse 2s ease-in-out infinite;
     }
-    .fs-up-dot.down { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.5); }
+    @keyframes fsUpPulse { 0%,100% { box-shadow: 0 0 0.5vmin rgba(74,222,128,0.3); } 50% { box-shadow: 0 0 1.5vmin rgba(74,222,128,0.6); } }
+    .fs-up-dot.down { background: #f87171; box-shadow: 0 0 1vmin rgba(248,113,113,0.5); animation-name: fsDownPulse; }
+    @keyframes fsDownPulse { 0%,100% { box-shadow: 0 0 0.5vmin rgba(248,113,113,0.3); } 50% { box-shadow: 0 0 1.5vmin rgba(248,113,113,0.6); } }
     .fs-up-name { flex: 1; font-weight: 500; }
-    .fs-up-latency { font-family: var(--mono); font-size: 0.6rem; color: rgba(255,255,255,0.3); }
+    .fs-up-latency { font-family: var(--mono); font-size: 1.1vmin; color: rgba(255,255,255,0.3); }
 
     .fs-feed-wrap {
       background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 8px; padding: 0.75rem 1rem; flex: 1; overflow: hidden;
+      border-radius: 1vmin; padding: 1.5vmin 2vmin; flex: 1; overflow: hidden;
       backdrop-filter: blur(8px);
     }
     .fs-feed-line {
-      font-family: var(--mono); font-size: 0.68rem; line-height: 1.8; color: #c9d1d9;
+      font-family: var(--mono); font-size: 1.2vmin; line-height: 2; color: #c9d1d9;
       opacity: 0; animation: fsFeedIn 0.4s ease-out forwards;
     }
-    .fs-feed-sha { color: #f0883e; margin-right: 0.5rem; }
-    .fs-feed-repo { color: #58a6ff; margin-right: 0.5rem; }
-    .fs-feed-time { color: #484f58; margin-left: 0.5rem; float: right; }
-    @keyframes fsFeedIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+    .fs-feed-sha { color: #f0883e; margin-right: 0.8vmin; }
+    .fs-feed-repo { color: #58a6ff; margin-right: 0.8vmin; }
+    .fs-feed-time { color: #484f58; margin-left: 0.8vmin; float: right; }
+    @keyframes fsFeedIn { from { opacity: 0; transform: translateX(-1.5vmin); } to { opacity: 1; transform: none; } }
+
+    /* Chart area for kiosk */
+    .fs-chart-wrap {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2vmin; flex: 1;
+    }
+    .fs-chart-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 1vmin; padding: 2vmin; display: flex; flex-direction: column;
+      backdrop-filter: blur(8px);
+      opacity: 0; animation: fsCardIn 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    .fs-chart-title {
+      font-size: 1.3vmin; font-weight: 600; color: rgba(255,255,255,0.5);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.5vmin;
+    }
+    .fs-chart-canvas { flex: 1; position: relative; }
+    .fs-bar-chart { display: flex; align-items: flex-end; gap: 1vmin; height: 100%; padding-bottom: 3vmin; position: relative; }
+    .fs-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.4vmin; height: 100%; justify-content: flex-end; }
+    .fs-bar {
+      width: 100%; border-radius: 0.5vmin 0.5vmin 0 0; min-height: 0; position: relative;
+      transition: height 1.2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .fs-bar-val {
+      font-family: var(--mono); font-size: 1.1vmin; font-weight: 700; color: rgba(255,255,255,0.7);
+      text-align: center; padding-bottom: 0.3vmin;
+    }
+    .fs-bar-label {
+      font-size: 0.9vmin; color: rgba(255,255,255,0.3); text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+      padding-top: 0.3vmin;
+    }
+    .fs-donut-wrap { display: flex; align-items: center; justify-content: center; gap: 3vmin; height: 100%; }
+    .fs-donut-svg { width: 22vmin; height: 22vmin; }
+    .fs-donut-legend { display: flex; flex-direction: column; gap: 1vmin; }
+    .fs-donut-item { display: flex; align-items: center; gap: 0.8vmin; font-size: 1.3vmin; color: rgba(255,255,255,0.7); }
+    .fs-donut-swatch { width: 1.4vmin; height: 1.4vmin; border-radius: 0.3vmin; flex-shrink: 0; }
+    .fs-donut-pct { font-family: var(--mono); font-weight: 700; color: rgba(255,255,255,0.5); margin-left: 0.4vmin; }
 
     .fs-progress {
       position: absolute; bottom: 0; left: 0; right: 0; height: 3px; z-index: 2;
@@ -1000,21 +1040,19 @@
     }
     .fs-progress-fill {
       height: 100%; width: 0; background: linear-gradient(90deg, #005093, #00a5e5);
-      border-radius: 0 2px 2px 0;
-      transition: width 0.3s linear;
+      border-radius: 0 2px 2px 0; transition: width 0.3s linear;
     }
     .fs-progress-fill.running { transition: width linear; }
 
     .fs-dots {
-      display: flex; gap: 0.4rem; justify-content: center; padding: 0.5rem 0;
+      display: flex; gap: 0.6vmin; justify-content: center; padding: 0.8vmin 0;
       flex-shrink: 0;
     }
     .fs-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.15); transition: 0.3s;
-      cursor: pointer;
+      width: 0.8vmin; height: 0.8vmin; border-radius: 50%;
+      background: rgba(255,255,255,0.15); transition: 0.3s; cursor: pointer;
     }
-    .fs-dot.active { background: var(--blue-secondary); transform: scale(1.3); box-shadow: 0 0 8px rgba(0,165,229,0.5); cursor: default; }
+    .fs-dot.active { background: var(--blue-secondary); transform: scale(1.4); box-shadow: 0 0 1vmin rgba(0,165,229,0.5); cursor: default; }
     .fs-dot:hover:not(.active) { background: rgba(255,255,255,0.3); cursor: default; }
 
     /* Weekly Trend Chart */
@@ -2753,7 +2791,7 @@ let fsRefreshInterval = null;
 let fsClockInterval = null;
 let fsSlideInterval = null;
 let fsCurrentSlide = 0;
-let fsSlideCount = 4;
+let fsSlideCount = 5;
 const FS_SLIDE_DURATION = 12000;
 
 let fsData = { gh: null, infra: null, uptime: null };
@@ -2780,6 +2818,32 @@ function fsUpdateClock() {
 }
 
 function buildKioskHTML() {
+  const CAT_DATA = [
+    { label: 'Change', pt: 141, color: '#3b82f6' },
+    { label: 'Run / Betrieb', pt: 59, color: '#10b981' },
+    { label: 'Tools & Plattform', pt: 19, color: '#f59e0b' },
+    { label: 'Governance', pt: 61, color: '#8b5cf6' },
+  ];
+  const TOP10 = DATA.slice().sort((a,b) => b.ptMid - a.ptMid).slice(0,10);
+  const topMax = Math.max(...TOP10.map(d => d.ptMid));
+  const catTotal = CAT_DATA.reduce((s,c) => s + c.pt, 0);
+
+  let donutPaths = '';
+  let cum = 0;
+  const R = 38, CX = 50, CY = 50;
+  CAT_DATA.forEach(c => {
+    const pct = c.pt / catTotal;
+    const startAngle = cum * 2 * Math.PI - Math.PI/2;
+    cum += pct;
+    const endAngle = cum * 2 * Math.PI - Math.PI/2;
+    const large = pct > 0.5 ? 1 : 0;
+    const x1 = CX + R * Math.cos(startAngle), y1 = CY + R * Math.sin(startAngle);
+    const x2 = CX + R * Math.cos(endAngle), y2 = CY + R * Math.sin(endAngle);
+    donutPaths += `<path d="M${CX},${CY} L${x1},${y1} A${R},${R} 0 ${large} 1 ${x2},${y2} Z" fill="${c.color}" opacity="0.85">
+      <animate attributeName="opacity" from="0" to="0.85" dur="0.8s" fill="freeze" begin="${cum * 0.3}s"/>
+    </path>`;
+  });
+
   return `
     <div class="fs-bg">
       <div class="fs-bg-orb"></div>
@@ -2807,12 +2871,12 @@ function buildKioskHTML() {
         <div class="fs-slide active" data-slide="0">
           <div class="fs-slide-title">GitHub Activity & Portfolio</div>
           <div class="fs-kpi-grid" id="fsSlide0Kpis"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;flex:1;">
+          <div style="display:grid;grid-template-columns:3fr 2fr;gap:2vmin;flex:1;">
             <div class="fs-feed-wrap">
-              <div style="font-size:0.55rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:0.5rem;">Letzte Commits</div>
+              <div style="font-size:1vmin;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:1vmin;">Letzte Commits</div>
               <div id="fsFeed0"></div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div style="display:flex;flex-direction:column;gap:1.2vmin;">
               <div class="fs-kpi-grid" style="grid-template-columns:1fr 1fr;">
                 <div class="fs-kpi-card"><div class="fs-kpi-val">26</div><div class="fs-kpi-label">Initiativen</div><div class="fs-kpi-accent"></div></div>
                 <div class="fs-kpi-card"><div class="fs-kpi-val">14</div><div class="fs-kpi-label">Produktiv</div><div class="fs-kpi-accent"></div></div>
@@ -2827,22 +2891,61 @@ function buildKioskHTML() {
         <div class="fs-slide" data-slide="1">
           <div class="fs-slide-title">Vercel Deployments & Infrastructure</div>
           <div class="fs-kpi-grid" id="fsSlide1Kpis"></div>
-          <div style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:0.75rem;" id="fsLastDeploy1">–</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.5rem;" id="fsActiveProjects1"></div>
+          <div style="font-size:1.3vmin;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:1.5vmin;" id="fsLastDeploy1">–</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(22vmin,1fr));gap:1vmin;" id="fsActiveProjects1"></div>
         </div>
 
         <!-- Slide 2: Supabase -->
         <div class="fs-slide" data-slide="2">
           <div class="fs-slide-title">Supabase Datenbanken</div>
-          <div class="fs-kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:1rem;" id="fsSlide2Kpis"></div>
+          <div class="fs-kpi-grid" style="grid-template-columns:repeat(3,1fr);" id="fsSlide2Kpis"></div>
           <div class="fs-supa-grid" id="fsSupaGrid2"></div>
         </div>
 
         <!-- Slide 3: Uptime -->
         <div class="fs-slide" data-slide="3">
           <div class="fs-slide-title">Service Uptime Monitor</div>
-          <div class="fs-kpi-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:1rem;" id="fsSlide3Kpis"></div>
+          <div class="fs-kpi-grid" style="grid-template-columns:repeat(2,1fr);" id="fsSlide3Kpis"></div>
           <div class="fs-uptime-grid" id="fsUptimeGrid3"></div>
+        </div>
+
+        <!-- Slide 4: Aufwandsverteilung Charts -->
+        <div class="fs-slide" data-slide="4">
+          <div class="fs-slide-title">Aufwandsverteilung & Top-Initiativen</div>
+          <div class="fs-chart-wrap">
+            <div class="fs-chart-card" style="animation-delay:0s">
+              <div class="fs-chart-title">Nach Kategorie (${catTotal} PT)</div>
+              <div class="fs-chart-canvas">
+                <div class="fs-donut-wrap">
+                  <svg class="fs-donut-svg" viewBox="0 0 100 100">
+                    ${donutPaths}
+                    <circle cx="${CX}" cy="${CY}" r="22" fill="#060b18"/>
+                    <text x="${CX}" y="${CY - 1.5}" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="var(--mono)">${catTotal}</text>
+                    <text x="${CX}" y="${CY + 5}" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="3.5" font-weight="500">PT / Jahr</text>
+                  </svg>
+                  <div class="fs-donut-legend">
+                    ${CAT_DATA.map(c => `<div class="fs-donut-item"><div class="fs-donut-swatch" style="background:${c.color}"></div>${c.label}<span class="fs-donut-pct">${c.pt} PT (${Math.round(c.pt/catTotal*100)}%)</span></div>`).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="fs-chart-card" style="animation-delay:0.15s">
+              <div class="fs-chart-title">Top 10 Initiativen (PT / Jahr)</div>
+              <div class="fs-chart-canvas">
+                <div class="fs-bar-chart" id="fsBarChart">
+                  ${TOP10.map((d, i) => {
+                    const h = (d.ptMid / topMax) * 100;
+                    const c = CAT_COLORS[d.cat] || '#6b7280';
+                    return `<div class="fs-bar-col">
+                      <div class="fs-bar-val">${d.ptMid}</div>
+                      <div class="fs-bar" style="height:0;background:${c};" data-target-h="${h}"></div>
+                      <div class="fs-bar-label">${d.name.replace('ZVV ', '')}</div>
+                    </div>`;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="fs-progress"><div class="fs-progress-fill" id="fsProgressFill"></div></div>
@@ -2870,12 +2973,17 @@ function fsGoToSlide(idx) {
 
 function fsReanimateCards(slide) {
   if (!slide) return;
-  const cards = slide.querySelectorAll('.fs-kpi-card, .fs-supa-card, .fs-uptime-card, .fs-feed-line');
+  const cards = slide.querySelectorAll('.fs-kpi-card, .fs-supa-card, .fs-uptime-card, .fs-feed-line, .fs-chart-card');
   cards.forEach((c, i) => {
     c.style.animation = 'none';
     c.offsetHeight;
-    c.style.animation = `fsCardIn 0.5s ease-out ${i * 0.06}s forwards`;
+    c.style.animation = `fsCardIn 0.7s cubic-bezier(.34,1.56,.64,1) ${i * 0.08}s forwards`;
     c.style.opacity = '0';
+  });
+  const bars = slide.querySelectorAll('.fs-bar[data-target-h]');
+  bars.forEach((bar, i) => {
+    bar.style.height = '0';
+    setTimeout(() => { bar.style.height = bar.dataset.targetH + '%'; }, 300 + i * 80);
   });
 }
 
