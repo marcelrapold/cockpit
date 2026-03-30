@@ -601,6 +601,18 @@
       transition: 0.15s; cursor: default; white-space: nowrap;
     }
     .tech-bubble:hover { border-color: var(--blue); transform: translateY(-1px); }
+    .tech-tip {
+      position: fixed; z-index: 100; pointer-events: none;
+      background: #1c2128; color: #e6edf3; border: 1px solid #30363d;
+      border-radius: 6px; padding: 0.5rem 0.65rem; max-width: 300px;
+      font-size: 0.68rem; line-height: 1.45; box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .tech-tip.show { opacity: 1; }
+    .tech-tip-desc { color: #e6edf3; margin-bottom: 0.3rem; }
+    .tech-tip-sep { border: none; border-top: 1px solid #30363d; margin: 0.3rem 0; }
+    .tech-tip-repos { color: #8b949e; font-size: 0.6rem; }
+    .tech-tip-repos strong { color: #58a6ff; font-weight: 600; }
     .tech-bubble .tb-count {
       display: inline-block; background: var(--blue); color: #fff;
       padding: 0.05rem 0.35rem; border-radius: 10px; font-size: 0.55rem;
@@ -2016,6 +2028,98 @@ function renderTechStack(d) {
     return `<div class="tech-fw-legend-item"><div class="tech-fw-legend-dot" style="background:${col}"></div>${f.name} (${f.count})</div>`;
   }).join('');
 
+  const PKG_INFO = {
+    'typescript': 'Typisierte Programmiersprache — Superset von JavaScript',
+    'react': 'UI-Library für komponentenbasierte Weboberflächen',
+    'react-dom': 'React-Renderer für den Browser-DOM',
+    'next': 'Fullstack React-Framework mit SSR, Routing und API-Routes',
+    'tailwindcss': 'Utility-first CSS-Framework für schnelles Styling',
+    'eslint': 'Statische Code-Analyse — findet Bugs und erzwingt Style',
+    'eslint-config-next': 'ESLint-Regeln optimiert für Next.js-Projekte',
+    'postcss': 'CSS-Transformations-Tool (Autoprefixer, Nesting etc.)',
+    'autoprefixer': 'Fügt automatisch Browser-Prefixe zu CSS hinzu',
+    'lucide-react': 'Moderne Icon-Library — 1500+ konsistente SVG-Icons',
+    '@supabase/supabase-js': 'Supabase-Client — Postgres, Auth, Realtime, Storage',
+    '@supabase/ssr': 'Server-seitiges Supabase Auth-Handling für Next.js',
+    'class-variance-authority': 'Typsichere Varianten für CSS-Klassen (cva)',
+    'clsx': 'Utility zum bedingten Zusammensetzen von CSS-Klassen',
+    'tailwind-merge': 'Intelligentes Merging von Tailwind-Klassen ohne Konflikte',
+    'framer-motion': 'Animations-Library für React — Gestures, Layout, Exit',
+    'zod': 'TypeScript-first Schema-Validierung und Parsing',
+    '@radix-ui/react-dialog': 'Accessible Dialog/Modal-Primitive',
+    '@radix-ui/react-label': 'Accessible Label-Primitive für Formulare',
+    '@radix-ui/react-slot': 'Slot-Pattern für flexible Component-Composition',
+    '@radix-ui/react-progress': 'Accessible Progress-Bar-Primitive',
+    '@radix-ui/react-tabs': 'Accessible Tabs-Primitive mit Keyboard-Nav',
+    '@radix-ui/react-toast': 'Accessible Toast/Notification-Primitive',
+    '@radix-ui/react-select': 'Accessible Select/Dropdown-Primitive',
+    '@radix-ui/react-checkbox': 'Accessible Checkbox-Primitive',
+    '@radix-ui/react-dropdown-menu': 'Accessible Dropdown-Menü-Primitive',
+    '@radix-ui/react-popover': 'Accessible Popover/Tooltip-Primitive',
+    '@radix-ui/react-radio-group': 'Accessible Radio-Group-Primitive',
+    '@radix-ui/react-slider': 'Accessible Range-Slider-Primitive',
+    '@radix-ui/react-switch': 'Accessible Toggle-Switch-Primitive',
+    '@radix-ui/react-tooltip': 'Accessible Tooltip-Primitive',
+    '@radix-ui/react-alert-dialog': 'Accessible Bestätigungsdialog-Primitive',
+    '@radix-ui/react-accordion': 'Accessible Accordion-Primitive',
+    '@radix-ui/react-aspect-ratio': 'Responsive Seitenverhältnis-Container',
+    '@radix-ui/react-separator': 'Accessible Trennlinie-Primitive',
+    '@radix-ui/react-scroll-area': 'Custom Scrollbar-Primitive',
+    'tailwindcss-animate': 'Vordefinierte Animationsklassen für Tailwind',
+    'date-fns': 'Leichtgewichtige Datums-Utility-Library',
+    'next-themes': 'Dark/Light-Mode Switching für Next.js',
+    'recharts': 'Deklarative Chart-Library auf React + D3 basiert',
+    'echarts': 'Enterprise-Grade Visualisierungs-Library (Apache)',
+    'echarts-for-react': 'React-Wrapper für Apache ECharts',
+    'd3': 'Datengetriebene Dokument-Manipulation — Charts, Maps, Graphen',
+    'leaflet': 'Interaktive Karten-Library — OpenStreetMap-Rendering',
+    'react-leaflet': 'React-Komponenten für Leaflet-Maps',
+    'three': '3D-Grafik-Library — WebGL-Szenen, Geometrien, Shader',
+    '@react-three/fiber': 'React-Renderer für Three.js — deklarative 3D-Szenen',
+    '@react-three/drei': 'Nützliche Three.js-Helpers (OrbitControls, Text etc.)',
+    'resend': 'E-Mail-API-Service — transaktionale Mails programmatisch senden',
+    '@vercel/analytics': 'Privacy-freundliches Web-Analytics von Vercel',
+    '@vercel/kv': 'Serverless Redis-kompatibles Key-Value-Store',
+    '@upstash/redis': 'Serverless Redis-Client — HTTP-basierter Zugriff',
+    'exceljs': 'Excel-Dateien lesen und schreiben in Node.js',
+    'sharp': 'Hochperformante Bildverarbeitung — Resize, Format, Crop',
+    'vitest': 'Blitzschnelles Unit-Test-Framework — Vite-nativ',
+    '@playwright/test': 'End-to-End Browser-Testing — Cross-Browser',
+    'ai': 'Vercel AI SDK — Streaming, Tool-Calls, Multi-Provider',
+    '@ai-sdk/openai': 'OpenAI-Provider für Vercel AI SDK',
+    '@ai-sdk/google': 'Google-AI-Provider für Vercel AI SDK',
+    'openai': 'Offizieller OpenAI API-Client',
+    '@modelcontextprotocol/sdk': 'Model Context Protocol — AI-Tool-Integration',
+    'mermaid': 'Diagramme aus Text generieren — Flowcharts, Sequenzen',
+    'react-markdown': 'Markdown-zu-React-Renderer',
+    'react-syntax-highlighter': 'Code-Syntax-Highlighting als React-Komponente',
+    'prettier': 'Opinionated Code-Formatter — einheitlicher Style',
+    'vite': 'Blitzschnelles Frontend-Build-Tool mit HMR',
+    '@vitejs/plugin-react': 'React-Support-Plugin für Vite (JSX, Fast Refresh)',
+    'express': 'Minimales Node.js Web-Framework für APIs und Server',
+    'dotenv': 'Lädt .env-Dateien in process.env',
+    'nodemon': 'Auto-Restart für Node.js bei Dateiänderungen',
+    'supabase': 'Supabase CLI — lokale Entwicklung, Migrationen, DB-Diff',
+    '@hookform/resolvers': 'Zod/Yup-Resolver für React Hook Form',
+    'sonner': 'Schöne Toast-Notifications für React',
+    'cmdk': 'Command-Palette-Komponente (⌘K) für React',
+    'input-otp': 'One-Time-Password Input-Komponente',
+    'fastapi': 'Modernes Python-Web-Framework — schnell, async, typisiert',
+    'uvicorn': 'ASGI-Server für Python-Web-Apps (FastAPI etc.)',
+    'pandas': 'Datenanalyse und -manipulation in Python',
+    'torch': 'PyTorch — Deep Learning Framework',
+    'transformers': 'Hugging Face — vortrainierte NLP/ML-Modelle',
+    'Jinja2': 'Template-Engine für Python',
+    'PyYAML': 'YAML-Parser und -Emitter für Python',
+    'pypdf': 'PDF-Dateien lesen und manipulieren in Python',
+    'python-docx': 'Word-Dokumente erstellen und lesen in Python',
+    'openpyxl': 'Excel-Dateien lesen und schreiben in Python',
+    'PyMuPDF': 'PDF-Rendering und Textextraktion — sehr schnell',
+    'httpx': 'Async HTTP-Client für Python — requests-Nachfolger',
+    'pydantic': 'Daten-Validierung über Python Type-Hints',
+    'pydantic-settings': 'Config-Management via Pydantic-Modelle',
+  };
+
   const catCls = {
     'Framework': 'framework', 'Backend': 'backend', 'Styling': 'styling',
     'Testing': 'testing', 'Visualization': 'visualization', 'AI/LLM': 'ai',
@@ -2024,17 +2128,41 @@ function renderTechStack(d) {
   const topPkgs = d.topPackages.filter(p => p.count >= 2 && !p.name.startsWith('@types/'));
   bubbles.innerHTML = topPkgs.slice(0, 40).map(p => {
     const cls = catCls[p.category] || '';
-    return `<span class="tech-bubble ${cls ? 'tb-cat-' + cls : ''}" title="${p.repos.join(', ')}">${p.name}<span class="tb-count">${p.count}</span></span>`;
+    const desc = PKG_INFO[p.name] || p.category;
+    return `<span class="tech-bubble ${cls ? 'tb-cat-' + cls : ''}" data-desc="${desc.replace(/"/g, '&quot;')}" data-repos="${p.repos.join(', ').replace(/"/g, '&quot;')}" data-count="${p.count}">${p.name}<span class="tb-count">${p.count}</span></span>`;
   }).join('');
 
+  const techTip = document.createElement('div');
+  techTip.className = 'tech-tip';
+  document.body.appendChild(techTip);
+
+  bubbles.addEventListener('mouseover', e => {
+    const b = e.target.closest('.tech-bubble');
+    if (!b) return;
+    const desc = b.dataset.desc;
+    const repos = b.dataset.repos;
+    const count = b.dataset.count;
+    techTip.innerHTML = `<div class="tech-tip-desc">${desc}</div><hr class="tech-tip-sep"><div class="tech-tip-repos"><strong>${count} Repos:</strong> ${repos}</div>`;
+    techTip.classList.add('show');
+  });
+  bubbles.addEventListener('mousemove', e => {
+    techTip.style.left = Math.min(e.clientX + 12, window.innerWidth - 320) + 'px';
+    techTip.style.top = (e.clientY + 16) + 'px';
+  });
+  bubbles.addEventListener('mouseout', e => {
+    if (!e.target.closest('.tech-bubble')) return;
+    techTip.classList.remove('show');
+  });
+
   const tbody = document.querySelector('#techTable tbody');
-  tbody.innerHTML = d.topPackages.slice(0, 30).map(p =>
-    `<tr>
-      <td><strong>${p.name}</strong></td>
+  tbody.innerHTML = d.topPackages.slice(0, 30).map(p => {
+    const desc = PKG_INFO[p.name] || '';
+    return `<tr title="${desc.replace(/"/g, '&quot;')}">
+      <td><strong>${p.name}</strong>${desc ? `<div style="font-size:0.58rem;color:var(--text-muted);margin-top:0.1rem;">${desc}</div>` : ''}</td>
       <td style="font-family:var(--mono);font-weight:600;text-align:center;">${p.count}</td>
       <td><span class="tech-cat-badge">${p.category}</span></td>
-    </tr>`
-  ).join('');
+    </tr>`;
+  }).join('');
 }
 
 loadTechStack();
