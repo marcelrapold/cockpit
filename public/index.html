@@ -599,13 +599,22 @@
     .uptime-summary .us-count { font-weight: 700; font-size: 1.1rem; }
 
     /* Dependency Map */
-    .dep-svg { width: 100%; max-height: 400px; }
+    .dep-wrap { position: relative; overflow-x: auto; }
+    .dep-svg { width: 100%; min-height: 380px; }
     .dep-node { cursor: default; }
-    .dep-node circle { transition: r 0.2s; }
-    .dep-node:hover circle { r: 22; }
-    .dep-link { stroke: var(--border); stroke-width: 1.5; fill: none; }
-    .dep-label { font-family: var(--font); font-size: 9px; fill: var(--text); text-anchor: middle; pointer-events: none; }
-    .dep-cat-label { font-family: var(--font); font-size: 7px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; }
+    .dep-node rect, .dep-node circle { transition: opacity 0.15s, filter 0.15s; }
+    .dep-node:hover rect, .dep-node:hover circle { filter: brightness(1.15); }
+    .dep-link { fill: none; stroke-width: 1.5; opacity: 0.5; transition: opacity 0.15s, stroke-width 0.15s; }
+    .dep-link:hover { opacity: 1; stroke-width: 2.5; }
+    .dep-label { font-family: var(--font); font-size: 9px; fill: #fff; text-anchor: middle; pointer-events: none; font-weight: 600; }
+    .dep-ext-label { font-family: var(--font); font-size: 8px; fill: var(--text); text-anchor: middle; pointer-events: none; }
+    .dep-conn-label { font-family: var(--mono); font-size: 6.5px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; }
+    .dep-layer-label { font-family: var(--font); font-size: 8px; fill: var(--text-muted); text-anchor: start; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .dep-layer-bg { fill: var(--surface-alt); opacity: 0.4; rx: 6; }
+    [data-theme="dark"] .dep-layer-bg { opacity: 0.2; }
+    .dep-legend { display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .dep-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.6rem; color: var(--text-sec); }
+    .dep-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
 
     /* Tech Stack */
     .tech-summary { display: flex; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
@@ -1028,7 +1037,11 @@
     <div class="viz-2col">
       <div class="card">
         <h2 class="card-title">Projekt-Abhängigkeiten</h2>
-        <svg class="dep-svg" id="depMap" viewBox="0 0 500 400"></svg>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Architekturübersicht: welche Applikation hängt von welchem Service ab.</p>
+        <div class="dep-wrap">
+          <svg class="dep-svg" id="depMap" viewBox="0 0 520 400"></svg>
+        </div>
+        <div class="dep-legend" id="depLegend"></div>
       </div>
       <div class="card" id="uptime">
         <h2 class="card-title">Uptime-Monitor</h2>
@@ -1990,54 +2003,109 @@ function renderSparklines() {
 }
 
 function renderDependencyMap() {
-  const deps = [
-    ['ZVV Medienspiegel', 'ZVV PDF2Text'],
-    ['ZVV Medienspiegel', 'n8n Workflows'],
-    ['ZVV Info / Fahrplan', 'MCP-GTFS'],
-    ['ZVV App Modal', 'zvv.ch (AEM)'],
-    ['ZVV App Banner', 'zvv.ch (AEM)'],
-    ['ZVV Lottie', 'zvv.ch (AEM)'],
-    ['ZVV Mailer', 'Supabase'],
-    ['ZVV Mailer', 'Resend'],
-    ['ZVV TAMA', 'Supabase'],
-    ['ZVV Entdeckungsreise', 'Supabase'],
-    ['ZVV KontoRadar', 'Supabase'],
-    ['ZVV Medienspiegel', 'Supabase'],
-    ['ZVV Medienspiegel', 'OpenAI'],
+  const CONNS = [
+    { from: 'ZVV Mailer', to: 'Supabase', type: 'data', label: 'Auth + DB' },
+    { from: 'ZVV Mailer', to: 'Resend', type: 'api', label: 'E-Mail API' },
+    { from: 'ZVV TAMA', to: 'Supabase', type: 'data', label: 'DB + Auth' },
+    { from: 'ZVV Entdeckungsreise', to: 'Supabase', type: 'data', label: 'DB + Auth' },
+    { from: 'ZVV KontoRadar', to: 'Supabase', type: 'data', label: 'DB' },
+    { from: 'ZVV Medienspiegel', to: 'Supabase', type: 'data', label: 'Storage' },
+    { from: 'ZVV Medienspiegel', to: 'OpenAI', type: 'ai', label: 'GPT-4o' },
+    { from: 'ZVV Medienspiegel', to: 'n8n', type: 'auto', label: 'Workflows' },
+    { from: 'ZVV Medienspiegel', to: 'PDF2Text', type: 'api', label: 'Extraktion' },
+    { from: 'ZVV Info / Fahrplan', to: 'OpenAI', type: 'ai', label: 'AI SDK' },
+    { from: 'ZVV Info / Fahrplan', to: 'MCP-GTFS', type: 'api', label: 'Fahrplan' },
+    { from: 'ZVV App Modal', to: 'zvv.ch', type: 'embed', label: 'iFrame' },
+    { from: 'ZVV App Banner', to: 'zvv.ch', type: 'embed', label: 'Micro-FE' },
+    { from: 'ZVV Lottie', to: 'zvv.ch', type: 'embed', label: 'Assets' },
+    { from: 'ZVV Mailer', to: 'Vercel', type: 'host', label: 'Hosting' },
+    { from: 'ZVV TAMA', to: 'Vercel', type: 'host', label: 'Hosting' },
+    { from: 'ZVV Entdeckungsreise', to: 'Vercel', type: 'host', label: 'Hosting' },
+    { from: 'n8n', to: 'OpenAI', type: 'ai', label: 'API' },
+    { from: 'n8n', to: 'Resend', type: 'api', label: 'E-Mail' },
   ];
 
-  const nodes = new Set();
-  deps.forEach(([a, b]) => { nodes.add(a); nodes.add(b); });
-  const nodeArr = [...nodes];
+  const LAYERS = {
+    external: { y: 40, label: 'Externe Services', color: '#f59e0b', nodes: ['Supabase', 'OpenAI', 'Resend', 'Vercel', 'zvv.ch'] },
+    apps:     { y: 175, label: 'Applikationen', color: '#005093', nodes: ['ZVV Mailer', 'ZVV TAMA', 'ZVV Entdeckungsreise', 'ZVV Medienspiegel', 'ZVV KontoRadar', 'ZVV Info / Fahrplan'] },
+    frontend: { y: 280, label: 'Frontends & Infra', color: '#0479cc', nodes: ['ZVV App Modal', 'ZVV App Banner', 'ZVV Lottie', 'n8n', 'PDF2Text', 'MCP-GTFS'] },
+  };
 
-  const external = new Set(['zvv.ch (AEM)', 'Supabase', 'Resend', 'OpenAI']);
-  const catColor = name => external.has(name) ? '#f59e0b' : '#005093';
+  const TYPE_COLORS = {
+    data: '#3b82f6', api: '#10b981', ai: '#a855f7', embed: '#f59e0b', host: '#6b7280', auto: '#ec4899',
+  };
+  const TYPE_LABELS = {
+    data: 'Daten / Auth', api: 'API-Call', ai: 'AI / LLM', embed: 'Embed', host: 'Hosting', auto: 'Automation',
+  };
 
-  const cx = 250, cy = 200, rx = 190, ry = 160;
-  const positions = {};
-  nodeArr.forEach((n, i) => {
-    const angle = (2 * Math.PI * i) / nodeArr.length - Math.PI / 2;
-    positions[n] = { x: cx + rx * Math.cos(angle), y: cy + ry * Math.sin(angle) };
+  const connCount = {};
+  CONNS.forEach(c => {
+    connCount[c.from] = (connCount[c.from] || 0) + 1;
+    connCount[c.to] = (connCount[c.to] || 0) + 1;
+  });
+
+  const pos = {};
+  const W = 520;
+  Object.entries(LAYERS).forEach(([key, layer]) => {
+    const n = layer.nodes.length;
+    const spacing = (W - 80) / (n + 1);
+    layer.nodes.forEach((name, i) => {
+      pos[name] = { x: 40 + spacing * (i + 1), y: layer.y, layer: key, color: layer.color };
+    });
   });
 
   const svg = document.getElementById('depMap');
   let html = '';
 
-  deps.forEach(([a, b]) => {
-    const pa = positions[a], pb = positions[b];
-    html += `<line class="dep-link" x1="${pa.x}" y1="${pa.y}" x2="${pb.x}" y2="${pb.y}"/>`;
+  Object.entries(LAYERS).forEach(([key, layer]) => {
+    const yTop = layer.y - 22;
+    html += `<rect class="dep-layer-bg" x="10" y="${yTop}" width="${W - 20}" height="50"/>`;
+    html += `<text class="dep-layer-label" x="18" y="${yTop + 11}">${layer.label}</text>`;
   });
 
-  nodeArr.forEach(n => {
-    const p = positions[n];
-    const isExt = external.has(n);
-    html += `<g class="dep-node">
-      <circle cx="${p.x}" cy="${p.y}" r="${isExt ? 16 : 18}" fill="${catColor(n)}" opacity="${isExt ? 0.7 : 0.85}"/>
-      <text class="dep-label" x="${p.x}" y="${p.y + 28}" fill="var(--text)">${n.length > 18 ? n.slice(0, 16) + '…' : n}</text>
-    </g>`;
+  html += '<defs>';
+  Object.entries(TYPE_COLORS).forEach(([type, color]) => {
+    html += `<marker id="arrow-${type}" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="${color}" opacity="0.6"/></marker>`;
+  });
+  html += '</defs>';
+
+  CONNS.forEach(c => {
+    const a = pos[c.from], b = pos[c.to];
+    if (!a || !b) return;
+    const col = TYPE_COLORS[c.type] || '#888';
+    const dy = b.y - a.y;
+    const dx = b.x - a.x;
+    const cp1y = a.y + dy * 0.35;
+    const cp2y = b.y - dy * 0.35;
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    html += `<path class="dep-link" d="M${a.x},${a.y + 12} C${a.x},${cp1y} ${b.x},${cp2y} ${b.x},${b.y - 12}" stroke="${col}" marker-end="url(#arrow-${c.type})"><title>${c.from} → ${c.to}: ${c.label}</title></path>`;
+    html += `<text class="dep-conn-label" x="${mx + (dx === 0 ? 12 : 0)}" y="${my}">${c.label}</text>`;
+  });
+
+  Object.entries(pos).forEach(([name, p]) => {
+    const count = connCount[name] || 1;
+    const r = Math.max(14, Math.min(22, 10 + count * 2));
+    const isExt = p.layer === 'external';
+    const w = Math.max(60, name.length * 6.5 + 12);
+
+    if (isExt) {
+      html += `<g class="dep-node">
+        <rect x="${p.x - w/2}" y="${p.y - 12}" width="${w}" height="24" rx="4" fill="${p.color}" opacity="0.15" stroke="${p.color}" stroke-width="1.5"/>
+        <text class="dep-ext-label" x="${p.x}" y="${p.y + 4}" fill="${p.color}" style="font-weight:700">${name}</text>
+      </g>`;
+    } else {
+      html += `<g class="dep-node">
+        <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${p.color}" opacity="0.9"/>
+        <text class="dep-label" x="${p.x}" y="${p.y + 3.5}">${name.replace('ZVV ', '').slice(0, 14)}</text>
+      </g>`;
+    }
   });
 
   svg.innerHTML = html;
+
+  document.getElementById('depLegend').innerHTML = Object.entries(TYPE_LABELS).map(([type, label]) =>
+    `<div class="dep-legend-item"><div class="dep-legend-dot" style="background:${TYPE_COLORS[type]}"></div>${label}</div>`
+  ).join('');
 }
 
 // === UPTIME MONITOR ===
