@@ -603,18 +603,19 @@
     .dep-svg { width: 100%; min-height: 380px; }
     .dep-node { cursor: default; }
     .dep-node rect, .dep-node circle { transition: opacity 0.15s, filter 0.15s; }
-    .dep-node:hover rect, .dep-node:hover circle { filter: brightness(1.15); }
-    .dep-link { fill: none; stroke-width: 1.5; opacity: 0.5; transition: opacity 0.15s, stroke-width 0.15s; }
+    .dep-node:hover rect, .dep-node:hover circle { filter: brightness(1.15) drop-shadow(0 1px 4px rgba(0,0,0,.25)); }
+    .dep-link { fill: none; stroke-width: 1.6; opacity: 0.45; transition: opacity 0.15s, stroke-width 0.15s; }
     .dep-link:hover { opacity: 1; stroke-width: 2.5; }
-    .dep-label { font-family: var(--font); font-size: 9px; fill: #fff; text-anchor: middle; pointer-events: none; font-weight: 600; }
-    .dep-ext-label { font-family: var(--font); font-size: 8px; fill: var(--text); text-anchor: middle; pointer-events: none; }
-    .dep-conn-label { font-family: var(--mono); font-size: 6.5px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; }
-    .dep-layer-label { font-family: var(--font); font-size: 8px; fill: var(--text-muted); text-anchor: start; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .dep-layer-bg { fill: var(--surface-alt); opacity: 0.4; rx: 6; }
+    .dep-label { font-family: var(--font); font-size: 10.5px; fill: #fff; text-anchor: middle; pointer-events: none; font-weight: 700; paint-order: stroke; stroke: rgba(0,0,0,.35); stroke-width: 2.5px; }
+    .dep-ext-label { font-family: var(--font); font-size: 10px; fill: var(--text); text-anchor: middle; pointer-events: none; font-weight: 700; }
+    .dep-conn-label { font-family: var(--font); font-size: 8px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; font-weight: 500; }
+    .dep-conn-bg { fill: var(--bg); opacity: 0.85; rx: 3; }
+    .dep-layer-label { font-family: var(--font); font-size: 9.5px; fill: var(--text-muted); text-anchor: start; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .dep-layer-bg { fill: var(--surface-alt); opacity: 0.35; rx: 8; }
     [data-theme="dark"] .dep-layer-bg { opacity: 0.2; }
     .dep-legend { display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
-    .dep-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.6rem; color: var(--text-sec); }
-    .dep-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+    .dep-legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; color: var(--text-sec); font-weight: 500; }
+    .dep-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
     /* Tech Stack */
     .tech-summary { display: flex; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
@@ -1039,7 +1040,7 @@
         <h2 class="card-title">Projekt-Abhängigkeiten</h2>
         <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Architekturübersicht: welche Applikation hängt von welchem Service ab.</p>
         <div class="dep-wrap">
-          <svg class="dep-svg" id="depMap" viewBox="0 0 520 400"></svg>
+          <svg class="dep-svg" id="depMap" viewBox="0 0 600 370"></svg>
         </div>
         <div class="dep-legend" id="depLegend"></div>
       </div>
@@ -2026,9 +2027,9 @@ function renderDependencyMap() {
   ];
 
   const LAYERS = {
-    external: { y: 40, label: 'Externe Services', color: '#f59e0b', nodes: ['Supabase', 'OpenAI', 'Resend', 'Vercel', 'zvv.ch'] },
-    apps:     { y: 175, label: 'Applikationen', color: '#005093', nodes: ['ZVV Mailer', 'ZVV TAMA', 'ZVV Entdeckungsreise', 'ZVV Medienspiegel', 'ZVV KontoRadar', 'ZVV Info / Fahrplan'] },
-    frontend: { y: 280, label: 'Frontends & Infra', color: '#0479cc', nodes: ['ZVV App Modal', 'ZVV App Banner', 'ZVV Lottie', 'n8n', 'PDF2Text', 'MCP-GTFS'] },
+    external: { y: 50, label: 'Externe Services', color: '#f59e0b', nodes: ['Supabase', 'OpenAI', 'Resend', 'Vercel', 'zvv.ch'] },
+    apps:     { y: 200, label: 'Applikationen', color: '#005093', nodes: ['ZVV Mailer', 'ZVV TAMA', 'ZVV Entdeckungsreise', 'ZVV Medienspiegel', 'ZVV KontoRadar', 'ZVV Info / Fahrplan'] },
+    frontend: { y: 320, label: 'Frontends & Infra', color: '#0479cc', nodes: ['ZVV App Modal', 'ZVV App Banner', 'ZVV Lottie', 'n8n', 'PDF2Text', 'MCP-GTFS'] },
   };
 
   const TYPE_COLORS = {
@@ -2045,12 +2046,12 @@ function renderDependencyMap() {
   });
 
   const pos = {};
-  const W = 520;
+  const W = 600;
   Object.entries(LAYERS).forEach(([key, layer]) => {
     const n = layer.nodes.length;
-    const spacing = (W - 80) / (n + 1);
+    const spacing = (W - 60) / (n + 1);
     layer.nodes.forEach((name, i) => {
-      pos[name] = { x: 40 + spacing * (i + 1), y: layer.y, layer: key, color: layer.color };
+      pos[name] = { x: 30 + spacing * (i + 1), y: layer.y, layer: key, color: layer.color };
     });
   });
 
@@ -2058,9 +2059,9 @@ function renderDependencyMap() {
   let html = '';
 
   Object.entries(LAYERS).forEach(([key, layer]) => {
-    const yTop = layer.y - 22;
-    html += `<rect class="dep-layer-bg" x="10" y="${yTop}" width="${W - 20}" height="50"/>`;
-    html += `<text class="dep-layer-label" x="18" y="${yTop + 11}">${layer.label}</text>`;
+    const yTop = layer.y - 28;
+    html += `<rect class="dep-layer-bg" x="8" y="${yTop}" width="${W - 16}" height="60"/>`;
+    html += `<text class="dep-layer-label" x="18" y="${yTop + 14}">${layer.label}</text>`;
   });
 
   html += '<defs>';
@@ -2079,24 +2080,28 @@ function renderDependencyMap() {
     const cp2y = b.y - dy * 0.35;
     const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
     html += `<path class="dep-link" d="M${a.x},${a.y + 12} C${a.x},${cp1y} ${b.x},${cp2y} ${b.x},${b.y - 12}" stroke="${col}" marker-end="url(#arrow-${c.type})"><title>${c.from} → ${c.to}: ${c.label}</title></path>`;
-    html += `<text class="dep-conn-label" x="${mx + (dx === 0 ? 12 : 0)}" y="${my}">${c.label}</text>`;
+    const lx = mx + (dx === 0 ? 14 : 0), ly = my;
+    const tw = c.label.length * 5 + 8;
+    html += `<rect class="dep-conn-bg" x="${lx - tw/2}" y="${ly - 8}" width="${tw}" height="13"/>`;
+    html += `<text class="dep-conn-label" x="${lx}" y="${ly + 1}">${c.label}</text>`;
   });
 
   Object.entries(pos).forEach(([name, p]) => {
     const count = connCount[name] || 1;
-    const r = Math.max(14, Math.min(22, 10 + count * 2));
+    const r = Math.max(18, Math.min(28, 14 + count * 2));
     const isExt = p.layer === 'external';
-    const w = Math.max(60, name.length * 6.5 + 12);
+    const w = Math.max(72, name.length * 7.5 + 16);
 
     if (isExt) {
       html += `<g class="dep-node">
-        <rect x="${p.x - w/2}" y="${p.y - 12}" width="${w}" height="24" rx="4" fill="${p.color}" opacity="0.15" stroke="${p.color}" stroke-width="1.5"/>
-        <text class="dep-ext-label" x="${p.x}" y="${p.y + 4}" fill="${p.color}" style="font-weight:700">${name}</text>
+        <rect x="${p.x - w/2}" y="${p.y - 14}" width="${w}" height="28" rx="5" fill="${p.color}" opacity="0.12" stroke="${p.color}" stroke-width="1.5"/>
+        <text class="dep-ext-label" x="${p.x}" y="${p.y + 4}" fill="${p.color}">${name}</text>
       </g>`;
     } else {
+      const short = name.replace('ZVV ', '');
       html += `<g class="dep-node">
         <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${p.color}" opacity="0.9"/>
-        <text class="dep-label" x="${p.x}" y="${p.y + 3.5}">${name.replace('ZVV ', '').slice(0, 14)}</text>
+        <text class="dep-label" x="${p.x}" y="${p.y + 4}">${short}</text>
       </g>`;
     }
   });
