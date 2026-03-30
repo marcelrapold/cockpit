@@ -13,9 +13,9 @@ async function ghFetch(url, token) {
   return res.json();
 }
 
-async function searchCommits(query, token) {
+async function searchCommits(query, token, perPage = 1) {
   const res = await fetch(
-    `https://api.github.com/search/commits?q=${encodeURIComponent(query)}&per_page=1`,
+    `https://api.github.com/search/commits?q=${encodeURIComponent(query)}&sort=committer-date&order=desc&per_page=${perPage}`,
     {
       headers: {
         Authorization: `token ${token}`,
@@ -24,7 +24,7 @@ async function searchCommits(query, token) {
       },
     }
   );
-  if (!res.ok) return { total_count: 0 };
+  if (!res.ok) return { total_count: 0, items: [] };
   return res.json();
 }
 
@@ -55,10 +55,11 @@ module.exports = async function handler(req, res) {
 
     const baseQ = `org:${ORG} author:${USER}`;
 
-    const [todayData, weekData, monthData, events] = await Promise.all([
+    const [todayData, weekData, monthData, recentData, events] = await Promise.all([
       searchCommits(`${baseQ} committer-date:${today}`, token),
       searchCommits(`${baseQ} committer-date:>=${monday}`, token),
       searchCommits(`${baseQ} committer-date:>=${monthStart}`, token),
+      searchCommits(`${baseQ} committer-date:>=${monday}`, token, 12),
       ghFetch(`https://api.github.com/users/${USER}/events?per_page=100`, token),
     ]);
 
@@ -72,26 +73,23 @@ module.exports = async function handler(req, res) {
       time: lastPush.created_at,
     } : null;
 
-    const recentCommits = [];
-    const seen = new Set();
-    for (const ev of pushEvents) {
-      const repo = ev.repo.name.replace(`${ORG}/`, '');
-      for (const c of (ev.payload.commits || []).reverse()) {
-        const msg = (c.message || '').split('\n')[0];
-        const key = `${c.sha?.slice(0, 8)}`;
-        if (seen.has(key) || msg.startsWith('Merge') || msg.startsWith('chore: update dashboard')) continue;
-        seen.add(key);
-        recentCommits.push({
-          sha: c.sha?.slice(0, 7),
+    const recentCommits = (recentData.items || [])
+      .filter(item => {
+        const msg = (item.commit?.message || '').split('\n')[0];
+        return !msg.startsWith('Merge') && !msg.startsWith('chore: update dashboard');
+      })
+      .slice(0, 10)
+      .map(item => {
+        const msg = (item.commit?.message || '').split('\n')[0];
+        const repo = (item.repository?.full_name || '').replace(`${ORG}/`, '');
+        return {
+          sha: item.sha?.slice(0, 7),
           message: msg.length > 72 ? msg.slice(0, 69) + '…' : msg,
           repo,
-          time: ev.created_at,
-          url: c.url ? `https://github.com/${ORG}/${repo}/commit/${c.sha}` : null,
-        });
-        if (recentCommits.length >= 10) break;
-      }
-      if (recentCommits.length >= 10) break;
-    }
+          time: item.commit?.committer?.date || item.commit?.author?.date,
+          url: item.html_url,
+        };
+      });
 
     const weekRepos = {};
     pushEvents.forEach(e => {
