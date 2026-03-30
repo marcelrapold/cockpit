@@ -1,0 +1,21 @@
+{
+  "name": "ZVV Workload-Portfolio",
+  "short_name": "Workload",
+  "description": "Workload-Portfolio von Marcel Rapold — 26 Initiativen, Live-KPIs, Commit-Kalender, Uptime-Monitor",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#005093",
+  "theme_color": "#005093",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml"
+    }
+  ]
+}
