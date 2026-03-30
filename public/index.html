@@ -592,6 +592,57 @@
     .dep-label { font-family: var(--font); font-size: 9px; fill: var(--text); text-anchor: middle; pointer-events: none; }
     .dep-cat-label { font-family: var(--font); font-size: 7px; fill: var(--text-muted); text-anchor: middle; pointer-events: none; }
 
+    /* Tech Stack */
+    .tech-summary { display: flex; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tech-stat { text-align: center; }
+    .tech-stat-val { font-size: 1.3rem; font-weight: 700; color: var(--blue); }
+    .tech-stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .tech-bubbles { display: flex; flex-wrap: wrap; gap: 0.35rem; align-content: flex-start; }
+    .tech-bubble {
+      padding: 0.25rem 0.55rem; border-radius: 20px; font-size: 0.65rem; font-weight: 500;
+      background: var(--blue-light); color: var(--blue); border: 1px solid transparent;
+      transition: 0.15s; cursor: default; white-space: nowrap;
+    }
+    .tech-bubble:hover { border-color: var(--blue); transform: translateY(-1px); }
+    .tech-bubble .tb-count {
+      display: inline-block; background: var(--blue); color: #fff;
+      padding: 0.05rem 0.35rem; border-radius: 10px; font-size: 0.55rem;
+      margin-left: 0.3rem; font-weight: 700;
+    }
+    .tech-bubble.tb-cat-framework { background: #eff6ff; color: #1d4ed8; }
+    .tech-bubble.tb-cat-framework .tb-count { background: #1d4ed8; }
+    .tech-bubble.tb-cat-backend { background: #f0fdf4; color: #166534; }
+    .tech-bubble.tb-cat-backend .tb-count { background: #166534; }
+    .tech-bubble.tb-cat-styling { background: #fdf4ff; color: #7e22ce; }
+    .tech-bubble.tb-cat-styling .tb-count { background: #7e22ce; }
+    .tech-bubble.tb-cat-testing { background: #fef2f2; color: #b91c1c; }
+    .tech-bubble.tb-cat-testing .tb-count { background: #b91c1c; }
+    .tech-bubble.tb-cat-visualization { background: #fffbeb; color: #92400e; }
+    .tech-bubble.tb-cat-visualization .tb-count { background: #92400e; }
+    .tech-bubble.tb-cat-ai { background: #f0f9ff; color: #0369a1; }
+    .tech-bubble.tb-cat-ai .tb-count { background: #0369a1; }
+    [data-theme="dark"] .tech-bubble { background: var(--border); color: var(--text); }
+    [data-theme="dark"] .tech-bubble:hover { border-color: var(--blue); }
+    .tech-fw-bar { display: flex; height: 28px; border-radius: 6px; overflow: hidden; margin-top: 0.5rem; }
+    .tech-fw-seg {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 600; color: #fff; min-width: 30px;
+      transition: flex 0.5s;
+    }
+    .tech-fw-legend { display: flex; gap: 0.8rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .tech-fw-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.65rem; }
+    .tech-fw-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+    .tech-pkg-table { width: 100%; font-size: 0.72rem; border-collapse: collapse; }
+    .tech-pkg-table th { text-align: left; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
+    .tech-pkg-table td { padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); }
+    .tech-pkg-table tr:hover { background: var(--blue-light); }
+    .tech-cat-badge {
+      display: inline-block; padding: 0.1rem 0.4rem; border-radius: 3px;
+      font-size: 0.58rem; font-weight: 600; background: var(--surface-alt); color: var(--text-sec);
+    }
+    @media (max-width: 900px) { .tech-grid { grid-template-columns: 1fr; } }
+
     /* Two-col layout for smaller visualizations */
     .viz-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 900px) { .viz-2col, .ai-split { grid-template-columns: 1fr; } }
@@ -719,6 +770,7 @@
       <a href="#activity">Aktivität</a>
       <a href="#insights">Insights</a>
       <a href="#uptime">Uptime</a>
+      <a href="#techstack">Tech Stack</a>
       <a href="#portfolio">Portfolio</a>
       <a href="#charts">Aufwand</a>
     </div>
@@ -916,6 +968,33 @@
         <span>Prüfe Dienste…</span>
       </div>
       <div class="uptime-grid" id="uptimeGrid"></div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section id="techstack" class="reveal">
+    <div class="card">
+      <h2 class="card-title">Technologie-Landkarte</h2>
+      <p style="font-size:0.75rem;color:var(--text-sec);margin-bottom:1rem;">Externe Libraries und Frameworks über alle ZVV-Repositories. Gescannt aus package.json und requirements.txt.</p>
+      <div class="tech-summary" id="techSummary"></div>
+      <h3 style="font-size:0.82rem;font-weight:600;margin-bottom:0.5rem;">Framework-Verteilung</h3>
+      <div class="tech-fw-bar" id="techFwBar"></div>
+      <div class="tech-fw-legend" id="techFwLegend"></div>
+    </div>
+    <div class="tech-grid" style="margin-top:1.5rem;">
+      <div class="card">
+        <h3 style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem;">Top Packages (nach Verbreitung)</h3>
+        <div class="tech-bubbles" id="techBubbles"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem;">Meistgenutzte Libraries</h3>
+        <div style="max-height:400px;overflow-y:auto;">
+          <table class="tech-pkg-table" id="techTable">
+            <thead><tr><th>Package</th><th>Repos</th><th>Kategorie</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -1410,7 +1489,7 @@ function updateNav() {
   const headerH = header.offsetHeight;
   stickyNav.classList.toggle('visible', y > headerH + 100);
   // Active link
-  const sections = ['summary','timeline','activity','insights','uptime','portfolio','capacity','charts','infra'];
+  const sections = ['summary','timeline','activity','insights','uptime','techstack','portfolio','capacity','charts','infra'];
   let active = '';
   sections.forEach(id => {
     const el = document.getElementById(id);
@@ -1878,6 +1957,67 @@ async function loadUptime() {
 }
 
 loadDashboardData().then(() => { renderTables(); });
+
+// === TECH STACK VISUALIZATION ===
+async function loadTechStack() {
+  try {
+    const res = await fetch('/data-deps.json');
+    if (!res.ok) throw new Error('data-deps.json not found');
+    const d = await res.json();
+    renderTechStack(d);
+  } catch (e) {
+    console.warn('Tech stack data not available:', e.message);
+  }
+}
+
+function renderTechStack(d) {
+  const summary = document.getElementById('techSummary');
+  const stats = [
+    [d.repoCount, 'Repos gescannt'],
+    [d.uniquePackages, 'Packages'],
+    [d.categories?.length || 0, 'Kategorien'],
+    [d.frameworks?.[0]?.name || '–', 'Top Framework'],
+  ];
+  summary.innerHTML = stats.map(([val, label]) =>
+    `<div class="tech-stat"><div class="tech-stat-val">${val}</div><div class="tech-stat-label">${label}</div></div>`
+  ).join('');
+
+  const fwColors = { 'Next.js': '#005093', 'Vite': '#646cff', 'Express': '#333', 'FastAPI': '#009688', 'Python': '#3776ab', 'Vite + React': '#61dafb' };
+  const fwBar = document.getElementById('techFwBar');
+  const fwLegend = document.getElementById('techFwLegend');
+  const totalFw = d.frameworks.reduce((s, f) => s + f.count, 0);
+  fwBar.innerHTML = d.frameworks.map(f => {
+    const pct = (f.count / totalFw * 100);
+    const col = fwColors[f.name] || '#6b7280';
+    return `<div class="tech-fw-seg" style="flex:${f.count};background:${col}">${f.count > 1 ? f.name : ''}</div>`;
+  }).join('');
+  fwLegend.innerHTML = d.frameworks.map(f => {
+    const col = fwColors[f.name] || '#6b7280';
+    return `<div class="tech-fw-legend-item"><div class="tech-fw-legend-dot" style="background:${col}"></div>${f.name} (${f.count})</div>`;
+  }).join('');
+
+  const catCls = {
+    'Framework': 'framework', 'Backend': 'backend', 'Styling': 'styling',
+    'Testing': 'testing', 'Visualization': 'visualization', 'AI/LLM': 'ai',
+  };
+  const bubbles = document.getElementById('techBubbles');
+  const topPkgs = d.topPackages.filter(p => p.count >= 2 && !p.name.startsWith('@types/'));
+  bubbles.innerHTML = topPkgs.slice(0, 40).map(p => {
+    const cls = catCls[p.category] || '';
+    return `<span class="tech-bubble ${cls ? 'tb-cat-' + cls : ''}" title="${p.repos.join(', ')}">${p.name}<span class="tb-count">${p.count}</span></span>`;
+  }).join('');
+
+  const tbody = document.querySelector('#techTable tbody');
+  tbody.innerHTML = d.topPackages.slice(0, 30).map(p =>
+    `<tr>
+      <td><strong>${p.name}</strong></td>
+      <td style="font-family:var(--mono);font-weight:600;text-align:center;">${p.count}</td>
+      <td><span class="tech-cat-badge">${p.category}</span></td>
+    </tr>`
+  ).join('');
+}
+
+loadTechStack();
 loadUptime();
 setInterval(loadUptime, 5 * 60 * 1000);
 </script>
