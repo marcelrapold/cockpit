@@ -1040,7 +1040,7 @@
         <h2 class="card-title">Projekt-Abhängigkeiten</h2>
         <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Architekturübersicht: welche Applikation hängt von welchem Service ab.</p>
         <div class="dep-wrap">
-          <svg class="dep-svg" id="depMap" viewBox="0 0 600 370"></svg>
+          <svg class="dep-svg" id="depMap" viewBox="0 0 680 380"></svg>
         </div>
         <div class="dep-legend" id="depLegend"></div>
       </div>
@@ -2046,12 +2046,13 @@ function renderDependencyMap() {
   });
 
   const pos = {};
-  const W = 600;
+  const W = 680;
   Object.entries(LAYERS).forEach(([key, layer]) => {
     const n = layer.nodes.length;
-    const spacing = (W - 60) / (n + 1);
+    const pad = 50;
+    const spacing = (W - pad * 2) / (n + 1);
     layer.nodes.forEach((name, i) => {
-      pos[name] = { x: 30 + spacing * (i + 1), y: layer.y, layer: key, color: layer.color };
+      pos[name] = { x: pad + spacing * (i + 1), y: layer.y, layer: key, color: layer.color };
     });
   });
 
@@ -2059,9 +2060,9 @@ function renderDependencyMap() {
   let html = '';
 
   Object.entries(LAYERS).forEach(([key, layer]) => {
-    const yTop = layer.y - 28;
-    html += `<rect class="dep-layer-bg" x="8" y="${yTop}" width="${W - 16}" height="60"/>`;
-    html += `<text class="dep-layer-label" x="18" y="${yTop + 14}">${layer.label}</text>`;
+    const yTop = layer.y - 30;
+    html += `<rect class="dep-layer-bg" x="8" y="${yTop}" width="${W - 16}" height="64"/>`;
+    html += `<text class="dep-layer-label" x="18" y="${yTop + 15}">${layer.label}</text>`;
   });
 
   html += '<defs>';
@@ -2098,7 +2099,14 @@ function renderDependencyMap() {
         <text class="dep-ext-label" x="${p.x}" y="${p.y + 4}" fill="${p.color}">${name}</text>
       </g>`;
     } else {
-      const short = name.replace('ZVV ', '');
+      const LABEL_MAP = {
+        'ZVV Entdeckungsreise': 'Entdeckung.',
+        'ZVV Medienspiegel': 'Medienspi.',
+        'ZVV Info / Fahrplan': 'Info/Fahrpl.',
+        'ZVV App Modal': 'App Modal',
+        'ZVV App Banner': 'App Banner',
+      };
+      const short = LABEL_MAP[name] || name.replace('ZVV ', '');
       html += `<g class="dep-node">
         <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${p.color}" opacity="0.9"/>
         <text class="dep-label" x="${p.x}" y="${p.y + 4}">${short}</text>
