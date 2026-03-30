@@ -96,8 +96,9 @@
       --text-muted: #64748b;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: var(--font); color: var(--text); background: var(--surface-alt); line-height: 1.6; -webkit-font-smoothing: antialiased; transition: background 0.3s, color 0.3s; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { font-family: var(--font); color: var(--text); background: var(--surface-alt); line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; transition: background 0.3s, color 0.3s; }
+    button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
     .header {
       background: var(--blue);
@@ -109,6 +110,8 @@
     .header h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; }
     .header .sub { font-size: 0.9rem; font-weight: 300; opacity: 0.85; margin-top: 0.15rem; }
     .header .meta { margin-top: 0.75rem; font-size: 0.75rem; opacity: 0.55; display: flex; gap: 1.25rem; flex-wrap: wrap; }
+    .header-flex { display: flex; align-items: flex-start; justify-content: space-between; }
+    .header-actions { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
 
     .container { max-width: 1240px; margin: 0 auto; padding: 0 1.5rem; }
 
@@ -811,9 +814,17 @@
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
     @media (max-width: 768px) {
-      .live-bar { gap: 0.6rem; }
+      .live-bar { gap: 0.5rem; padding: 0.5rem 0.75rem; }
       .live-repos, .live-last { display: none; }
       .feed-repo-t { display: none; }
+      .live-stats { gap: 0.7rem; }
+      .live-val { font-size: 0.9rem; }
+      .live-label { font-size: 0.52rem; }
+      .live-sep { height: 18px; }
+      .live-indicator span:last-child { display: none; }
+      .infra-bar .live-stats { gap: 0.6rem; }
+      .infra-supa-detail { gap: 0.35rem; }
+      .supa-proj-pill { font-size: 0.58rem; padding: 0.15rem 0.4rem; }
     }
 
     /* Fullscreen / Kiosk Mode */
@@ -1089,16 +1100,136 @@
       border-top: 1px solid var(--border); margin-top: 1rem;
     }
 
+    /* === MOBILE RESPONSIVE (Google Material Design Guidelines) === */
     @media (max-width: 900px) {
       .charts-2col, .infra-grid { grid-template-columns: 1fr; }
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
       .gauge-container { flex-direction: column; text-align: center; }
       .gauge-bar-label { text-align: left; }
+      .card { padding: 1.25rem; }
+      .card-title { font-size: 1.05rem; }
+      table { font-size: 0.75rem; }
+      td, thead th { padding: 0.45rem 0.55rem; }
     }
+
     @media (max-width: 600px) {
-      .stats-row { grid-template-columns: 1fr; }
-      .container { padding: 0 1rem; }
+      html { font-size: 16px; }
+      body { line-height: 1.5; }
+
+      .header { padding: 1.25rem 1rem 1rem; }
+      .header h1 { font-size: 1.25rem; letter-spacing: -0.02em; }
+      .header .sub { font-size: 0.82rem; }
+      .header .org { font-size: 0.65rem; }
+      .header .meta { font-size: 0.68rem; gap: 0.75rem; margin-top: 0.5rem; }
+      .header .meta span { white-space: nowrap; }
+      .header svg[viewBox="0 0 314 145"] { height: 1.2rem !important; }
+
+      .container { padding: 0 0.75rem; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin: -0.6rem 0 1.25rem; }
+      .stat { padding: 0.75rem 0.85rem; }
+      .stat .stat-value { font-size: 1.25rem; }
+      .stat .stat-label { font-size: 0.62rem; }
+      .stat .stat-detail { font-size: 0.65rem; }
+      .stat-icon { width: 22px; height: 22px; }
+
+      section { margin-bottom: 1.25rem; }
+      .card { padding: 1rem; border-radius: 6px; }
+      .card-title { font-size: 1rem; margin-bottom: 0.5rem; }
+      .card-sub { font-size: 0.78rem; line-height: 1.55; }
+      .note { font-size: 0.75rem; padding: 0.7rem 0.85rem; }
+
       .sticky-nav-links { display: none; }
+      .sticky-nav-inner { padding: 0.4rem 0.75rem; }
+      .sticky-nav-title { font-size: 0.75rem; }
+
+      .tabs { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .tab { padding: 0.45rem 0.7rem; font-size: 0.7rem; min-height: 36px; }
+
+      .search-box input { font-size: 0.88rem; padding: 0.55rem 0.75rem 0.55rem 2.2rem; min-height: 44px; }
+      .search-count { font-size: 0.65rem; }
+
+      .timeline-container { margin: 0 -1rem; padding: 0 1rem 0.5rem; }
+      .tl-label { font-size: 0.65rem; padding: 0.25rem 0.4rem 0.25rem 0; }
+      .tl-lc-badge { font-size: 0.48rem; }
+
+      .viz-2col { gap: 1rem; }
+
+      .cal-day { width: 10px; height: 10px; }
+      .cal-day-labels span { font-size: 0.45rem; height: 10px; line-height: 10px; width: 18px; }
+      .cal-months span { font-size: 0.5rem; }
+      .cal-total { font-size: 0.75rem; }
+      .cal-legend { font-size: 0.52rem; }
+
+      .hm-grid { grid-template-columns: 18px repeat(24, minmax(0, 1fr)); }
+      .hm-cell { height: 11px; }
+      .hm-label { font-size: 0.42rem; }
+      .hm-hlabel { font-size: 0.36rem; }
+
+      .dep-svg { min-height: 280px; }
+
+      .uptime-grid { grid-template-columns: 1fr; gap: 0.4rem; }
+      .uptime-card { padding: 0.5rem 0.65rem; font-size: 0.68rem; min-height: 40px; }
+      .uptime-dot { width: 8px; height: 8px; }
+
+      .tech-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .tech-summary { gap: 1rem; }
+      .tech-stat-val { font-size: 1.1rem; }
+      .tech-stat-label { font-size: 0.55rem; }
+      .tech-bubble { font-size: 0.6rem; padding: 0.2rem 0.45rem; }
+      .tech-fw-bar { height: 22px; }
+      .tech-fw-legend { font-size: 0.58rem; gap: 0.5rem; }
+      .tech-pkg-table th, .tech-pkg-table td { padding: 0.25rem 0.4rem; font-size: 0.65rem; }
+
+      .tw { margin: 0 -1rem; padding: 0 1rem; }
+      table { font-size: 0.72rem; }
+      td, thead th { padding: 0.4rem 0.5rem; }
+      .link-pill { font-size: 0.58rem; padding: 0.1rem 0.4rem; }
+      .tag, .lifecycle { font-size: 0.6rem; }
+
+      .gauge-ring { width: 110px; height: 110px; }
+      .gauge-ring svg { width: 110px; height: 110px; }
+      .gauge-ring circle { stroke-width: 10; }
+      .gp-num { font-size: 1.3rem; }
+      .gauge-detail h3 { font-size: 0.82rem; }
+      .gauge-detail p { font-size: 0.72rem; }
+      .gauge-bar-label { width: 70px; font-size: 0.65rem; }
+      .gauge-bar { height: 6px; }
+      .gauge-bar-val { font-size: 0.62rem; }
+
+      .charts-2col { gap: 0.75rem; }
+      .chart-card { padding: 0.85rem; }
+      .chart-card h3 { font-size: 0.78rem; }
+
+      .infra-grid { gap: 0.5rem; }
+      .infra-stat { padding: 0.65rem 0.85rem; }
+      .infra-stat .is-value { font-size: 1rem; }
+      .infra-stat .is-label { font-size: 0.6rem; }
+      .infra-stat .is-detail { font-size: 0.65rem; }
+
+      .live-feed-console { padding: 0.5rem 0.6rem; max-height: 220px; }
+      .feed-line { font-size: 0.58rem; line-height: 1.55; }
+      .feed-sha-t { margin-right: 0.35rem; }
+
+      .dm-toggle, .fs-toggle, .pdf-btn { padding: 0.25rem 0.45rem; font-size: 0.65rem; min-height: 36px; }
+      .dm-toggle svg, .fs-toggle svg, .pdf-btn svg { width: 12px; height: 12px; }
+
+      .btt { width: 48px; height: 48px; bottom: 1rem; right: 0.75rem; }
+
+      .footer { font-size: 0.65rem; padding: 1rem; }
+
+      .dep-legend { font-size: 0.62rem; gap: 0.6rem; }
+      .dep-legend-dot { width: 8px; height: 8px; }
+
+      .legend { font-size: 0.65rem; gap: 0.75rem; }
+      .legend-swatch, .legend-swatch-heat { width: 12px; height: 12px; }
+    }
+
+    @media (max-width: 380px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .stat .stat-value { font-size: 1.15rem; }
+      .header h1 { font-size: 1.1rem; }
+      .live-stats { gap: 0.5rem; }
+      .live-val { font-size: 0.82rem; }
     }
     @media print {
       body { background: white !important; color: #1c2b3a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -1137,7 +1268,7 @@
 </nav>
 
 <header class="header" id="pageTop">
-  <div class="container" style="display:flex;align-items:flex-start;justify-content:space-between;">
+  <div class="container header-flex">
     <div>
       <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.2rem;">
         <svg viewBox="0 0 314 145" fill="white" style="height:1.6rem;width:auto;opacity:0.9;"><path d="M165.19,94.29l25.9-43.6h-23.77v-9.75h37.62v6.5l-25.9,43.6h27.19v9.75h-41.04v-6.5Z"/><path d="M209.4,40.94h11.2l14.19,40.78,14.28-40.78h10.77l-21.12,59.85h-8.21l-21.12-59.85Z"/><path d="M263.26,40.94h11.2l14.19,40.78,14.28-40.78h10.77l-21.12,59.85h-8.21l-21.12-59.85Z"/><path d="M40.59,36.41C52.46,13.72,72.94,7.91,78.6,6.59,106.6.04,125.66,15.08,125.66,15.08c-4.71,4.71-7.53,7.64-7.65,7.57-10.07-5.99-21.5-8.77-35-6.18-19.89,3.82-30.03,19.93-30.03,19.93h-12.4Z"/><path fill-rule="evenodd" d="M138.12,26.41c7.06,8.2,12.81,20.65,13.39,34.56,1.53,36.47-27.77,52.76-27.77,52.76l-7.46-7.83c10.41-5.74,24.93-19.41,24.63-43.5-.2-17.02-10.29-28.46-10.29-28.46,5.26-5.3,7.5-7.54,7.5-7.54Z"/><path fill-rule="evenodd" d="M45.7,52.91c-3.09,14.41-.1,28.5,8.79,40.19,8.97,11.8,27.43,22.24,44.04,19.04l8.68,8.75c-24.92,6.29-49.49-4.3-62.72-23.38-13.02-18.77-10.96-37.17-9.6-44.6h10.81Z"/><polygon points="78.6 66.63 145.03 .08 156.65 3.39 85.84 74.16 78.6 66.63"/><polygon points="46.17 52.91 60.68 52.91 137.17 132.72 134.06 144.11 46.17 52.91"/><polygon points=".25 39.4 100.87 39.4 90.28 49.99 6.6 49.99 .25 39.4"/></svg>
@@ -1150,7 +1281,7 @@
         <span>Basis: 30 Repositories, GitHub-Organisation zvvch</span>
       </div>
     </div>
-    <div style="display:flex;gap:0.4rem;align-items:center;">
+    <div class="header-actions">
       <button class="pdf-btn" id="pdfBtn" title="PDF-Export">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         PDF
