@@ -691,6 +691,7 @@
       display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
       box-shadow: 0 1px 4px rgba(0,0,0,0.04);
     }
+    .infra-bar { margin-top: -0.75rem; border-top: 1px dashed var(--border); }
     .live-indicator {
       display: flex; align-items: center; gap: 0.4rem;
       font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em;
@@ -976,6 +977,45 @@
         <div id="feedList"></div>
       </div>
     </div>
+  </div>
+
+  <!-- Infra Live Bar -->
+  <div class="live-bar infra-bar" id="infraBar" style="display:none">
+    <div class="live-indicator">
+      <span class="live-dot" style="background:#a855f7"></span>
+      <span>Infra</span>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-stats">
+      <div class="live-stat">
+        <span class="live-val" id="infraDeplToday">–</span>
+        <span class="live-label">Deploys Heute</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="infraDeplWeek">–</span>
+        <span class="live-label">Deploys Woche</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val live-trend" id="infraSuccess">–</span>
+        <span class="live-label">Erfolgsrate</span>
+      </div>
+      <div class="live-sep"></div>
+      <div class="live-stat">
+        <span class="live-val" id="infraVercelProjects">–</span>
+        <span class="live-label">Vercel Proj.</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="infraSupaHealth">–</span>
+        <span class="live-label">Supabase DBs</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="infraSupaLatency">–</span>
+        <span class="live-label">Ø DB Latenz</span>
+      </div>
+    </div>
+    <div class="live-sep"></div>
+    <div class="live-last" id="infraLastDeploy">Letztes Deployment wird geladen…</div>
+    <div class="live-repos" id="infraActiveProjects"></div>
   </div>
 
   <!-- Summary -->
@@ -1884,6 +1924,52 @@ function renderFeed(commits) {
 
 fetchLiveKPIs();
 setInterval(fetchLiveKPIs, 5 * 60 * 1000);
+
+async function fetchInfraStats() {
+  try {
+    const res = await fetch('/api/infra-stats');
+    const d = await res.json();
+    const bar = document.getElementById('infraBar');
+
+    if (!d.vercel && !d.supabase) return;
+    bar.style.display = '';
+
+    if (d.vercel && !d.vercel.error) {
+      document.getElementById('infraDeplToday').textContent = d.vercel.deploymentsToday;
+      document.getElementById('infraDeplWeek').textContent = d.vercel.deploymentsWeek;
+      const sEl = document.getElementById('infraSuccess');
+      sEl.textContent = d.vercel.successRate + '%';
+      sEl.className = 'live-val live-trend ' + (d.vercel.successRate >= 95 ? 'up' : d.vercel.successRate >= 80 ? 'flat' : 'down');
+      document.getElementById('infraVercelProjects').textContent = d.vercel.totalProjects;
+
+      if (d.vercel.latestDeploy) {
+        const ld = d.vercel.latestDeploy;
+        const msg = ld.message.length > 40 ? ld.message.slice(0, 37) + '…' : ld.message;
+        document.getElementById('infraLastDeploy').innerHTML =
+          `<code>${ld.project}</code> ${msg} — <em>${timeAgo(ld.time)}</em>`;
+      }
+
+      const projEl = document.getElementById('infraActiveProjects');
+      projEl.innerHTML = '';
+      (d.vercel.activeProjects || []).slice(0, 4).forEach(p => {
+        const chip = document.createElement('span');
+        chip.className = 'live-repo-chip';
+        chip.innerHTML = `${p.name}<span class="lr-count">${p.week}</span>`;
+        projEl.appendChild(chip);
+      });
+    }
+
+    if (d.supabase && !d.supabase.error) {
+      document.getElementById('infraSupaHealth').textContent =
+        `${d.supabase.healthy}/${d.supabase.totalProjects}`;
+      document.getElementById('infraSupaLatency').textContent =
+        d.supabase.avgLatency + 'ms';
+    }
+  } catch {}
+}
+
+fetchInfraStats();
+setInterval(fetchInfraStats, 10 * 60 * 1000);
 
 // === DATA-DRIVEN VISUALIZATIONS ===
 const calTooltip = document.createElement('div');
