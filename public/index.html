@@ -835,96 +835,187 @@
     .pdf-btn:hover { background: rgba(255,255,255,0.25); }
     .pdf-btn svg { width: 14px; height: 14px; }
 
-    body.fs-active {
-      overflow: hidden;
-    }
-    body.fs-active .header,
-    body.fs-active .sticky-nav,
-    body.fs-active .footer,
-    body.fs-active .btt,
-    body.fs-active #portfolio,
-    body.fs-active #charts { display: none !important; }
-
-    body.fs-active .container { max-width: 100%; padding: 0 1rem; }
+    body.fs-active { overflow: hidden; }
+    body.fs-active .header, body.fs-active .sticky-nav, body.fs-active .footer,
+    body.fs-active .btt, body.fs-active > .container { display: none !important; }
 
     .fs-overlay {
       display: none; position: fixed; inset: 0; z-index: 200;
-      background: var(--surface-alt); overflow-y: auto;
-      padding: 0.75rem 1.25rem;
+      background: #060b18; overflow: hidden; cursor: none;
     }
     body.fs-active .fs-overlay { display: block; }
 
-    .fs-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0.5rem 0; border-bottom: 2px solid var(--blue); margin-bottom: 0.75rem;
+    .fs-bg {
+      position: absolute; inset: 0; z-index: 0; overflow: hidden;
     }
-    .fs-header-title { font-size: 1rem; font-weight: 700; color: var(--blue); }
-    .fs-header-meta { font-size: 0.65rem; color: var(--text-muted); }
-    .fs-close {
-      background: var(--blue); color: white; border: none; border-radius: 4px;
-      padding: 0.3rem 0.7rem; font-size: 0.68rem; font-weight: 600; cursor: pointer;
-      font-family: var(--font);
+    .fs-bg-orb {
+      position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15;
+      animation: fsOrbFloat 20s ease-in-out infinite alternate;
     }
-    .fs-close:hover { opacity: 0.85; }
+    .fs-bg-orb:nth-child(1) { width: 600px; height: 600px; background: #005093; top: -15%; left: -10%; animation-delay: 0s; }
+    .fs-bg-orb:nth-child(2) { width: 500px; height: 500px; background: #00a5e5; bottom: -20%; right: -10%; animation-delay: -7s; }
+    .fs-bg-orb:nth-child(3) { width: 400px; height: 400px; background: #8b5cf6; top: 50%; left: 50%; animation-delay: -14s; transform: translate(-50%, -50%); }
+    @keyframes fsOrbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -40px) scale(1.1); }
+      66% { transform: translate(-20px, 30px) scale(0.95); }
+      100% { transform: translate(10px, -10px) scale(1.05); }
+    }
 
-    .fs-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: auto;
-      gap: 0.65rem;
-      height: calc(100vh - 4.5rem);
+    .fs-chrome {
+      position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column;
+      padding: 1.25rem 2rem;
     }
-    .fs-cell {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 6px; padding: 0.6rem 0.75rem; overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-    .fs-cell-title {
-      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.35rem;
+    .fs-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08);
       flex-shrink: 0;
     }
-    .fs-cell-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
-    .fs-cell.span2 { grid-column: span 2; }
-    .fs-cell.span3 { grid-column: span 3; }
-    .fs-cell.span4 { grid-column: span 4; }
+    .fs-logo { display: flex; align-items: center; gap: 0.6rem; }
+    .fs-logo-mark {
+      width: 32px; height: 32px; background: linear-gradient(135deg, #005093, #00a5e5);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.7rem; color: white; letter-spacing: -0.02em;
+    }
+    .fs-logo-text { color: rgba(255,255,255,0.9); font-size: 0.85rem; font-weight: 600; }
+    .fs-logo-sub { color: rgba(255,255,255,0.35); font-size: 0.62rem; font-weight: 400; }
+    .fs-clock {
+      font-family: var(--mono); font-size: 2rem; font-weight: 300;
+      color: rgba(255,255,255,0.85); letter-spacing: 0.04em;
+    }
+    .fs-clock-date { font-size: 0.65rem; color: rgba(255,255,255,0.35); text-align: right; margin-top: -0.15rem; }
+    .fs-close-btn {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5); border-radius: 6px; padding: 0.35rem 0.7rem;
+      font-size: 0.65rem; cursor: pointer; font-family: var(--font); transition: 0.2s;
+    }
+    .fs-close-btn:hover { background: rgba(255,255,255,0.12); color: white; cursor: default; }
 
-    .fs-kpi-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
-    .fs-kpi { text-align: center; }
-    .fs-kpi-val { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.1; }
-    .fs-kpi-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .fs-kpi-val.green { color: #22c55e; }
-    .fs-kpi-val.amber { color: #f59e0b; }
-    .fs-kpi-val.red { color: #ef4444; }
+    .fs-stage { flex: 1; position: relative; overflow: hidden; margin-top: 0.75rem; }
 
-    .fs-supa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.4rem; }
+    .fs-slide {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      opacity: 0; transform: scale(0.97) translateY(12px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .fs-slide.active {
+      opacity: 1; transform: scale(1) translateY(0); pointer-events: auto;
+    }
+    .fs-slide.exit {
+      opacity: 0; transform: scale(1.02) translateY(-12px);
+    }
+
+    .fs-slide-title {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.3); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .fs-slide-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+    }
+
+    .fs-kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem; margin-bottom: 1rem;
+    }
+    .fs-kpi-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 1.2rem 1rem; text-align: center;
+      backdrop-filter: blur(8px); transition: transform 0.3s, border-color 0.3s;
+      opacity: 0; animation: fsCardIn 0.6s ease-out forwards;
+    }
+    .fs-kpi-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.15); cursor: default; }
+    @keyframes fsCardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fs-kpi-val {
+      font-family: var(--mono); font-size: 2.4rem; font-weight: 700;
+      color: white; line-height: 1; margin-bottom: 0.2rem;
+    }
+    .fs-kpi-val.green { color: #4ade80; }
+    .fs-kpi-val.amber { color: #fbbf24; }
+    .fs-kpi-val.red { color: #f87171; }
+    .fs-kpi-label {
+      font-size: 0.62rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: rgba(255,255,255,0.4);
+    }
+    .fs-kpi-accent {
+      width: 28px; height: 2px; border-radius: 1px; margin: 0.35rem auto 0;
+      background: linear-gradient(90deg, var(--blue), var(--blue-secondary));
+    }
+
+    .fs-supa-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem;
+    }
     .fs-supa-card {
-      background: var(--surface-alt); border-radius: 4px; padding: 0.4rem 0.5rem;
-      border-left: 3px solid #22c55e; font-size: 0.65rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 0.75rem 0.85rem; border-left: 3px solid #4ade80;
+      opacity: 0; animation: fsCardIn 0.6s ease-out forwards;
     }
-    .fs-supa-card.degraded { border-left-color: #f59e0b; }
-    .fs-supa-card.unreachable { border-left-color: #ef4444; }
-    .fs-supa-name { font-weight: 600; }
-    .fs-supa-meta { color: var(--text-muted); font-size: 0.55rem; }
+    .fs-supa-card.degraded { border-left-color: #fbbf24; }
+    .fs-supa-card.unreachable { border-left-color: #f87171; }
+    .fs-supa-name { font-weight: 600; font-size: 0.78rem; color: rgba(255,255,255,0.85); }
+    .fs-supa-meta { color: rgba(255,255,255,0.35); font-size: 0.6rem; margin-top: 0.15rem; }
+    .fs-supa-status { font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.3rem; color: #4ade80; }
+    .fs-supa-card.degraded .fs-supa-status { color: #fbbf24; }
+    .fs-supa-card.unreachable .fs-supa-status { color: #f87171; }
 
-    .fs-trend-sparkline { width: 100%; height: 50px; }
-    .fs-trend-sparkline polyline { fill: none; stroke: var(--blue); stroke-width: 2; stroke-linecap: round; }
-    .fs-trend-sparkline .area { fill: var(--blue); opacity: 0.08; stroke: none; }
-
-    .fs-uptime-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .fs-uptime-pill {
-      display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem;
-      border-radius: 4px; font-size: 0.62rem; font-weight: 500;
-      background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+    .fs-uptime-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem;
     }
-    .fs-uptime-pill.down { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); }
-    .fs-uptime-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
-    .fs-uptime-pill.down .fs-uptime-dot { background: #ef4444; }
+    .fs-uptime-card {
+      display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.7rem;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px; font-size: 0.72rem; color: rgba(255,255,255,0.7);
+      opacity: 0; animation: fsCardIn 0.5s ease-out forwards;
+    }
+    .fs-up-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.5);
+    }
+    .fs-up-dot.down { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,0.5); }
+    .fs-up-name { flex: 1; font-weight: 500; }
+    .fs-up-latency { font-family: var(--mono); font-size: 0.6rem; color: rgba(255,255,255,0.3); }
 
-    .fs-feed-list { font-family: var(--mono); font-size: 0.6rem; line-height: 1.7; color: #c9d1d9; max-height: 100%; overflow-y: auto; background: #0d1117; border-radius: 4px; padding: 0.4rem 0.6rem; }
-    .fs-feed-sha { color: #f0883e; }
-    .fs-feed-repo { color: #58a6ff; }
-    .fs-feed-time { color: #484f58; }
+    .fs-feed-wrap {
+      background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 0.75rem 1rem; flex: 1; overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .fs-feed-line {
+      font-family: var(--mono); font-size: 0.68rem; line-height: 1.8; color: #c9d1d9;
+      opacity: 0; animation: fsFeedIn 0.4s ease-out forwards;
+    }
+    .fs-feed-sha { color: #f0883e; margin-right: 0.5rem; }
+    .fs-feed-repo { color: #58a6ff; margin-right: 0.5rem; }
+    .fs-feed-time { color: #484f58; margin-left: 0.5rem; float: right; }
+    @keyframes fsFeedIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+
+    .fs-progress {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 3px; z-index: 2;
+      background: rgba(255,255,255,0.04);
+    }
+    .fs-progress-fill {
+      height: 100%; width: 0; background: linear-gradient(90deg, #005093, #00a5e5);
+      border-radius: 0 2px 2px 0;
+      transition: width 0.3s linear;
+    }
+    .fs-progress-fill.running { transition: width linear; }
+
+    .fs-dots {
+      display: flex; gap: 0.4rem; justify-content: center; padding: 0.5rem 0;
+      flex-shrink: 0;
+    }
+    .fs-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); transition: 0.3s;
+      cursor: pointer;
+    }
+    .fs-dot.active { background: var(--blue-secondary); transform: scale(1.3); box-shadow: 0 0 8px rgba(0,165,229,0.5); cursor: default; }
+    .fs-dot:hover:not(.active) { background: rgba(255,255,255,0.3); cursor: default; }
 
     /* Weekly Trend Chart */
     .trend-section { margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
@@ -2650,7 +2741,7 @@ document.getElementById('pdfBtn').addEventListener('click', () => {
   window.print();
 });
 
-// === FEATURE: Fullscreen / Kiosk Mode ===
+// === FEATURE: Fullscreen / Kiosk Mode (Executive Carousel) ===
 const fsToggle = document.getElementById('fsToggle');
 const fsOverlay = document.createElement('div');
 fsOverlay.className = 'fs-overlay';
@@ -2659,152 +2750,260 @@ document.body.appendChild(fsOverlay);
 
 let fsActive = false;
 let fsRefreshInterval = null;
+let fsClockInterval = null;
+let fsSlideInterval = null;
+let fsCurrentSlide = 0;
+let fsSlideCount = 4;
+const FS_SLIDE_DURATION = 12000;
 
-function buildFullscreenDashboard() {
-  const now = new Date().toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' });
-  fsOverlay.innerHTML = `
-    <div class="fs-header">
-      <div>
-        <div class="fs-header-title">ZVV Workload-Portfolio — Kiosk</div>
-        <div class="fs-header-meta">Marcel Rapold · ICT Entwicklung & Betrieb · Aktualisiert: ${now}</div>
-      </div>
-      <button class="fs-close" onclick="toggleFullscreen()">✕ Schliessen (ESC)</button>
+let fsData = { gh: null, infra: null, uptime: null };
+
+function fsAnimateNumber(el, target, suffix = '') {
+  const dur = 900;
+  const start = performance.now();
+  const from = parseInt(el.textContent) || 0;
+  function tick(now) {
+    const p = Math.min((now - start) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (target - from) * eased) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function fsUpdateClock() {
+  const now = new Date();
+  const clockEl = document.getElementById('fsClock');
+  const dateEl = document.getElementById('fsClockDate');
+  if (clockEl) clockEl.textContent = now.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('de-CH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function buildKioskHTML() {
+  return `
+    <div class="fs-bg">
+      <div class="fs-bg-orb"></div>
+      <div class="fs-bg-orb"></div>
+      <div class="fs-bg-orb"></div>
     </div>
-    <div class="fs-grid">
-      <div class="fs-cell span2">
-        <div class="fs-cell-title">GitHub — Live KPIs</div>
-        <div class="fs-cell-body">
-          <div class="fs-kpi-row" id="fsGhKpis">
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsToday">–</div><div class="fs-kpi-label">Heute</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsWeek">–</div><div class="fs-kpi-label">Woche</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsMonth">–</div><div class="fs-kpi-label">Monat</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsVelocity">–</div><div class="fs-kpi-label">vs. Vorwoche</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsAvg">–</div><div class="fs-kpi-label">Ø / Tag</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsIssues">–</div><div class="fs-kpi-label">Issues</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsPRs">–</div><div class="fs-kpi-label">PRs</div></div>
+    <div class="fs-chrome">
+      <div class="fs-topbar">
+        <div class="fs-logo">
+          <div class="fs-logo-mark">ZVV</div>
+          <div>
+            <div class="fs-logo-text">Workload-Portfolio</div>
+            <div class="fs-logo-sub">Marcel Rapold · ICT Entwicklung & Betrieb</div>
           </div>
         </div>
-      </div>
-      <div class="fs-cell span2">
-        <div class="fs-cell-title">Vercel — Deployments</div>
-        <div class="fs-cell-body">
-          <div class="fs-kpi-row" id="fsVercelKpis">
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsDeplToday">–</div><div class="fs-kpi-label">Heute</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsDeplWeek">–</div><div class="fs-kpi-label">Woche</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsSuccess">–</div><div class="fs-kpi-label">Erfolgsrate</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val" id="fsProjects">–</div><div class="fs-kpi-label">Projekte</div></div>
-          </div>
-          <div style="font-size:0.65rem;color:var(--text-sec);margin-top:0.4rem;text-align:center;" id="fsLastDeploy">–</div>
+        <div style="text-align:right;">
+          <div class="fs-clock" id="fsClock">--:--:--</div>
+          <div class="fs-clock-date" id="fsClockDate"></div>
         </div>
+        <button class="fs-close-btn" onclick="toggleFullscreen()">ESC</button>
       </div>
-      <div class="fs-cell span2">
-        <div class="fs-cell-title">Supabase — Datenbanken</div>
-        <div class="fs-cell-body">
-          <div class="fs-supa-grid" id="fsSupaGrid">Lade…</div>
-        </div>
-      </div>
-      <div class="fs-cell span2">
-        <div class="fs-cell-title">Uptime-Monitor</div>
-        <div class="fs-cell-body">
-          <div class="fs-uptime-row" id="fsUptimeRow">Lade…</div>
-        </div>
-      </div>
-      <div class="fs-cell span2">
-        <div class="fs-cell-title">Portfolio-Übersicht</div>
-        <div class="fs-cell-body">
-          <div class="fs-kpi-row">
-            <div class="fs-kpi"><div class="fs-kpi-val">26</div><div class="fs-kpi-label">Initiativen</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val">14</div><div class="fs-kpi-label">Produktiv</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val amber">~280 PT</div><div class="fs-kpi-label">Aufwand/Jahr</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val red">127%</div><div class="fs-kpi-label">Auslastung</div></div>
-            <div class="fs-kpi"><div class="fs-kpi-val">10+</div><div class="fs-kpi-label">Technologien</div></div>
+
+      <div class="fs-stage" id="fsStage">
+        <!-- Slide 0: GitHub + Portfolio -->
+        <div class="fs-slide active" data-slide="0">
+          <div class="fs-slide-title">GitHub Activity & Portfolio</div>
+          <div class="fs-kpi-grid" id="fsSlide0Kpis"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;flex:1;">
+            <div class="fs-feed-wrap">
+              <div style="font-size:0.55rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:0.5rem;">Letzte Commits</div>
+              <div id="fsFeed0"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+              <div class="fs-kpi-grid" style="grid-template-columns:1fr 1fr;">
+                <div class="fs-kpi-card"><div class="fs-kpi-val">26</div><div class="fs-kpi-label">Initiativen</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val">14</div><div class="fs-kpi-label">Produktiv</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val amber">~280</div><div class="fs-kpi-label">PT / Jahr</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val red">127%</div><div class="fs-kpi-label">Auslastung</div><div class="fs-kpi-accent"></div></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="fs-cell span2">
-        <div class="fs-cell-title">Letzte Commits</div>
-        <div class="fs-cell-body">
-          <div class="fs-feed-list" id="fsFeed">Lade…</div>
+
+        <!-- Slide 1: Infrastructure -->
+        <div class="fs-slide" data-slide="1">
+          <div class="fs-slide-title">Vercel Deployments & Infrastructure</div>
+          <div class="fs-kpi-grid" id="fsSlide1Kpis"></div>
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:0.75rem;" id="fsLastDeploy1">–</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.5rem;" id="fsActiveProjects1"></div>
         </div>
+
+        <!-- Slide 2: Supabase -->
+        <div class="fs-slide" data-slide="2">
+          <div class="fs-slide-title">Supabase Datenbanken</div>
+          <div class="fs-kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:1rem;" id="fsSlide2Kpis"></div>
+          <div class="fs-supa-grid" id="fsSupaGrid2"></div>
+        </div>
+
+        <!-- Slide 3: Uptime -->
+        <div class="fs-slide" data-slide="3">
+          <div class="fs-slide-title">Service Uptime Monitor</div>
+          <div class="fs-kpi-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:1rem;" id="fsSlide3Kpis"></div>
+          <div class="fs-uptime-grid" id="fsUptimeGrid3"></div>
+        </div>
+
+        <div class="fs-progress"><div class="fs-progress-fill" id="fsProgressFill"></div></div>
       </div>
+
+      <div class="fs-dots" id="fsDots"></div>
     </div>`;
 }
 
-async function refreshFullscreenData() {
-  try {
-    const [ghRes, infraRes, uptimeRes] = await Promise.all([
-      fetch('/api/github-stats').then(r => r.json()).catch(() => null),
-      fetch('/api/infra-stats').then(r => r.json()).catch(() => null),
-      fetch('/api/health-check').then(r => r.json()).catch(() => null),
-    ]);
+function fsGoToSlide(idx) {
+  const slides = fsOverlay.querySelectorAll('.fs-slide');
+  const dots = fsOverlay.querySelectorAll('.fs-dot');
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'exit');
+    if (i === fsCurrentSlide && i !== idx) s.classList.add('exit');
+  });
+  fsCurrentSlide = idx;
+  requestAnimationFrame(() => {
+    slides[idx]?.classList.add('active');
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    fsResetProgress();
+    fsReanimateCards(slides[idx]);
+  });
+}
 
-    if (ghRes) {
-      const s = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-      s('fsToday', ghRes.today);
-      s('fsWeek', ghRes.week);
-      s('fsMonth', ghRes.month);
-      const velEl = document.getElementById('fsVelocity');
-      if (velEl && ghRes.velocity !== undefined) {
-        velEl.textContent = (ghRes.velocity > 0 ? '+' : '') + ghRes.velocity + '%';
-        velEl.className = 'fs-kpi-val ' + (ghRes.velocity > 0 ? 'green' : ghRes.velocity < 0 ? 'red' : '');
-      }
-      s('fsAvg', ghRes.avgPerDay);
-      s('fsIssues', ghRes.openIssues);
-      s('fsPRs', ghRes.openPRs);
+function fsReanimateCards(slide) {
+  if (!slide) return;
+  const cards = slide.querySelectorAll('.fs-kpi-card, .fs-supa-card, .fs-uptime-card, .fs-feed-line');
+  cards.forEach((c, i) => {
+    c.style.animation = 'none';
+    c.offsetHeight;
+    c.style.animation = `fsCardIn 0.5s ease-out ${i * 0.06}s forwards`;
+    c.style.opacity = '0';
+  });
+}
 
-      const feedEl = document.getElementById('fsFeed');
-      if (feedEl && ghRes.recentCommits?.length) {
-        feedEl.innerHTML = ghRes.recentCommits.slice(0, 8).map(c =>
-          `<div><span class="fs-feed-sha">${c.sha}</span> <span class="fs-feed-repo">${c.repo}</span> ${c.message.slice(0, 50)} <span class="fs-feed-time">${timeAgo(c.time)}</span></div>`
-        ).join('');
-      }
+function fsResetProgress() {
+  const fill = document.getElementById('fsProgressFill');
+  if (!fill) return;
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  requestAnimationFrame(() => {
+    fill.classList.add('running');
+    fill.style.transition = `width ${FS_SLIDE_DURATION}ms linear`;
+    fill.style.width = '100%';
+  });
+}
+
+function fsNextSlide() {
+  fsGoToSlide((fsCurrentSlide + 1) % fsSlideCount);
+}
+
+async function fsRefreshData() {
+  const [gh, infra, up] = await Promise.all([
+    fetch('/api/github-stats').then(r => r.json()).catch(() => null),
+    fetch('/api/infra-stats').then(r => r.json()).catch(() => null),
+    fetch('/api/health-check').then(r => r.json()).catch(() => null),
+  ]);
+  fsData = { gh, infra, uptime: up };
+  fsRenderAllSlides();
+}
+
+function fsKpiCard(val, label, cls = '', delay = 0) {
+  return `<div class="fs-kpi-card" style="animation-delay:${delay}s"><div class="fs-kpi-val ${cls}">${val}</div><div class="fs-kpi-label">${label}</div><div class="fs-kpi-accent"></div></div>`;
+}
+
+function fsRenderAllSlides() {
+  const { gh, infra, uptime } = fsData;
+
+  // Slide 0: GitHub
+  const s0 = document.getElementById('fsSlide0Kpis');
+  if (s0 && gh) {
+    const velCls = gh.velocity > 0 ? 'green' : gh.velocity < 0 ? 'red' : '';
+    const velSign = gh.velocity > 0 ? '+' : '';
+    s0.innerHTML = [
+      fsKpiCard(gh.today, 'Commits Heute', '', 0),
+      fsKpiCard(gh.week, 'Diese Woche', '', 0.06),
+      fsKpiCard(gh.month, 'Dieser Monat', '', 0.12),
+      fsKpiCard(velSign + gh.velocity + '%', 'vs. Vorwoche', velCls, 0.18),
+      fsKpiCard(gh.avgPerDay, 'Ø pro Tag', '', 0.24),
+      fsKpiCard(gh.openIssues, 'Open Issues', '', 0.3),
+      fsKpiCard(gh.openPRs, 'Open PRs', '', 0.36),
+    ].join('');
+  }
+  const feed0 = document.getElementById('fsFeed0');
+  if (feed0 && gh?.recentCommits?.length) {
+    feed0.innerHTML = gh.recentCommits.slice(0, 10).map((c, i) =>
+      `<div class="fs-feed-line" style="animation-delay:${i * 0.05}s"><span class="fs-feed-sha">${c.sha}</span><span class="fs-feed-repo">${c.repo}</span>${c.message.slice(0, 45)}<span class="fs-feed-time">${timeAgo(c.time)}</span></div>`
+    ).join('');
+  }
+
+  // Slide 1: Vercel
+  const s1 = document.getElementById('fsSlide1Kpis');
+  if (s1 && infra?.vercel && !infra.vercel.error) {
+    const v = infra.vercel;
+    const sCls = v.successRate >= 95 ? 'green' : v.successRate >= 80 ? 'amber' : 'red';
+    s1.innerHTML = [
+      fsKpiCard(v.deploymentsToday, 'Deploys Heute', '', 0),
+      fsKpiCard(v.deploymentsWeek, 'Deploys Woche', '', 0.06),
+      fsKpiCard(v.successRate + '%', 'Erfolgsrate', sCls, 0.12),
+      fsKpiCard(v.totalProjects, 'Vercel Projekte', '', 0.18),
+    ].join('');
+    if (v.latestDeploy) {
+      const ld = v.latestDeploy;
+      const el = document.getElementById('fsLastDeploy1');
+      if (el) el.innerHTML = `Letztes Deploy: <strong>${ld.project}</strong> — ${ld.message.slice(0, 50)} · ${timeAgo(ld.time)}`;
     }
-
-    if (infraRes?.vercel && !infraRes.vercel.error) {
-      const v = infraRes.vercel;
-      const s = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-      s('fsDeplToday', v.deploymentsToday);
-      s('fsDeplWeek', v.deploymentsWeek);
-      const sEl = document.getElementById('fsSuccess');
-      if (sEl) {
-        sEl.textContent = v.successRate + '%';
-        sEl.className = 'fs-kpi-val ' + (v.successRate >= 95 ? 'green' : v.successRate >= 80 ? 'amber' : 'red');
-      }
-      s('fsProjects', v.totalProjects);
-      if (v.latestDeploy) {
-        const ld = v.latestDeploy;
-        const el = document.getElementById('fsLastDeploy');
-        if (el) el.textContent = `${ld.project}: ${ld.message.slice(0, 40)} — ${timeAgo(ld.time)}`;
-      }
+    const projEl = document.getElementById('fsActiveProjects1');
+    if (projEl && v.activeProjects) {
+      projEl.innerHTML = v.activeProjects.map((p, i) =>
+        `<div class="fs-uptime-card" style="animation-delay:${i * 0.06}s">
+          <div class="fs-up-dot" style="background:#3b82f6;box-shadow:0 0 6px rgba(59,130,246,0.4);"></div>
+          <span class="fs-up-name">${p.name}</span>
+          <span class="fs-up-latency">${p.week} deploys</span>
+        </div>`
+      ).join('');
     }
+  }
 
-    if (infraRes?.supabase?.projects) {
-      const grid = document.getElementById('fsSupaGrid');
-      if (grid) {
-        grid.innerHTML = infraRes.supabase.projects.map(p => {
-          const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
-          return `<div class="fs-supa-card${cls}">
-            <div class="fs-supa-name">${p.name}</div>
-            <div class="fs-supa-meta">${[p.region, p.latency ? p.latency + 'ms' : '', p.dbVersion || ''].filter(Boolean).join(' · ')}</div>
-          </div>`;
-        }).join('');
-      }
+  // Slide 2: Supabase
+  const s2 = document.getElementById('fsSlide2Kpis');
+  if (s2 && infra?.supabase && !infra.supabase.error) {
+    const sb = infra.supabase;
+    const hCls = sb.allHealthy ? 'green' : 'amber';
+    s2.innerHTML = [
+      fsKpiCard(`${sb.healthy}/${sb.totalProjects}`, 'Healthy', hCls, 0),
+      fsKpiCard(sb.avgLatency + 'ms', 'Ø Latenz', '', 0.06),
+      fsKpiCard(sb.dbVersions?.length || '–', 'PG Versionen', '', 0.12),
+    ].join('');
+    const grid2 = document.getElementById('fsSupaGrid2');
+    if (grid2) {
+      grid2.innerHTML = sb.projects.map((p, i) => {
+        const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
+        return `<div class="fs-supa-card${cls}" style="animation-delay:${i * 0.08}s">
+          <div class="fs-supa-name">${p.name}</div>
+          <div class="fs-supa-meta">${[p.region, p.latency ? p.latency + 'ms' : '', p.dbVersion ? 'PG ' + p.dbVersion.split('.')[0] : ''].filter(Boolean).join(' · ')}</div>
+          <div class="fs-supa-status">${p.ok ? '● HEALTHY' : '● ' + (p.status || 'DOWN').toUpperCase()}</div>
+        </div>`;
+      }).join('');
     }
+  }
 
-    if (uptimeRes?.services) {
-      const row = document.getElementById('fsUptimeRow');
-      if (row) {
-        row.innerHTML = uptimeRes.services.map(s =>
-          `<div class="fs-uptime-pill${s.ok ? '' : ' down'}"><div class="fs-uptime-dot"></div>${s.name}${s.ok ? ' ' + s.latency + 'ms' : ''}</div>`
-        ).join('');
-      }
+  // Slide 3: Uptime
+  const s3 = document.getElementById('fsSlide3Kpis');
+  if (s3 && uptime) {
+    const uCls = uptime.allOk ? 'green' : 'red';
+    s3.innerHTML = [
+      fsKpiCard(`${uptime.up}/${uptime.total}`, 'Erreichbar', uCls, 0),
+      fsKpiCard(uptime.allOk ? 'OK' : 'WARNUNG', 'Status', uCls, 0.06),
+    ].join('');
+    const grid3 = document.getElementById('fsUptimeGrid3');
+    if (grid3) {
+      grid3.innerHTML = uptime.services.map((s, i) =>
+        `<div class="fs-uptime-card" style="animation-delay:${i * 0.04}s">
+          <div class="fs-up-dot${s.ok ? '' : ' down'}"></div>
+          <span class="fs-up-name">${s.name}</span>
+          <span class="fs-up-latency">${s.ok ? s.latency + 'ms' : 'offline'}</span>
+        </div>`
+      ).join('');
     }
-
-    const metaEl = fsOverlay.querySelector('.fs-header-meta');
-    if (metaEl) {
-      metaEl.textContent = `Marcel Rapold · ICT Entwicklung & Betrieb · Aktualisiert: ${new Date().toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' })}`;
-    }
-  } catch {}
+  }
 }
 
 function toggleFullscreen() {
@@ -2812,15 +3011,27 @@ function toggleFullscreen() {
   document.body.classList.toggle('fs-active', fsActive);
 
   if (fsActive) {
-    buildFullscreenDashboard();
-    refreshFullscreenData();
-    fsRefreshInterval = setInterval(refreshFullscreenData, 60000);
+    fsCurrentSlide = 0;
+    fsOverlay.innerHTML = buildKioskHTML();
+    const dotsEl = document.getElementById('fsDots');
+    dotsEl.innerHTML = Array.from({ length: fsSlideCount }, (_, i) =>
+      `<div class="fs-dot${i === 0 ? ' active' : ''}" onclick="fsGoToSlide(${i})"></div>`
+    ).join('');
+
+    fsUpdateClock();
+    fsClockInterval = setInterval(fsUpdateClock, 1000);
+    fsResetProgress();
+    fsSlideInterval = setInterval(fsNextSlide, FS_SLIDE_DURATION);
+
+    fsRefreshData();
+    fsRefreshInterval = setInterval(fsRefreshData, 60000);
+
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(() => {});
     }
   } else {
-    if (fsRefreshInterval) clearInterval(fsRefreshInterval);
-    fsRefreshInterval = null;
+    [fsRefreshInterval, fsClockInterval, fsSlideInterval].forEach(i => i && clearInterval(i));
+    fsRefreshInterval = fsClockInterval = fsSlideInterval = null;
     fsOverlay.innerHTML = '';
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
@@ -2830,9 +3041,10 @@ function toggleFullscreen() {
 
 fsToggle.addEventListener('click', toggleFullscreen);
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && fsActive) {
-    toggleFullscreen();
-  }
+  if (!fsActive) return;
+  if (e.key === 'Escape') toggleFullscreen();
+  if (e.key === 'ArrowRight' || e.key === ' ') { clearInterval(fsSlideInterval); fsNextSlide(); fsSlideInterval = setInterval(fsNextSlide, FS_SLIDE_DURATION); }
+  if (e.key === 'ArrowLeft') { clearInterval(fsSlideInterval); fsGoToSlide((fsCurrentSlide - 1 + fsSlideCount) % fsSlideCount); fsSlideInterval = setInterval(fsNextSlide, FS_SLIDE_DURATION); }
 });
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && fsActive) {
