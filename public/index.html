@@ -712,6 +712,9 @@
       font-family: var(--mono); font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.2;
       min-width: 28px; text-align: center;
     }
+    .live-trend.up { color: #22c55e; }
+    .live-trend.down { color: #ef4444; }
+    .live-trend.flat { color: var(--text-muted); }
     .live-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
     .live-last {
       font-size: 0.72rem; color: var(--text-sec); flex: 1; min-width: 0;
@@ -936,6 +939,24 @@
       <div class="live-stat">
         <span class="live-val" id="liveMonth"><div class="live-loading"><span></span><span></span><span></span></div></span>
         <span class="live-label">Monat</span>
+      </div>
+      <div class="live-sep"></div>
+      <div class="live-stat">
+        <span class="live-val live-trend" id="liveVelocity">–</span>
+        <span class="live-label">vs. Vorwoche</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="liveAvg">–</span>
+        <span class="live-label">Ø / Tag</span>
+      </div>
+      <div class="live-sep"></div>
+      <div class="live-stat">
+        <span class="live-val" id="liveIssues">–</span>
+        <span class="live-label">Issues</span>
+      </div>
+      <div class="live-stat">
+        <span class="live-val" id="livePRs">–</span>
+        <span class="live-label">PRs</span>
       </div>
     </div>
     <div class="live-sep"></div>
@@ -1774,7 +1795,7 @@ async function fetchLiveKPIs() {
     if (d.error && d.today === 0 && !d.lastCommit) {
       document.getElementById('liveLast').innerHTML =
         '<span class="live-error">API nicht verfügbar — statische Daten werden angezeigt</span>';
-      ['liveToday','liveWeek','liveMonth'].forEach(id => {
+      ['liveToday','liveWeek','liveMonth','liveVelocity','liveAvg','liveIssues','livePRs'].forEach(id => {
         document.getElementById(id).textContent = '–';
       });
       return;
@@ -1783,6 +1804,22 @@ async function fetchLiveKPIs() {
     document.getElementById('liveToday').textContent = d.today;
     document.getElementById('liveWeek').textContent = d.week;
     document.getElementById('liveMonth').textContent = d.month;
+
+    const velEl = document.getElementById('liveVelocity');
+    if (d.velocity !== undefined) {
+      const sign = d.velocity > 0 ? '+' : '';
+      velEl.textContent = `${sign}${d.velocity}%`;
+      velEl.className = 'live-val live-trend ' + (d.velocity > 0 ? 'up' : d.velocity < 0 ? 'down' : 'flat');
+    }
+    if (d.avgPerDay !== undefined) {
+      document.getElementById('liveAvg').textContent = d.avgPerDay;
+    }
+    if (d.openIssues !== undefined) {
+      document.getElementById('liveIssues').textContent = d.openIssues;
+    }
+    if (d.openPRs !== undefined) {
+      document.getElementById('livePRs').textContent = d.openPRs;
+    }
 
     if (d.lastCommit) {
       const msg = d.lastCommit.message.length > 50
@@ -1814,7 +1851,7 @@ async function fetchLiveKPIs() {
   } catch (err) {
     document.getElementById('liveLast').innerHTML =
       '<span class="live-error">Verbindung zum API fehlgeschlagen</span>';
-    ['liveToday','liveWeek','liveMonth'].forEach(id => {
+    ['liveToday','liveWeek','liveMonth','liveVelocity','liveAvg','liveIssues','livePRs'].forEach(id => {
       document.getElementById(id).textContent = '–';
     });
   }

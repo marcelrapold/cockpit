@@ -28,6 +28,21 @@ async function searchCommits(query, token, perPage = 1) {
   return res.json();
 }
 
+async function searchIssues(query, token) {
+  const res = await fetch(
+    `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=1`,
+    {
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
+  if (!res.ok) return { total_count: 0 };
+  return res.json();
+}
+
 function startOfWeek(d) {
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
@@ -55,12 +70,22 @@ module.exports = async function handler(req, res) {
 
     const baseQ = `org:${ORG} author:${USER}`;
 
-    const [todayData, weekData, monthData, recentData, events] = await Promise.all([
+    const prevMonday = new Date(startOfWeek(now));
+    prevMonday.setDate(prevMonday.getDate() - 7);
+    const prevSunday = new Date(prevMonday);
+    prevSunday.setDate(prevSunday.getDate() + 6);
+    const prevMondayStr = prevMonday.toISOString().split('T')[0];
+    const prevSundayStr = prevSunday.toISOString().split('T')[0];
+
+    const [todayData, weekData, monthData, prevWeekData, recentData, events, openIssues, openPRs] = await Promise.all([
       searchCommits(`${baseQ} committer-date:${today}`, token),
       searchCommits(`${baseQ} committer-date:>=${monday}`, token),
       searchCommits(`${baseQ} committer-date:>=${monthStart}`, token),
+      searchCommits(`${baseQ} committer-date:${prevMondayStr}..${prevSundayStr}`, token),
       searchCommits(`${baseQ} committer-date:>=${monday}`, token, 12),
       ghFetch(`https://api.github.com/users/${USER}/events?per_page=100`, token),
+      searchIssues(`org:${ORG} is:issue is:open`, token).catch(() => ({ total_count: 0 })),
+      searchIssues(`org:${ORG} is:pr is:open`, token).catch(() => ({ total_count: 0 })),
     ]);
 
     const pushEvents = (Array.isArray(events) ? events : [])
@@ -115,10 +140,25 @@ module.exports = async function handler(req, res) {
       } else break;
     }
 
+    const weekCount = weekData.total_count || 0;
+    const prevWeekCount = prevWeekData.total_count || 0;
+    const velocityPct = prevWeekCount > 0
+      ? Math.round(((weekCount - prevWeekCount) / prevWeekCount) * 100)
+      : (weekCount > 0 ? 100 : 0);
+
+    const monthCount = monthData.total_count || 0;
+    const dayOfMonth = now.getDate();
+    const avgPerDay = dayOfMonth > 0 ? +(monthCount / dayOfMonth).toFixed(1) : 0;
+
     return res.status(200).json({
       today: todayData.total_count || 0,
-      week: weekData.total_count || 0,
-      month: monthData.total_count || 0,
+      week: weekCount,
+      month: monthCount,
+      prevWeek: prevWeekCount,
+      velocity: velocityPct,
+      avgPerDay,
+      openIssues: openIssues.total_count || 0,
+      openPRs: openPRs.total_count || 0,
       lastCommit,
       recentCommits,
       activeRepos: Object.entries(weekRepos)
