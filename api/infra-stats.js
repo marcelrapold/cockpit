@@ -32,12 +32,9 @@ async function supabaseMgmt(path, token) {
 
 async function getSupabaseProjectStats(project, token) {
   const start = Date.now();
-  const [details, apiLogs, authLogs] = await Promise.all([
+  const [details, usage] = await Promise.all([
     supabaseMgmt(`/v1/projects/${project.id}`, token),
-    supabaseMgmt(`/v1/projects/${project.id}/analytics/endpoints/logs.all?interval=24h`, token)
-      .catch(() => null),
-    supabaseMgmt(`/v1/projects/${project.id}/analytics/endpoints/logs.auth?interval=24h`, token)
-      .catch(() => null),
+    supabaseMgmt(`/v1/projects/${project.id}/usage`, token).catch(() => null),
   ]);
   const latency = Date.now() - start;
 
@@ -45,6 +42,20 @@ async function getSupabaseProjectStats(project, token) {
   const ok = status === 'ACTIVE_HEALTHY';
   const dbVersion = details?.database?.version || null;
   const region = details?.region || null;
+  const plan = details?.subscription_id || details?.organization_id ? 'pro' : 'free';
+  const createdAt = details?.created_at || null;
+
+  let dbSize = null;
+  let storageSize = null;
+  let monthlyApiRequests = null;
+  if (usage && Array.isArray(usage)) {
+    const dbUsage = usage.find(u => u.metric === 'DB_SIZE' || u.metric === 'db_size');
+    const stUsage = usage.find(u => u.metric === 'STORAGE_SIZE' || u.metric === 'storage_size');
+    const apiUsage = usage.find(u => u.metric === 'MONTHLY_ACTIVE_USERS' || u.metric === 'func_invocations');
+    if (dbUsage) dbSize = dbUsage.usage || dbUsage.total;
+    if (stUsage) storageSize = stUsage.usage || stUsage.total;
+    if (apiUsage) monthlyApiRequests = apiUsage.usage || apiUsage.total;
+  }
 
   return {
     name: project.name,
@@ -53,6 +64,11 @@ async function getSupabaseProjectStats(project, token) {
     status: ok ? 'healthy' : status.toLowerCase(),
     dbVersion,
     region,
+    plan,
+    createdAt,
+    dbSize,
+    storageSize,
+    monthlyApiRequests,
   };
 }
 

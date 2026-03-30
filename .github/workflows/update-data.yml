@@ -34,10 +34,33 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data.json public/data-deps.json
+          git add public/data.json public/data-deps.json public/data-history.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
             git commit -m "chore: update dashboard data $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
+          fi
+
+      - name: Health check & alerting
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          HEALTH=$(curl -sf "https://zvv-workload-portfolio.vercel.app/api/health-check" || echo '{"allOk":false}')
+          ALL_OK=$(echo "$HEALTH" | jq -r '.allOk // false')
+          if [ "$ALL_OK" != "true" ]; then
+            DOWN=$(echo "$HEALTH" | jq -r '[.services[]? | select(.ok==false) | .name] | join(", ")')
+            EXISTING=$(gh issue list --repo zvvch/zvv-workload-portfolio --label "alert" --state open --json number --jq length 2>/dev/null || echo "0")
+            if [ "$EXISTING" = "0" ]; then
+              gh issue create \
+                --repo zvvch/zvv-workload-portfolio \
+                --title "Alert: Dienste nicht erreichbar — $DOWN" \
+                --body "Automatische Prüfung um $(date -u +'%Y-%m-%d %H:%M UTC') hat Ausfälle erkannt.\n\n**Betroffene Dienste:** $DOWN\n\n**Response:**\n\`\`\`json\n$HEALTH\n\`\`\`\n\nDieses Issue wird automatisch erstellt und schliesst sich bei der nächsten erfolgreichen Prüfung." \
+                --label "alert" || echo "Could not create issue"
+            fi
+          else
+            OPEN=$(gh issue list --repo zvvch/zvv-workload-portfolio --label "alert" --state open --json number --jq '.[].number' 2>/dev/null)
+            for NUM in $OPEN; do
+              gh issue close "$NUM" --repo zvvch/zvv-workload-portfolio --comment "Automatisch geschlossen — alle Dienste wieder erreichbar ($(date -u +'%Y-%m-%d %H:%M UTC'))." || true
+            done
           fi

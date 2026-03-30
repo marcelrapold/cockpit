@@ -816,6 +816,131 @@
       .feed-repo-t { display: none; }
     }
 
+    /* Fullscreen / Kiosk Mode */
+    .fs-toggle {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px; padding: 0.3rem 0.55rem; cursor: pointer;
+      color: white; font-size: 0.72rem; font-family: var(--font); font-weight: 500;
+      display: flex; align-items: center; gap: 0.35rem; transition: 0.15s;
+    }
+    .fs-toggle:hover { background: rgba(255,255,255,0.25); }
+    .fs-toggle svg { width: 14px; height: 14px; }
+
+    .pdf-btn {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px; padding: 0.3rem 0.55rem; cursor: pointer;
+      color: white; font-size: 0.72rem; font-family: var(--font); font-weight: 500;
+      display: flex; align-items: center; gap: 0.35rem; transition: 0.15s;
+    }
+    .pdf-btn:hover { background: rgba(255,255,255,0.25); }
+    .pdf-btn svg { width: 14px; height: 14px; }
+
+    body.fs-active {
+      overflow: hidden;
+    }
+    body.fs-active .header,
+    body.fs-active .sticky-nav,
+    body.fs-active .footer,
+    body.fs-active .btt,
+    body.fs-active #portfolio,
+    body.fs-active #charts { display: none !important; }
+
+    body.fs-active .container { max-width: 100%; padding: 0 1rem; }
+
+    .fs-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: var(--surface-alt); overflow-y: auto;
+      padding: 0.75rem 1.25rem;
+    }
+    body.fs-active .fs-overlay { display: block; }
+
+    .fs-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 0; border-bottom: 2px solid var(--blue); margin-bottom: 0.75rem;
+    }
+    .fs-header-title { font-size: 1rem; font-weight: 700; color: var(--blue); }
+    .fs-header-meta { font-size: 0.65rem; color: var(--text-muted); }
+    .fs-close {
+      background: var(--blue); color: white; border: none; border-radius: 4px;
+      padding: 0.3rem 0.7rem; font-size: 0.68rem; font-weight: 600; cursor: pointer;
+      font-family: var(--font);
+    }
+    .fs-close:hover { opacity: 0.85; }
+
+    .fs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto;
+      gap: 0.65rem;
+      height: calc(100vh - 4.5rem);
+    }
+    .fs-cell {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.6rem 0.75rem; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .fs-cell-title {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.35rem;
+      flex-shrink: 0;
+    }
+    .fs-cell-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+    .fs-cell.span2 { grid-column: span 2; }
+    .fs-cell.span3 { grid-column: span 3; }
+    .fs-cell.span4 { grid-column: span 4; }
+
+    .fs-kpi-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .fs-kpi { text-align: center; }
+    .fs-kpi-val { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1.1; }
+    .fs-kpi-label { font-size: 0.58rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .fs-kpi-val.green { color: #22c55e; }
+    .fs-kpi-val.amber { color: #f59e0b; }
+    .fs-kpi-val.red { color: #ef4444; }
+
+    .fs-supa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.4rem; }
+    .fs-supa-card {
+      background: var(--surface-alt); border-radius: 4px; padding: 0.4rem 0.5rem;
+      border-left: 3px solid #22c55e; font-size: 0.65rem;
+    }
+    .fs-supa-card.degraded { border-left-color: #f59e0b; }
+    .fs-supa-card.unreachable { border-left-color: #ef4444; }
+    .fs-supa-name { font-weight: 600; }
+    .fs-supa-meta { color: var(--text-muted); font-size: 0.55rem; }
+
+    .fs-trend-sparkline { width: 100%; height: 50px; }
+    .fs-trend-sparkline polyline { fill: none; stroke: var(--blue); stroke-width: 2; stroke-linecap: round; }
+    .fs-trend-sparkline .area { fill: var(--blue); opacity: 0.08; stroke: none; }
+
+    .fs-uptime-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .fs-uptime-pill {
+      display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.5rem;
+      border-radius: 4px; font-size: 0.62rem; font-weight: 500;
+      background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+    }
+    .fs-uptime-pill.down { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); }
+    .fs-uptime-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+    .fs-uptime-pill.down .fs-uptime-dot { background: #ef4444; }
+
+    .fs-feed-list { font-family: var(--mono); font-size: 0.6rem; line-height: 1.7; color: #c9d1d9; max-height: 100%; overflow-y: auto; background: #0d1117; border-radius: 4px; padding: 0.4rem 0.6rem; }
+    .fs-feed-sha { color: #f0883e; }
+    .fs-feed-repo { color: #58a6ff; }
+    .fs-feed-time { color: #484f58; }
+
+    /* Weekly Trend Chart */
+    .trend-section { margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
+    .trend-mini { display: flex; gap: 2px; align-items: flex-end; height: 32px; }
+    .trend-bar { flex: 1; border-radius: 2px 2px 0 0; background: var(--blue); opacity: 0.7; transition: opacity 0.15s, height 0.3s; min-width: 4px; }
+    .trend-bar:hover { opacity: 1; }
+    .trend-bar:last-child { background: var(--blue-secondary); opacity: 1; }
+    .trend-labels { display: flex; gap: 2px; margin-top: 2px; }
+    .trend-labels span { flex: 1; font-size: 0.42rem; color: var(--text-muted); text-align: center; min-width: 4px; overflow: hidden; }
+
+    /* Cost/Plan indicators */
+    .plan-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.45rem; border-radius: 3px; font-size: 0.58rem; font-weight: 600; }
+    .plan-badge.plan-free { background: #d1fae5; color: #065f46; }
+    .plan-badge.plan-pro { background: #dbeafe; color: #1e40af; }
+    .plan-badge.plan-team { background: #ede9fe; color: #5b21b6; }
+
     /* Back to top */
     .btt {
       position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40;
@@ -848,14 +973,19 @@
       .sticky-nav-links { display: none; }
     }
     @media print {
-      body { background: white !important; color: #1c2b3a !important; }
+      body { background: white !important; color: #1c2b3a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       .card, .stat, .chart-card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
-      .tabs, .sticky-nav, .btt, .dm-toggle, .search-box { display: none !important; }
+      .tabs, .sticky-nav, .btt, .dm-toggle, .search-box, .fs-toggle, .pdf-btn, .live-feed, .fs-overlay { display: none !important; }
       .panel { display: block !important; }
       .reveal { opacity: 1 !important; transform: none !important; }
       .tl-row { opacity: 1 !important; transform: none !important; animation: none !important; }
-      .header { background: #005093 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .stat { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .header { background: #005093 !important; }
+      .stat { page-break-inside: avoid; }
+      section { page-break-inside: avoid; }
+      .live-bar { page-break-inside: avoid; }
+      @page { margin: 1.5cm; size: A4 landscape; }
+      .container { max-width: 100% !important; }
     }
   </style>
 </head>
@@ -873,6 +1003,7 @@
       <a href="#techstack">Tech Stack</a>
       <a href="#portfolio">Portfolio</a>
       <a href="#charts">Aufwand</a>
+      <a href="#" onclick="toggleFullscreen();return false;" style="color:var(--blue);font-weight:600;">Kiosk</a>
     </div>
   </div>
 </nav>
@@ -888,10 +1019,20 @@
         <span>Basis: 30 Repositories, GitHub-Organisation zvvch</span>
       </div>
     </div>
-    <button class="dm-toggle" id="dmToggle" title="Dark / Light Mode">
-      <svg id="dmIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      <span id="dmLabel">Dark</span>
-    </button>
+    <div style="display:flex;gap:0.4rem;align-items:center;">
+      <button class="pdf-btn" id="pdfBtn" title="PDF-Export">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        PDF
+      </button>
+      <button class="fs-toggle" id="fsToggle" title="Fullscreen / Kiosk-Mode (4:3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        Kiosk
+      </button>
+      <button class="dm-toggle" id="dmToggle" title="Dark / Light Mode">
+        <svg id="dmIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="dmLabel">Dark</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -1987,12 +2128,15 @@ async function fetchInfraStats() {
         detailEl.innerHTML = d.supabase.projects.map(p => {
           const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
           const meta = [
-            p.region ? p.region : null,
+            p.region || null,
             p.latency ? p.latency + 'ms' : null,
+            p.dbVersion ? 'PG ' + p.dbVersion.split('.').slice(0, 2).join('.') : null,
           ].filter(Boolean).join(' · ');
+          const planCls = p.plan === 'pro' ? 'plan-pro' : 'plan-free';
           return `<span class="supa-proj-pill${cls}">
             <span class="supa-dot"></span>
             ${p.name}
+            ${p.plan ? `<span class="plan-badge ${planCls}">${p.plan}</span>` : ''}
             ${meta ? `<span class="supa-proj-meta">${meta}</span>` : ''}
           </span>`;
         }).join('');
@@ -2484,6 +2628,242 @@ function renderTechStack(d) {
 loadTechStack();
 loadUptime();
 setInterval(loadUptime, 5 * 60 * 1000);
+
+// === FEATURE: Weekly Trend Chart ===
+function renderWeeklyTrend(data) {
+  if (!data.weeklyTrend || data.weeklyTrend.length < 2) return;
+  const container = document.getElementById('weeklyTrendContainer');
+  if (!container) return;
+  const weeks = data.weeklyTrend;
+  const max = Math.max(...weeks.map(w => w.commits), 1);
+  container.innerHTML = `
+    <div class="trend-mini">${weeks.map(w =>
+      `<div class="trend-bar" style="height:${Math.max(2, (w.commits / max) * 100)}%" title="KW ${w.week}: ${w.commits} Commits"></div>`
+    ).join('')}</div>
+    <div class="trend-labels">${weeks.map(w =>
+      `<span>${w.week.split('-W')[1]}</span>`
+    ).join('')}</div>`;
+}
+
+// === FEATURE: PDF Export ===
+document.getElementById('pdfBtn').addEventListener('click', () => {
+  window.print();
+});
+
+// === FEATURE: Fullscreen / Kiosk Mode ===
+const fsToggle = document.getElementById('fsToggle');
+const fsOverlay = document.createElement('div');
+fsOverlay.className = 'fs-overlay';
+fsOverlay.id = 'fsOverlay';
+document.body.appendChild(fsOverlay);
+
+let fsActive = false;
+let fsRefreshInterval = null;
+
+function buildFullscreenDashboard() {
+  const now = new Date().toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' });
+  fsOverlay.innerHTML = `
+    <div class="fs-header">
+      <div>
+        <div class="fs-header-title">ZVV Workload-Portfolio — Kiosk</div>
+        <div class="fs-header-meta">Marcel Rapold · ICT Entwicklung & Betrieb · Aktualisiert: ${now}</div>
+      </div>
+      <button class="fs-close" onclick="toggleFullscreen()">✕ Schliessen (ESC)</button>
+    </div>
+    <div class="fs-grid">
+      <div class="fs-cell span2">
+        <div class="fs-cell-title">GitHub — Live KPIs</div>
+        <div class="fs-cell-body">
+          <div class="fs-kpi-row" id="fsGhKpis">
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsToday">–</div><div class="fs-kpi-label">Heute</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsWeek">–</div><div class="fs-kpi-label">Woche</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsMonth">–</div><div class="fs-kpi-label">Monat</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsVelocity">–</div><div class="fs-kpi-label">vs. Vorwoche</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsAvg">–</div><div class="fs-kpi-label">Ø / Tag</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsIssues">–</div><div class="fs-kpi-label">Issues</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsPRs">–</div><div class="fs-kpi-label">PRs</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="fs-cell span2">
+        <div class="fs-cell-title">Vercel — Deployments</div>
+        <div class="fs-cell-body">
+          <div class="fs-kpi-row" id="fsVercelKpis">
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsDeplToday">–</div><div class="fs-kpi-label">Heute</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsDeplWeek">–</div><div class="fs-kpi-label">Woche</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsSuccess">–</div><div class="fs-kpi-label">Erfolgsrate</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val" id="fsProjects">–</div><div class="fs-kpi-label">Projekte</div></div>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-sec);margin-top:0.4rem;text-align:center;" id="fsLastDeploy">–</div>
+        </div>
+      </div>
+      <div class="fs-cell span2">
+        <div class="fs-cell-title">Supabase — Datenbanken</div>
+        <div class="fs-cell-body">
+          <div class="fs-supa-grid" id="fsSupaGrid">Lade…</div>
+        </div>
+      </div>
+      <div class="fs-cell span2">
+        <div class="fs-cell-title">Uptime-Monitor</div>
+        <div class="fs-cell-body">
+          <div class="fs-uptime-row" id="fsUptimeRow">Lade…</div>
+        </div>
+      </div>
+      <div class="fs-cell span2">
+        <div class="fs-cell-title">Portfolio-Übersicht</div>
+        <div class="fs-cell-body">
+          <div class="fs-kpi-row">
+            <div class="fs-kpi"><div class="fs-kpi-val">26</div><div class="fs-kpi-label">Initiativen</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val">14</div><div class="fs-kpi-label">Produktiv</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val amber">~280 PT</div><div class="fs-kpi-label">Aufwand/Jahr</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val red">127%</div><div class="fs-kpi-label">Auslastung</div></div>
+            <div class="fs-kpi"><div class="fs-kpi-val">10+</div><div class="fs-kpi-label">Technologien</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="fs-cell span2">
+        <div class="fs-cell-title">Letzte Commits</div>
+        <div class="fs-cell-body">
+          <div class="fs-feed-list" id="fsFeed">Lade…</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function refreshFullscreenData() {
+  try {
+    const [ghRes, infraRes, uptimeRes] = await Promise.all([
+      fetch('/api/github-stats').then(r => r.json()).catch(() => null),
+      fetch('/api/infra-stats').then(r => r.json()).catch(() => null),
+      fetch('/api/health-check').then(r => r.json()).catch(() => null),
+    ]);
+
+    if (ghRes) {
+      const s = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      s('fsToday', ghRes.today);
+      s('fsWeek', ghRes.week);
+      s('fsMonth', ghRes.month);
+      const velEl = document.getElementById('fsVelocity');
+      if (velEl && ghRes.velocity !== undefined) {
+        velEl.textContent = (ghRes.velocity > 0 ? '+' : '') + ghRes.velocity + '%';
+        velEl.className = 'fs-kpi-val ' + (ghRes.velocity > 0 ? 'green' : ghRes.velocity < 0 ? 'red' : '');
+      }
+      s('fsAvg', ghRes.avgPerDay);
+      s('fsIssues', ghRes.openIssues);
+      s('fsPRs', ghRes.openPRs);
+
+      const feedEl = document.getElementById('fsFeed');
+      if (feedEl && ghRes.recentCommits?.length) {
+        feedEl.innerHTML = ghRes.recentCommits.slice(0, 8).map(c =>
+          `<div><span class="fs-feed-sha">${c.sha}</span> <span class="fs-feed-repo">${c.repo}</span> ${c.message.slice(0, 50)} <span class="fs-feed-time">${timeAgo(c.time)}</span></div>`
+        ).join('');
+      }
+    }
+
+    if (infraRes?.vercel && !infraRes.vercel.error) {
+      const v = infraRes.vercel;
+      const s = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      s('fsDeplToday', v.deploymentsToday);
+      s('fsDeplWeek', v.deploymentsWeek);
+      const sEl = document.getElementById('fsSuccess');
+      if (sEl) {
+        sEl.textContent = v.successRate + '%';
+        sEl.className = 'fs-kpi-val ' + (v.successRate >= 95 ? 'green' : v.successRate >= 80 ? 'amber' : 'red');
+      }
+      s('fsProjects', v.totalProjects);
+      if (v.latestDeploy) {
+        const ld = v.latestDeploy;
+        const el = document.getElementById('fsLastDeploy');
+        if (el) el.textContent = `${ld.project}: ${ld.message.slice(0, 40)} — ${timeAgo(ld.time)}`;
+      }
+    }
+
+    if (infraRes?.supabase?.projects) {
+      const grid = document.getElementById('fsSupaGrid');
+      if (grid) {
+        grid.innerHTML = infraRes.supabase.projects.map(p => {
+          const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
+          return `<div class="fs-supa-card${cls}">
+            <div class="fs-supa-name">${p.name}</div>
+            <div class="fs-supa-meta">${[p.region, p.latency ? p.latency + 'ms' : '', p.dbVersion || ''].filter(Boolean).join(' · ')}</div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    if (uptimeRes?.services) {
+      const row = document.getElementById('fsUptimeRow');
+      if (row) {
+        row.innerHTML = uptimeRes.services.map(s =>
+          `<div class="fs-uptime-pill${s.ok ? '' : ' down'}"><div class="fs-uptime-dot"></div>${s.name}${s.ok ? ' ' + s.latency + 'ms' : ''}</div>`
+        ).join('');
+      }
+    }
+
+    const metaEl = fsOverlay.querySelector('.fs-header-meta');
+    if (metaEl) {
+      metaEl.textContent = `Marcel Rapold · ICT Entwicklung & Betrieb · Aktualisiert: ${new Date().toLocaleString('de-CH', { dateStyle: 'medium', timeStyle: 'short' })}`;
+    }
+  } catch {}
+}
+
+function toggleFullscreen() {
+  fsActive = !fsActive;
+  document.body.classList.toggle('fs-active', fsActive);
+
+  if (fsActive) {
+    buildFullscreenDashboard();
+    refreshFullscreenData();
+    fsRefreshInterval = setInterval(refreshFullscreenData, 60000);
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  } else {
+    if (fsRefreshInterval) clearInterval(fsRefreshInterval);
+    fsRefreshInterval = null;
+    fsOverlay.innerHTML = '';
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+}
+
+fsToggle.addEventListener('click', toggleFullscreen);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && fsActive) {
+    toggleFullscreen();
+  }
+});
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && fsActive) {
+    fsActive = true;
+    toggleFullscreen();
+  }
+});
+
+// Load trend data into infra section
+async function loadWeeklyTrend() {
+  try {
+    const res = await fetch('/data.json');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.weeklyTrend) renderWeeklyTrend(data);
+  } catch {}
+}
+
+// Add weekly trend container after live bar
+(function() {
+  const infraBar = document.getElementById('infraBar');
+  if (infraBar) {
+    const trendDiv = document.createElement('div');
+    trendDiv.className = 'trend-section';
+    trendDiv.style.width = '100%';
+    trendDiv.innerHTML = '<div style="font-size:0.58rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.25rem;">Wöchentlicher Commit-Trend</div><div id="weeklyTrendContainer"></div>';
+    infraBar.appendChild(trendDiv);
+  }
+})();
+loadWeeklyTrend();
+
 </script>
 
 </body>

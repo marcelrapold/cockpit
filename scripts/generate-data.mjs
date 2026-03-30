@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const ORG = 'zvvch';
@@ -53,6 +53,22 @@ function cetDay(isoStr) {
   const offset = isCEST ? 2 : 1;
   const cetDate = new Date(d.getTime() + offset * 3600000);
   return cetDate.getUTCDay();
+}
+
+function getISOWeek(d) {
+  const date = new Date(d);
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
+  const week1 = new Date(date.getFullYear(), 0, 4);
+  const weekNum = 1 + Math.round(((date - week1) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+  return `${date.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+}
+
+function getWeekStart(d) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(date.getFullYear(), date.getMonth(), diff).toISOString().split('T')[0];
 }
 
 async function main() {
@@ -129,6 +145,37 @@ async function main() {
     else aiAuthors[login] = count;
   }
 
+  // Weekly trend history
+  const historyPath = 'public/data-history.json';
+  let history = [];
+  if (existsSync(historyPath)) {
+    try { history = JSON.parse(readFileSync(historyPath, 'utf8')); } catch {}
+  }
+  const weekKey = getISOWeek(now);
+  const weekCommits = allCommits.filter(c => {
+    const d = c.commit?.author?.date?.split('T')[0];
+    return d && d >= getWeekStart(now) && d <= today;
+  }).length;
+  const activeReposThisWeek = new Set(allCommits.filter(c => {
+    const d = c.commit?.author?.date?.split('T')[0];
+    return d && d >= getWeekStart(now) && d <= today;
+  }).map(c => c.repository?.name)).size;
+
+  const existing = history.findIndex(h => h.week === weekKey);
+  const weekEntry = {
+    week: weekKey,
+    date: now.toISOString(),
+    commits: weekCommits,
+    totalCommits: allCommits.length,
+    activeRepos: activeReposThisWeek,
+  };
+  if (existing >= 0) history[existing] = weekEntry;
+  else history.push(weekEntry);
+  history = history.slice(-52);
+
+  writeFileSync(historyPath, JSON.stringify(history));
+  console.log(`✓ Written ${historyPath} (${history.length} weeks)`);
+
   const output = {
     generated: now.toISOString(),
     calendar,
@@ -138,6 +185,7 @@ async function main() {
     sparkMonths,
     repoMonthly,
     totalCommits: allCommits.length,
+    weeklyTrend: history.slice(-12),
   };
 
   writeFileSync('public/data.json', JSON.stringify(output));
