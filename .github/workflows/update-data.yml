@@ -1,0 +1,38 @@
+name: Update Dashboard Data
+
+on:
+  schedule:
+    # 07:00, 12:00, 18:00 CEST (UTC+2 summer) / CET (UTC+1 winter)
+    # Using CEST offsets: 05:00, 10:00, 16:00 UTC
+    - cron: '0 5,10,16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate dashboard data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: node scripts/generate-data.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update dashboard data $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
