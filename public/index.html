@@ -555,10 +555,6 @@
     [data-theme="dark"] .hm-cell[data-level="3"] { background: #2563eb; }
     [data-theme="dark"] .hm-cell[data-level="4"] { background: #3b82f6; }
 
-    /* AI Ratio */
-    .ai-split { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; align-items: center; }
-    .ai-legend-list { display: flex; flex-direction: column; gap: 0.4rem; }
-    .ai-legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; }
     .ai-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
     /* Sparkline */
@@ -645,7 +641,7 @@
 
     /* Two-col layout for smaller visualizations */
     .viz-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media (max-width: 900px) { .viz-2col, .ai-split { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .viz-2col { grid-template-columns: 1fr; } }
 
     /* Live Bar */
     .live-bar {
@@ -943,20 +939,11 @@
     </div>
   </section>
 
-  <!-- AI vs Human + Dependency Map -->
+  <!-- Dependency Map -->
   <section id="insights" class="reveal">
-    <div class="viz-2col">
-      <div class="card">
-        <h2 class="card-title">Beiträge nach Autor</h2>
-        <div class="ai-split">
-          <canvas id="chartAI" width="180" height="180"></canvas>
-          <div class="ai-legend-list" id="aiLegend"></div>
-        </div>
-      </div>
-      <div class="card">
-        <h2 class="card-title">Projekt-Abhängigkeiten</h2>
-        <svg class="dep-svg" id="depMap" viewBox="0 0 500 400"></svg>
-      </div>
+    <div class="card">
+      <h2 class="card-title">Projekt-Abhängigkeiten</h2>
+      <svg class="dep-svg" id="depMap" viewBox="0 0 500 400"></svg>
     </div>
   </section>
 
@@ -1691,7 +1678,6 @@ async function loadDashboardData() {
     window._sparkData = data.sparklines || {};
     renderCalendar(data);
     renderHourly(data);
-    renderAIRatio(data);
     renderSparklines(data);
     renderDependencyMap();
   } catch (e) {
@@ -1817,50 +1803,6 @@ function renderHourly(data) {
       cell.title = `${dayNames[day]} ${h}:00 — ${val} Commits`;
       grid.appendChild(cell);
     }
-  });
-}
-
-function renderAIRatio(data) {
-  const authors = data.authors || {};
-  const human = authors.human || {};
-  const ai = authors.ai || {};
-
-  const labels = [];
-  const values = [];
-  const colors = [];
-  const palette = ['#005093','#00a5e5','#0479cc','#5F99D7','#f59e0b','#ef4444','#8b5cf6','#10b981'];
-  let ci = 0;
-
-  Object.entries(human).sort((a,b) => b[1] - a[1]).forEach(([k, v]) => {
-    labels.push(k); values.push(v); colors.push(palette[ci++ % palette.length]);
-  });
-  Object.entries(ai).sort((a,b) => b[1] - a[1]).forEach(([k, v]) => {
-    labels.push(k + ' (AI)'); values.push(v); colors.push(palette[ci++ % palette.length]);
-  });
-
-  const total = values.reduce((s, v) => s + v, 0);
-  const humanTotal = Object.values(human).reduce((s, v) => s + v, 0);
-
-  const legend = document.getElementById('aiLegend');
-  labels.forEach((l, i) => {
-    const pct = total ? Math.round(values[i] / total * 100) : 0;
-    legend.innerHTML += `<div class="ai-legend-item">
-      <div class="ai-legend-dot" style="background:${colors[i]}"></div>
-      <span>${l}</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-weight:600">${values[i]} (${pct}%)</span>
-    </div>`;
-  });
-
-  new Chart(document.getElementById('chartAI'), {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] },
-    options: {
-      cutout: '60%',
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw} Commits` } },
-      },
-    },
   });
 }
 
