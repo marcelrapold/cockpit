@@ -1,21 +1,38 @@
 {
   "name": "ZVV Workload-Portfolio",
   "short_name": "Workload",
-  "description": "Workload-Portfolio von Marcel Rapold — 26 Initiativen, Live-KPIs, Commit-Kalender, Uptime-Monitor",
+  "description": "Workload-Portfolio von Marcel Rapold — 26 Initiativen, Live-KPIs, Commit-Kalender, Uptime-Monitor, AI Insights",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#005093",
   "theme_color": "#005093",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "/apple-touch-icon.svg",
       "sizes": "180x180",
       "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kiosk-Modus",
+      "short_name": "Kiosk",
+      "url": "/#kiosk",
+      "description": "Fullscreen Dashboard starten"
+    },
+    {
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "url": "/#portfolio",
+      "description": "Portfolio-Übersicht"
     }
   ]
 }

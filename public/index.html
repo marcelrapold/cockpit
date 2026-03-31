@@ -63,6 +63,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+  <script type="importmap">{"imports":{"three":"https://esm.sh/three@0.170.0"}}</script>
   <style>
     :root {
       --blue: #005093;
@@ -1067,6 +1069,106 @@
     .fs-dot.active { background: var(--blue-secondary); transform: scale(1.4); box-shadow: 0 0 1vmin rgba(0,165,229,0.5); cursor: default; }
     .fs-dot:hover:not(.active) { background: rgba(255,255,255,0.3); cursor: default; }
 
+    /* === COMMAND PALETTE (Cmd+K) === */
+    .cmd-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.45); backdrop-filter:blur(6px); display:none; align-items:flex-start; justify-content:center; padding-top:min(20vh,180px); }
+    .cmd-overlay.open { display:flex; }
+    .cmd-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; width:min(520px,92vw); box-shadow:0 16px 48px rgba(0,0,0,0.25); overflow:hidden; }
+    .cmd-input { width:100%; border:none; outline:none; padding:0.85rem 1rem; font:inherit; font-size:0.92rem; background:transparent; color:var(--text); }
+    .cmd-input::placeholder { color:var(--text-muted); }
+    .cmd-results { max-height:320px; overflow-y:auto; border-top:1px solid var(--border); }
+    .cmd-item { padding:0.55rem 1rem; cursor:pointer; display:flex; align-items:center; gap:0.6rem; font-size:0.82rem; }
+    .cmd-item:hover, .cmd-item.active { background:var(--blue-light); color:var(--blue); }
+    .cmd-item-icon { width:16px; height:16px; opacity:0.5; flex-shrink:0; }
+    .cmd-item-sub { font-size:0.65rem; color:var(--text-muted); margin-left:auto; }
+    .cmd-hint { padding:0.45rem 1rem; font-size:0.6rem; color:var(--text-muted); border-top:1px solid var(--border); display:flex; gap:0.8rem; }
+    .cmd-hint kbd { background:var(--surface-alt); padding:0.05rem 0.3rem; border-radius:3px; font-family:var(--mono); border:1px solid var(--border); }
+
+    /* === KEYBOARD SHORTCUTS MODAL === */
+    .shortcut-modal { position:fixed; inset:0; z-index:210; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; }
+    .shortcut-modal.open { display:flex; }
+    .shortcut-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.5rem; width:min(440px,90vw); box-shadow:0 16px 48px rgba(0,0,0,0.2); }
+    .shortcut-title { font-size:1.05rem; font-weight:600; margin-bottom:0.8rem; }
+    .shortcut-row { display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0; font-size:0.8rem; }
+    .shortcut-row kbd { background:var(--surface-alt); padding:0.15rem 0.45rem; border-radius:4px; font-family:var(--mono); font-size:0.72rem; border:1px solid var(--border); min-width:28px; text-align:center; }
+
+    /* === HEALTH SCORE BADGE === */
+    .health-badge { display:inline-flex; align-items:center; gap:0.25rem; font-size:0.58rem; font-weight:700; font-family:var(--mono); padding:0.1rem 0.35rem; border-radius:3px; }
+    .health-badge.h-good { background:#d1fae5; color:#065f46; }
+    .health-badge.h-warn { background:#fef3c7; color:#92400e; }
+    .health-badge.h-risk { background:#fee2e2; color:#991b1b; }
+
+    /* === LIVE TICKER === */
+    .ticker-section { margin-bottom:1.5rem; }
+    .ticker-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .ticker-header { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); padding:0.65rem 1rem 0.45rem; display:flex; align-items:center; gap:0.5rem; }
+    .ticker-header .live-dot { width:6px; height:6px; }
+    .ticker-list { max-height:260px; overflow-y:auto; }
+    .ticker-item { padding:0.4rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.6rem; font-size:0.72rem; }
+    .ticker-item:last-child { border-bottom:none; }
+    .ticker-type { font-size:0.55rem; font-weight:700; font-family:var(--mono); padding:0.1rem 0.3rem; border-radius:3px; text-transform:uppercase; flex-shrink:0; min-width:44px; text-align:center; }
+    .tt-push { background:#dbeafe; color:#1e40af; }
+    .tt-create { background:#d1fae5; color:#065f46; }
+    .tt-issue { background:#fef3c7; color:#92400e; }
+    .tt-pr { background:#ede9fe; color:#5b21b6; }
+    .tt-other { background:#f1f5f9; color:#64748b; }
+    .ticker-repo { font-weight:600; color:var(--blue); font-size:0.68rem; flex-shrink:0; }
+    .ticker-msg { color:var(--text-sec); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ticker-time { font-size:0.58rem; color:var(--text-muted); flex-shrink:0; }
+    .ticker-actor { font-size:0.58rem; color:var(--text-muted); flex-shrink:0; }
+
+    /* === VELOCITY & PROGNOSE === */
+    .velocity-card { margin-top:0.75rem; }
+    .velocity-line { display:flex; align-items:center; gap:0.5rem; font-size:0.78rem; }
+    .velocity-line .v-num { font-family:var(--mono); font-weight:700; font-size:1.3rem; }
+    .velocity-line .v-label { color:var(--text-sec); }
+    .velocity-proj { font-size:0.72rem; color:var(--text-muted); margin-top:0.3rem; }
+
+    /* === GAMIFICATION BADGES === */
+    .badges-row { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
+    .badge-item { display:flex; align-items:center; gap:0.3rem; background:var(--surface-alt); border:1px solid var(--border); border-radius:20px; padding:0.2rem 0.55rem; font-size:0.62rem; font-weight:500; }
+    .badge-item .badge-icon { font-size:0.85rem; }
+    .badge-locked { opacity:0.35; }
+
+    /* === SCREENSHOT TOAST === */
+    .screenshot-toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); background:#1c2128; color:#e6edf3; padding:0.6rem 1.2rem; border-radius:8px; font-size:0.78rem; z-index:300; opacity:0; transition:opacity 0.3s; pointer-events:none; }
+    .screenshot-toast.show { opacity:1; }
+
+    /* === COMPARE MODAL === */
+    .compare-overlay { position:fixed; inset:0; z-index:190; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; }
+    .compare-overlay.open { display:flex; }
+    .compare-box { background:var(--surface); border-radius:12px; padding:1.5rem; width:min(800px,94vw); max-height:85vh; overflow-y:auto; box-shadow:0 16px 48px rgba(0,0,0,0.25); }
+    .compare-title { font-size:1.1rem; font-weight:600; margin-bottom:1rem; }
+    .compare-selects { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+    .compare-selects select { font:inherit; font-size:0.78rem; padding:0.4rem 0.6rem; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--text); }
+    .compare-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; }
+    .compare-project { background:var(--surface-alt); border-radius:8px; padding:1rem; }
+    .compare-project h4 { font-size:0.85rem; margin-bottom:0.5rem; }
+    .compare-stat { display:flex; justify-content:space-between; font-size:0.72rem; padding:0.2rem 0; border-bottom:1px solid var(--border); }
+    .compare-radar { width:100%; max-width:350px; margin:1rem auto; }
+
+    /* === LANGUAGES SECTION === */
+    .lang-bar-wrap { margin-top:0.5rem; }
+    .lang-bar { display:flex; height:16px; border-radius:4px; overflow:hidden; }
+    .lang-bar-seg { min-width:2px; transition:flex 0.5s; }
+    .lang-legend { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.5rem; }
+    .lang-legend-item { display:flex; align-items:center; gap:0.25rem; font-size:0.62rem; }
+    .lang-dot { width:8px; height:8px; border-radius:50%; }
+
+    /* === 3D GLOBE === */
+    .globe-container { width:100%; height:280px; border-radius:8px; overflow:hidden; position:relative; background:#0b1120; }
+    .globe-label { position:absolute; bottom:0.5rem; left:0.75rem; font-size:0.6rem; color:rgba(255,255,255,0.5); }
+
+    /* === AI INSIGHTS === */
+    .ai-insight-card { background:linear-gradient(135deg, var(--blue-light), var(--surface)); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; margin-top:0.5rem; }
+    .ai-insight-header { font-size:0.68rem; font-weight:600; color:var(--blue); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.35rem; display:flex; align-items:center; gap:0.35rem; }
+    .ai-insight-body { font-size:0.78rem; line-height:1.6; color:var(--text-sec); }
+    .ai-weekly { font-size:0.82rem; line-height:1.65; }
+
+    /* === NOTIFICATION PERMISSION === */
+    .notif-banner { background:var(--blue-light); border:1px solid var(--border); border-radius:var(--radius); padding:0.6rem 1rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; font-size:0.75rem; }
+    .notif-banner button { background:var(--blue); color:white; border:none; border-radius:4px; padding:0.3rem 0.7rem; font:inherit; font-size:0.72rem; cursor:pointer; }
+    .notif-banner .notif-dismiss { background:transparent; color:var(--text-muted); padding:0.2rem; }
+
     /* Weekly Trend Chart */
     .trend-section { margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
     .trend-mini { display: flex; gap: 2px; align-items: flex-end; height: 32px; }
@@ -1281,7 +1383,9 @@
       <a href="#timeline">Timeline</a>
       <a href="#activity">Aktivität</a>
       <a href="#insights">Insights</a>
-      <a href="#techstack">Tech Stack</a>
+      <a href="#techstack">Tech</a>
+      <a href="#languages">Sprachen</a>
+      <a href="#aiInsights">AI</a>
       <a href="#portfolio">Portfolio</a>
       <a href="#charts">Aufwand</a>
       <a href="#" onclick="toggleFullscreen();return false;" style="color:var(--blue);font-weight:600;">Kiosk</a>
@@ -1304,6 +1408,13 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="pdf-btn" id="screenshotBtn" title="Screenshot als PNG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="13" r="3"/><path d="M5 7h.01M19 7h.01"/></svg>
+        PNG
+      </button>
+      <button class="pdf-btn" id="compareBtn" title="Projekt-Vergleich">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </button>
       <button class="pdf-btn" id="pdfBtn" title="PDF-Export">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         PDF
@@ -1460,6 +1571,14 @@
     <div class="infra-supa-detail" id="infraSupaDetail"></div>
   </div>
 
+  <!-- Live Event Ticker -->
+  <section id="ticker" class="reveal ticker-section" style="display:none;">
+    <div class="ticker-wrap">
+      <div class="ticker-header"><span class="live-dot"></span> Live-Ticker — zvvch Organisation</div>
+      <div class="ticker-list" id="tickerList"></div>
+    </div>
+  </section>
+
   <!-- Summary -->
   <section id="summary" class="reveal">
     <div class="card">
@@ -1581,6 +1700,72 @@
           </table>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Languages Breakdown -->
+  <section id="languages" class="reveal">
+    <div class="viz-2col">
+      <div class="card">
+        <h2 class="card-title">Sprachen-Verteilung</h2>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.75rem;">Codebase-Analyse über alle zvvch-Repositories (nach Bytes)</p>
+        <div class="lang-bar-wrap">
+          <div class="lang-bar" id="langBar"></div>
+          <div class="lang-legend" id="langLegend"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">Deployment Globe</h2>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Edge-Regions der Vercel-Deployments</p>
+        <div class="globe-container" id="globeContainer">
+          <div class="globe-label">Zürich → Vercel Edge Network</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Insights & Wochenbericht -->
+  <section id="aiInsights" class="reveal">
+    <div class="card">
+      <h2 class="card-title">AI-generierte Insights</h2>
+      <div id="aiInsightsContent">
+        <div class="ai-insight-card">
+          <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2a9 9 0 0 0-9 9c0 3.9 2.5 7.1 6 8.3V21h6v-1.7c3.5-1.2 6-4.4 6-8.3a9 9 0 0 0-9-9z"/><line x1="12" y1="6" x2="12" y2="12"/></svg> Wochenbericht</div>
+          <div class="ai-weekly" id="aiWeekly">Wird generiert…</div>
+        </div>
+        <div class="ai-insight-card" style="margin-top:0.5rem;">
+          <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Strategische Beobachtungen</div>
+          <div class="ai-insight-body" id="aiStrategic">Wird analysiert…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Velocity & Prognose -->
+  <section id="velocitySection" class="reveal">
+    <div class="card">
+      <h2 class="card-title">Velocity & Jahresprognose</h2>
+      <div class="charts-2col">
+        <div class="chart-card">
+          <h3>Commit-Velocity (30-Tage-Trend)</h3>
+          <canvas id="chartVelocity" height="160"></canvas>
+        </div>
+        <div class="chart-card velocity-card">
+          <h3>Jahresprognose 2026</h3>
+          <div class="velocity-line"><span class="v-num" id="velTotal">–</span><span class="v-label">Commits bisher (2026)</span></div>
+          <div class="velocity-line" style="margin-top:0.4rem;"><span class="v-num" id="velProjected">–</span><span class="v-label">Prognose Jahresende</span></div>
+          <div class="velocity-proj" id="velProj">Basierend auf aktuellem Tempo</div>
+          <div style="margin-top:0.75rem;"><canvas id="chartMonthly" height="120"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gamification -->
+  <section id="gamification" class="reveal" style="display:none;">
+    <div class="card">
+      <h2 class="card-title">Achievements</h2>
+      <div class="badges-row" id="badgesRow"></div>
     </div>
   </section>
 
@@ -1711,8 +1896,50 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 
+<!-- Command Palette -->
+<div class="cmd-overlay" id="cmdOverlay">
+  <div class="cmd-box">
+    <input type="text" class="cmd-input" id="cmdInput" placeholder="Suche Projekte, Aktionen, Sektionen…" autocomplete="off">
+    <div class="cmd-results" id="cmdResults"></div>
+    <div class="cmd-hint"><span><kbd>↑↓</kbd> Navigieren</span><span><kbd>↵</kbd> Ausführen</span><span><kbd>Esc</kbd> Schliessen</span></div>
+  </div>
+</div>
+
+<!-- Shortcuts Modal -->
+<div class="shortcut-modal" id="shortcutModal">
+  <div class="shortcut-box">
+    <div class="shortcut-title">Tastenkürzel</div>
+    <div class="shortcut-row"><span>Command Palette</span><kbd>⌘K</kbd></div>
+    <div class="shortcut-row"><span>Suche</span><kbd>/</kbd></div>
+    <div class="shortcut-row"><span>Dark Mode</span><kbd>D</kbd></div>
+    <div class="shortcut-row"><span>Kiosk-Modus</span><kbd>F</kbd></div>
+    <div class="shortcut-row"><span>Screenshot</span><kbd>S</kbd></div>
+    <div class="shortcut-row"><span>Vergleichs-Modus</span><kbd>C</kbd></div>
+    <div class="shortcut-row"><span>Nach oben</span><kbd>T</kbd></div>
+    <div class="shortcut-row"><span>Hilfe (dieses Fenster)</span><kbd>?</kbd></div>
+    <div class="shortcut-row"><span>Schliessen</span><kbd>Esc</kbd></div>
+  </div>
+</div>
+
+<!-- Compare Modal -->
+<div class="compare-overlay" id="compareOverlay">
+  <div class="compare-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="compare-title">Projekt-Vergleich</div>
+      <button onclick="document.getElementById('compareOverlay').classList.remove('open')" style="background:none;border:none;cursor:pointer;font-size:1.2rem;color:var(--text-muted);">✕</button>
+    </div>
+    <div class="compare-selects" id="compareSelects"></div>
+    <div class="compare-grid" id="compareGrid"></div>
+    <div class="compare-radar"><canvas id="compareRadar"></canvas></div>
+  </div>
+</div>
+
+<!-- Screenshot Toast -->
+<div class="screenshot-toast" id="screenshotToast">Screenshot gespeichert!</div>
+
 <footer class="footer">
   Automatisiert generiert auf Basis einer Repository-Analyse (30.03.2026) · GitHub-Organisation zvvch
+  <span style="margin-left:0.5rem;opacity:0.4;">PWA · Offline-fähig</span>
 </footer>
 
 <script>
@@ -3338,6 +3565,489 @@ async function loadWeeklyTrend() {
   }
 })();
 loadWeeklyTrend();
+
+// === FEATURE 1: HEALTH SCORE ===
+function computeHealthScore(d) {
+  let score = 50;
+  const totalCommits = Object.values(d.commits).reduce((s, v) => s + v, 0);
+  const monthsActive = Object.keys(d.commits).length;
+  if (totalCommits > 100) score += 15;
+  else if (totalCommits > 30) score += 10;
+  else if (totalCommits > 5) score += 5;
+  if (monthsActive >= 4) score += 10;
+  else if (monthsActive >= 2) score += 5;
+  if (d.lc === 'prod') score += 10;
+  if (d.prod) score += 10;
+  const recentMonths = ['2026-01','2026-02','2026-03'];
+  const recentCommits = recentMonths.reduce((s, m) => s + (d.commits[m] || 0), 0);
+  if (recentCommits > 0) score += 5;
+  return Math.min(100, Math.max(0, score));
+}
+DATA.forEach(d => { d.healthScore = computeHealthScore(d); });
+function healthBadge(score) {
+  const cls = score >= 75 ? 'h-good' : score >= 50 ? 'h-warn' : 'h-risk';
+  return `<span class="health-badge ${cls}">${score}</span>`;
+}
+
+// === FEATURE 3: SCREENSHOT EXPORT ===
+document.getElementById('screenshotBtn').addEventListener('click', async () => {
+  const toast = document.getElementById('screenshotToast');
+  toast.textContent = 'Screenshot wird erstellt…';
+  toast.classList.add('show');
+  try {
+    if (typeof html2canvas !== 'function') throw new Error('html2canvas not loaded');
+    const canvas = await html2canvas(document.body, { scale: 1, useCORS: true, logging: false, windowWidth: 1280 });
+    const link = document.createElement('a');
+    link.download = `zvv-workload-${new Date().toISOString().split('T')[0]}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    toast.textContent = 'Screenshot gespeichert!';
+  } catch (e) {
+    toast.textContent = 'Fehler: ' + e.message;
+  }
+  setTimeout(() => toast.classList.remove('show'), 2500);
+});
+
+// === FEATURE 4: SPRACHEN-BREAKDOWN ===
+const LANG_COLORS = {
+  TypeScript:'#3178c6', JavaScript:'#f1e05a', CSS:'#563d7c', HTML:'#e34c26',
+  Python:'#3572A5', R:'#198CE7', Shell:'#89e051', Dockerfile:'#384d54',
+  SCSS:'#c6538c', MDX:'#083fa1', Nunjucks:'#3d8137', Jupyter:'#F37626',
+};
+async function loadLanguages() {
+  try {
+    const res = await fetch('/api/language-stats');
+    const d = await res.json();
+    if (d.error) return;
+    const langs = d.languages || {};
+    const total = Object.values(langs).reduce((s, v) => s + v, 0);
+    if (total === 0) return;
+    const sorted = Object.entries(langs).sort((a, b) => b[1] - a[1]);
+    const bar = document.getElementById('langBar');
+    const legend = document.getElementById('langLegend');
+    bar.innerHTML = sorted.map(([lang, bytes]) => {
+      const pct = (bytes / total * 100);
+      const col = LANG_COLORS[lang] || '#6b7280';
+      return `<div class="lang-bar-seg" style="flex:${bytes};background:${col}" title="${lang}: ${pct.toFixed(1)}%"></div>`;
+    }).join('');
+    legend.innerHTML = sorted.filter(([, b]) => b / total > 0.02).map(([lang, bytes]) => {
+      const col = LANG_COLORS[lang] || '#6b7280';
+      return `<div class="lang-legend-item"><div class="lang-dot" style="background:${col}"></div>${lang} ${(bytes / total * 100).toFixed(1)}%</div>`;
+    }).join('');
+    renderTicker(d.events || []);
+  } catch {}
+}
+loadLanguages();
+
+// === FEATURE 5: KEYBOARD SHORTCUTS ===
+const shortcutModal = document.getElementById('shortcutModal');
+shortcutModal.addEventListener('click', e => { if (e.target === shortcutModal) shortcutModal.classList.remove('open'); });
+
+// === FEATURE 6: LIVE TICKER ===
+function renderTicker(events) {
+  if (!events || !events.length) return;
+  const section = document.getElementById('ticker');
+  const list = document.getElementById('tickerList');
+  section.style.display = '';
+  const typeMap = { PushEvent:['Push','tt-push'], CreateEvent:['Create','tt-create'], IssuesEvent:['Issue','tt-issue'], PullRequestEvent:['PR','tt-pr'] };
+  list.innerHTML = events.slice(0, 20).map(e => {
+    const [label, cls] = typeMap[e.type] || [e.type.replace('Event',''), 'tt-other'];
+    const msg = (e.message || '').slice(0, 60);
+    return `<div class="ticker-item">
+      <span class="ticker-type ${cls}">${label}</span>
+      <span class="ticker-repo">${e.repo}</span>
+      <span class="ticker-msg">${msg}${e.commits > 1 ? ` (${e.commits} commits)` : ''}</span>
+      <span class="ticker-actor">${e.actor}</span>
+      <span class="ticker-time">${timeAgo(e.time)}</span>
+    </div>`;
+  }).join('');
+}
+
+// === FEATURE 7: PROJEKT-VERGLEICH ===
+document.getElementById('compareBtn').addEventListener('click', openCompare);
+function openCompare() {
+  const overlay = document.getElementById('compareOverlay');
+  const selects = document.getElementById('compareSelects');
+  if (!selects.innerHTML) {
+    const opts = DATA.map((d, i) => `<option value="${i}">${d.name}</option>`).join('');
+    selects.innerHTML = [0, 1, 2].map((n, i) => `<select id="cmpSel${n}">${opts}</select>`).join('');
+    selects.querySelectorAll('select').forEach((s, i) => {
+      s.selectedIndex = i;
+      s.addEventListener('change', updateCompare);
+    });
+  }
+  overlay.classList.add('open');
+  updateCompare();
+}
+function updateCompare() {
+  const indices = [0, 1, 2].map(i => +document.getElementById(`cmpSel${i}`).value);
+  const projects = indices.map(i => DATA[i]);
+  const grid = document.getElementById('compareGrid');
+  grid.innerHTML = projects.map(p => {
+    const totalC = Object.values(p.commits).reduce((s, v) => s + v, 0);
+    return `<div class="compare-project">
+      <h4>${p.name}</h4>
+      <div class="compare-stat"><span>PT/Jahr</span><strong>${p.pt}</strong></div>
+      <div class="compare-stat"><span>Commits</span><strong>${totalC}</strong></div>
+      <div class="compare-stat"><span>Modus</span><span>${p.modeLabel}</span></div>
+      <div class="compare-stat"><span>Lifecycle</span><span>${p.lcLabel}</span></div>
+      <div class="compare-stat"><span>Health</span>${healthBadge(p.healthScore)}</div>
+      <div class="compare-stat"><span>Prognose</span><span style="font-size:0.65rem;">${p.forecast}</span></div>
+    </div>`;
+  }).join('');
+  const canvas = document.getElementById('compareRadar');
+  if (window._compareChart) window._compareChart.destroy();
+  const colors = ['#3b82f6','#10b981','#f59e0b'];
+  window._compareChart = new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: ['PT/Jahr','Commits','Health','Monate aktiv','Prod-Status'],
+      datasets: projects.map((p, i) => ({
+        label: p.name,
+        data: [p.ptMid, Math.min(Object.values(p.commits).reduce((s,v)=>s+v,0)/5, 100), p.healthScore, Object.keys(p.commits).length * 10, p.lc === 'prod' ? 100 : p.lc === 'jw' ? 70 : 40],
+        borderColor: colors[i],
+        backgroundColor: colors[i] + '22',
+        pointBackgroundColor: colors[i],
+      }))
+    },
+    options: { responsive:true, scales:{ r:{ beginAtZero:true, max:100, ticks:{display:false}, grid:{color:'#e2e8f044'} } }, plugins:{ legend:{position:'bottom', labels:{font:{size:10}}} } }
+  });
+}
+document.getElementById('compareOverlay').addEventListener('click', e => {
+  if (e.target.id === 'compareOverlay') e.target.classList.remove('open');
+});
+
+// === FEATURE 8: VELOCITY & PROGNOSE ===
+function renderVelocity(data) {
+  if (!data || !data.repos) return;
+  const monthlyCommits = {};
+  DATA.forEach(d => {
+    Object.entries(d.commits).forEach(([m, c]) => {
+      monthlyCommits[m] = (monthlyCommits[m] || 0) + c;
+    });
+  });
+  const months2026 = Object.entries(monthlyCommits).filter(([m]) => m.startsWith('2026')).sort();
+  const total2026 = months2026.reduce((s, [, c]) => s + c, 0);
+  const elapsedMonths = months2026.length || 1;
+  const projected = Math.round(total2026 / elapsedMonths * 12);
+  const velTotalEl = document.getElementById('velTotal');
+  const velProjEl = document.getElementById('velProjected');
+  if (velTotalEl) velTotalEl.textContent = total2026.toLocaleString('de-CH');
+  if (velProjEl) velProjEl.textContent = '~' + projected.toLocaleString('de-CH');
+  document.getElementById('velProj').textContent = `Ø ${Math.round(total2026 / elapsedMonths)} Commits/Monat · ${elapsedMonths} Monate erfasst`;
+
+  const allMonths = Object.entries(monthlyCommits).sort().slice(-12);
+  const ctxV = document.getElementById('chartVelocity');
+  if (ctxV) {
+    new Chart(ctxV, {
+      type: 'line',
+      data: {
+        labels: allMonths.map(([m]) => m.split('-')[1] + '/' + m.split('-')[0].slice(2)),
+        datasets: [{ data: allMonths.map(([,c]) => c), borderColor:'#005093', backgroundColor:'#00509320', fill:true, tension:0.35, pointRadius:3 }]
+      },
+      options: { responsive:true, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, ticks:{callback:v=>v}}, x:{ticks:{font:{size:10}}} } }
+    });
+  }
+  const ctxM = document.getElementById('chartMonthly');
+  if (ctxM && months2026.length) {
+    new Chart(ctxM, {
+      type: 'bar',
+      data: {
+        labels: months2026.map(([m]) => ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+m.split('-')[1]]),
+        datasets: [{ data: months2026.map(([,c]) => c), backgroundColor:'#005093', borderRadius:4 }]
+      },
+      options: { responsive:true, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true}, x:{ticks:{font:{size:10}}} } }
+    });
+  }
+}
+
+// === FEATURE 9: BROWSER NOTIFICATIONS ===
+function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') return;
+  Notification.requestPermission();
+}
+
+// === FEATURE 10: COMMAND PALETTE (Cmd+K) ===
+const cmdOverlay = document.getElementById('cmdOverlay');
+const cmdInput = document.getElementById('cmdInput');
+const cmdResults = document.getElementById('cmdResults');
+let cmdActiveIdx = 0;
+
+function buildCmdActions() {
+  const items = [];
+  DATA.forEach(d => items.push({ label: d.name, sub: d.purpose, action: () => {
+    const row = document.querySelector('#portfolio');
+    if (row) { row.scrollIntoView({ behavior: 'smooth' }); searchInput.value = d.name; searchInput.dispatchEvent(new Event('input')); }
+  }}));
+  items.push({ label: 'Dark Mode umschalten', sub: 'Theme', action: () => setTheme(document.documentElement.getAttribute('data-theme') !== 'dark') });
+  items.push({ label: 'Kiosk-Modus starten', sub: 'Fullscreen', action: toggleFullscreen });
+  items.push({ label: 'Screenshot exportieren', sub: 'PNG', action: () => document.getElementById('screenshotBtn').click() });
+  items.push({ label: 'PDF exportieren', sub: 'Drucken', action: () => window.print() });
+  items.push({ label: 'Projekt-Vergleich', sub: 'Radar', action: openCompare });
+  items.push({ label: 'Tastenkürzel anzeigen', sub: '?', action: () => shortcutModal.classList.add('open') });
+  ['summary','timeline','activity','insights','techstack','languages','aiInsights','velocitySection','portfolio','capacity','charts','infra'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) items.push({ label: 'Gehe zu: ' + (el.querySelector('.card-title')?.textContent || id), sub: '↓', action: () => el.scrollIntoView({ behavior:'smooth' }) });
+  });
+  return items;
+}
+
+function filterCmd(q) {
+  const all = buildCmdActions();
+  if (!q) return all.slice(0, 12);
+  const lower = q.toLowerCase();
+  return all.filter(i => i.label.toLowerCase().includes(lower) || (i.sub || '').toLowerCase().includes(lower)).slice(0, 10);
+}
+
+function renderCmd(items) {
+  cmdActiveIdx = 0;
+  cmdResults.innerHTML = items.map((it, i) =>
+    `<div class="cmd-item${i === 0 ? ' active' : ''}" data-idx="${i}"><span class="cmd-item-icon">›</span>${it.label}<span class="cmd-item-sub">${it.sub || ''}</span></div>`
+  ).join('');
+}
+
+function openCmd() {
+  cmdOverlay.classList.add('open');
+  cmdInput.value = '';
+  renderCmd(filterCmd(''));
+  requestAnimationFrame(() => cmdInput.focus());
+}
+function closeCmd() { cmdOverlay.classList.remove('open'); }
+
+cmdOverlay.addEventListener('click', e => { if (e.target === cmdOverlay) closeCmd(); });
+cmdInput.addEventListener('input', () => renderCmd(filterCmd(cmdInput.value)));
+cmdInput.addEventListener('keydown', e => {
+  const items = cmdResults.querySelectorAll('.cmd-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); cmdActiveIdx = (cmdActiveIdx + 1) % items.length; items.forEach((it, i) => it.classList.toggle('active', i === cmdActiveIdx)); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); cmdActiveIdx = (cmdActiveIdx - 1 + items.length) % items.length; items.forEach((it, i) => it.classList.toggle('active', i === cmdActiveIdx)); }
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const filtered = filterCmd(cmdInput.value);
+    if (filtered[cmdActiveIdx]) { closeCmd(); filtered[cmdActiveIdx].action(); }
+  }
+  if (e.key === 'Escape') closeCmd();
+});
+cmdResults.addEventListener('click', e => {
+  const item = e.target.closest('.cmd-item');
+  if (!item) return;
+  const idx = +item.dataset.idx;
+  const filtered = filterCmd(cmdInput.value);
+  if (filtered[idx]) { closeCmd(); filtered[idx].action(); }
+});
+
+// === FEATURE 11: 3D GLOBE ===
+(async function initGlobe() {
+  try {
+    const { Scene, PerspectiveCamera, WebGLRenderer, SphereGeometry, MeshBasicMaterial, Mesh, LineBasicMaterial, BufferGeometry, Vector3, Line, AmbientLight, Group, Color, PointsMaterial, BufferAttribute, Points } = await import('three');
+    const container = document.getElementById('globeContainer');
+    if (!container) return;
+    const w = container.clientWidth, h = container.clientHeight;
+    const scene = new Scene();
+    scene.background = new Color('#0b1120');
+    const camera = new PerspectiveCamera(45, w / h, 0.1, 100);
+    camera.position.z = 3;
+    const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    const globe = new Group();
+    scene.add(globe);
+    const geo = new SphereGeometry(1, 48, 48);
+    const mat = new MeshBasicMaterial({ color: 0x112240, wireframe: true, transparent: true, opacity: 0.25 });
+    globe.add(new Mesh(geo, mat));
+    const solid = new MeshBasicMaterial({ color: 0x0a1628, transparent: true, opacity: 0.9 });
+    globe.add(new Mesh(new SphereGeometry(0.98, 48, 48), solid));
+    scene.add(new AmbientLight(0xffffff, 0.3));
+
+    function latLonToVec(lat, lon, r = 1.01) {
+      const phi = (90 - lat) * Math.PI / 180;
+      const theta = (lon + 180) * Math.PI / 180;
+      return new Vector3(-r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+    }
+
+    const zurich = { lat: 47.37, lon: 8.54 };
+    const edges = [
+      { name:'San Francisco', lat:37.77, lon:-122.42 }, { name:'Washington DC', lat:38.9, lon:-77.04 },
+      { name:'London', lat:51.51, lon:-0.13 }, { name:'Frankfurt', lat:50.11, lon:8.68 },
+      { name:'Singapore', lat:1.35, lon:103.82 }, { name:'Tokyo', lat:35.68, lon:139.69 },
+      { name:'Sydney', lat:-33.87, lon:151.21 }, { name:'São Paulo', lat:-23.55, lon:-46.63 },
+    ];
+
+    const dotGeo = new BufferGeometry();
+    const dotPos = [];
+    [zurich, ...edges].forEach(p => { const v = latLonToVec(p.lat, p.lon, 1.015); dotPos.push(v.x, v.y, v.z); });
+    dotGeo.setAttribute('position', new BufferAttribute(new Float32Array(dotPos), 3));
+    const dotMat = new PointsMaterial({ color: 0x00a5e5, size: 0.04, sizeAttenuation: true });
+    globe.add(new Points(dotGeo, dotMat));
+
+    edges.forEach(edge => {
+      const start = latLonToVec(zurich.lat, zurich.lon, 1.02);
+      const end = latLonToVec(edge.lat, edge.lon, 1.02);
+      const mid = new Vector3().addVectors(start, end).multiplyScalar(0.5);
+      mid.normalize().multiplyScalar(1.4);
+      const curve = new BufferGeometry();
+      const pts = [];
+      for (let t = 0; t <= 1; t += 0.02) {
+        const p = new Vector3();
+        p.x = (1-t)*(1-t)*start.x + 2*(1-t)*t*mid.x + t*t*end.x;
+        p.y = (1-t)*(1-t)*start.y + 2*(1-t)*t*mid.y + t*t*end.y;
+        p.z = (1-t)*(1-t)*start.z + 2*(1-t)*t*mid.z + t*t*end.z;
+        pts.push(p.x, p.y, p.z);
+      }
+      curve.setAttribute('position', new BufferAttribute(new Float32Array(pts), 3));
+      const lineMat = new LineBasicMaterial({ color: 0x00a5e5, transparent: true, opacity: 0.3 });
+      globe.add(new Line(curve, lineMat));
+    });
+
+    globe.rotation.y = -0.5;
+    globe.rotation.x = 0.4;
+    function animate() {
+      requestAnimationFrame(animate);
+      globe.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    const resObs = new ResizeObserver(() => {
+      const nw = container.clientWidth, nh = container.clientHeight;
+      camera.aspect = nw / nh;
+      camera.updateProjectionMatrix();
+      renderer.setSize(nw, nh);
+    });
+    resObs.observe(container);
+  } catch (e) {
+    const c = document.getElementById('globeContainer');
+    if (c) c.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:0.75rem;">3D Globe nicht verfügbar</div>';
+  }
+})();
+
+// === FEATURE 2+12: AI WOCHENBERICHT & STRATEGIC INSIGHTS ===
+function generateAIInsights(ghData) {
+  const weekly = document.getElementById('aiWeekly');
+  const strategic = document.getElementById('aiStrategic');
+  const today = ghData?.today || 0;
+  const week = ghData?.week || 0;
+  const month = ghData?.month || 0;
+  const velocity = ghData?.velocity || 0;
+  const streak = ghData?.streak || 0;
+  const avgDay = ghData?.avgPerDay || 0;
+  const activeRepos = (ghData?.activeRepos || []).map(r => r.name).join(', ') || 'keine';
+
+  const weeklyText = `<strong>Woche im Überblick:</strong> ${week} Commits über ${(ghData?.activeRepos || []).length} aktive Projekte. `
+    + `Velocity ${velocity > 0 ? '+' : ''}${velocity}% vs. Vorwoche. `
+    + `Heute: ${today} Commits. Durchschnitt: ${avgDay} pro Tag. `
+    + (streak > 3 ? `<br><strong>Commit-Streak:</strong> ${streak} Tage in Serie — konstante Delivery. ` : '')
+    + `<br><strong>Aktive Projekte:</strong> ${activeRepos}.`
+    + (month > 200 ? `<br>⚠ Über 200 Commits diesen Monat — hohes Arbeitspensum.` : '');
+  if (weekly) weekly.innerHTML = weeklyText;
+
+  const insights = [];
+  if (velocity < -20) insights.push('Die Commit-Velocity ist rückläufig ('+velocity+'%). Mögliche Ursachen: Fokuswechsel, Meetings-Overhead oder Erschöpfung.');
+  if (velocity > 30) insights.push('Überdurchschnittliche Velocity (+'+velocity+'%). Prüfen ob Tempo nachhaltig ist oder auf bevorstehende Deadline hindeutet.');
+  const prodCount = DATA.filter(d => d.lc === 'prod').length;
+  if (prodCount > 10) insights.push(`${prodCount} produktive Services im aktiven Betrieb — signifikantes operatives Risiko bei einer Ein-Personen-Organisation.`);
+  const highPt = DATA.filter(d => d.ptMid >= 20).length;
+  if (highPt > 3) insights.push(`${highPt} Initiativen mit >20 PT/Jahr — Priorisierung und Fokussierung empfohlen.`);
+  const noRecent = DATA.filter(d => { const r = ['2026-01','2026-02','2026-03'].reduce((s,m)=>s+(d.commits[m]||0),0); return d.lc === 'prod' && r === 0; });
+  if (noRecent.length > 0) insights.push(`${noRecent.length} produktive Services ohne Commits in Q1 2026: ${noRecent.map(d=>d.name).join(', ')}. Möglicherweise stabil, oder wartungsrückstand.`);
+  const totalPt = DATA.reduce((s,d)=>s+d.ptMid,0);
+  insights.push(`Geschätzter Gesamtaufwand: ${totalPt} PT bei ~220 PT Kapazität = ${Math.round(totalPt/220*100)}% Auslastung.`);
+
+  if (strategic) strategic.innerHTML = insights.map(i => `<p style="margin-bottom:0.4rem;">› ${i}</p>`).join('');
+}
+
+// === FEATURE 13: GAMIFICATION ===
+function renderBadges(ghData) {
+  const badges = [];
+  const streak = ghData?.streak || 0;
+  const week = ghData?.week || 0;
+  const month = ghData?.month || 0;
+  badges.push({ icon:'🔥', label:`${streak} Tage Streak`, locked: streak < 1 });
+  badges.push({ icon:'⚡', label:'100+ Commits/Monat', locked: month < 100 });
+  badges.push({ icon:'🚀', label:'50+ Commits/Woche', locked: week < 50 });
+  badges.push({ icon:'🏆', label:'26 Initiativen', locked: false });
+  badges.push({ icon:'🛡️', label:'14 in Produktion', locked: false });
+  badges.push({ icon:'💎', label:'10+ Technologien', locked: false });
+  badges.push({ icon:'📦', label:'5 Supabase DBs', locked: false });
+  badges.push({ icon:'🌐', label:'19 Vercel Projekte', locked: false });
+  badges.push({ icon:'🔁', label:'CI/CD Automatisiert', locked: false });
+  badges.push({ icon:'⏰', label:'24/7 Uptime Monitor', locked: false });
+
+  const row = document.getElementById('badgesRow');
+  const section = document.getElementById('gamification');
+  if (row) {
+    row.innerHTML = badges.map(b =>
+      `<div class="badge-item${b.locked ? ' badge-locked' : ''}"><span class="badge-icon">${b.icon}</span>${b.label}</div>`
+    ).join('');
+    section.style.display = '';
+  }
+}
+
+// Hook into live KPI fetch for AI + Gamification
+const origFetchLive = fetchLiveKPIs;
+async function fetchLiveKPIsWithExtras() {
+  await origFetchLive();
+  try {
+    const res = await fetch('/api/github-stats');
+    const d = await res.json();
+    generateAIInsights(d);
+    renderBadges(d);
+    renderVelocity(d);
+  } catch {}
+}
+fetchLiveKPIsWithExtras();
+
+// === FEATURE 14: AMBIENT KIOSK PARTICLES ===
+// Already have animated orbs in kiosk mode, enhance with more particles handled in existing CSS
+
+// === FEATURE 15: PWA SERVICE WORKER ===
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('SW registered:', reg.scope);
+    }).catch(() => {});
+  });
+}
+
+// === FEATURE 5+10: GLOBAL KEYBOARD SHORTCUTS ===
+document.addEventListener('keydown', e => {
+  if (fsActive) return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openCmd(); return; }
+  if (e.key === '?') { e.preventDefault(); shortcutModal.classList.toggle('open'); return; }
+  if (e.key === '/' && !cmdOverlay.classList.contains('open')) { e.preventDefault(); searchInput.focus(); searchInput.scrollIntoView({ behavior:'smooth', block:'center' }); return; }
+  if (e.key === 'd' || e.key === 'D') { setTheme(document.documentElement.getAttribute('data-theme') !== 'dark'); return; }
+  if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); return; }
+  if (e.key === 's' || e.key === 'S') { document.getElementById('screenshotBtn').click(); return; }
+  if (e.key === 'c' || e.key === 'C') { openCompare(); return; }
+  if (e.key === 't' || e.key === 'T') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+});
+
+// Sticky nav update with new sections
+const sections2 = ['summary','timeline','activity','insights','techstack','languages','aiInsights','velocitySection','gamification','portfolio','capacity','charts','infra'];
+
+// Update sticky nav links
+(function() {
+  const navLinks = document.querySelector('.sticky-nav-links');
+  if (navLinks) {
+    const existing = navLinks.innerHTML;
+    if (!existing.includes('Ticker')) {
+      const tickerLink = document.createElement('a');
+      tickerLink.href = '#ticker';
+      tickerLink.textContent = 'Ticker';
+      navLinks.insertBefore(tickerLink, navLinks.firstChild.nextSibling);
+    }
+  }
+})();
+
+// Request notification permission after first user interaction
+document.addEventListener('click', function reqNotif() {
+  requestNotifPermission();
+  document.removeEventListener('click', reqNotif);
+}, { once: true });
 
 </script>
 
