@@ -1058,16 +1058,136 @@
     }
     .fs-progress-fill.running { transition: width linear; }
 
+    /* Cursor auto-hide */
+    body.fs-active .fs-overlay { cursor: default; }
+    body.fs-active.fs-cursor-hidden .fs-overlay { cursor: none; }
+    body.fs-active.fs-cursor-hidden .fs-controls { opacity: 0; pointer-events: none; }
+
+    /* Control Bar */
+    .fs-controls {
+      display: flex; align-items: center; justify-content: center; gap: 1.2vmin;
+      padding: 0.8vmin 0 0.4vmin; flex-shrink: 0;
+      opacity: 1; transition: opacity 0.5s;
+    }
+    .fs-ctrl-btn {
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6); border-radius: 0.6vmin; padding: 0.5vmin 0.9vmin;
+      font-size: 1.1vmin; cursor: pointer; font-family: var(--font); transition: 0.2s;
+      display: flex; align-items: center; gap: 0.4vmin;
+    }
+    .fs-ctrl-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+    .fs-ctrl-btn.active { background: rgba(0,165,229,0.2); border-color: rgba(0,165,229,0.4); color: #00a5e5; }
+    .fs-ctrl-btn svg { width: 1.4vmin; height: 1.4vmin; }
+
+    .fs-ctrl-sep { width: 1px; height: 2.5vmin; background: rgba(255,255,255,0.08); }
+
+    .fs-speed-btn { font-family: var(--mono); font-size: 0.9vmin; padding: 0.3vmin 0.6vmin; }
+
+    /* Dots with labels */
     .fs-dots {
-      display: flex; gap: 0.6vmin; justify-content: center; padding: 0.8vmin 0;
+      display: flex; gap: 0.4vmin; justify-content: center; align-items: center;
       flex-shrink: 0;
     }
     .fs-dot {
-      width: 0.8vmin; height: 0.8vmin; border-radius: 50%;
-      background: rgba(255,255,255,0.15); transition: 0.3s; cursor: pointer;
+      padding: 0.3vmin 0.8vmin; border-radius: 2vmin; font-size: 0.85vmin; font-weight: 500;
+      background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.3);
+      transition: 0.3s; cursor: pointer; white-space: nowrap;
     }
-    .fs-dot.active { background: var(--blue-secondary); transform: scale(1.4); box-shadow: 0 0 1vmin rgba(0,165,229,0.5); cursor: default; }
-    .fs-dot:hover:not(.active) { background: rgba(255,255,255,0.3); cursor: default; }
+    .fs-dot.active { background: rgba(0,165,229,0.2); color: #00a5e5; box-shadow: 0 0 1vmin rgba(0,165,229,0.3); }
+    .fs-dot:hover:not(.active) { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
+
+    /* Slide counter */
+    .fs-slide-counter {
+      font-family: var(--mono); font-size: 1vmin; color: rgba(255,255,255,0.25);
+      margin-left: 1vmin;
+    }
+
+    /* Status LEDs */
+    .fs-status-leds { display: flex; gap: 0.8vmin; align-items: center; margin-left: 1.5vmin; }
+    .fs-led { display: flex; align-items: center; gap: 0.35vmin; font-size: 0.85vmin; color: rgba(255,255,255,0.3); }
+    .fs-led-dot {
+      width: 0.7vmin; height: 0.7vmin; border-radius: 50%; background: #4ade80;
+      box-shadow: 0 0 0.5vmin rgba(74,222,128,0.4);
+    }
+    .fs-led-dot.off { background: #f87171; box-shadow: 0 0 0.5vmin rgba(248,113,113,0.4); }
+    .fs-led-dot.unknown { background: #64748b; box-shadow: none; }
+
+    /* Freshness */
+    .fs-freshness {
+      font-size: 0.85vmin; color: rgba(255,255,255,0.2); font-family: var(--mono);
+      transition: color 0.3s;
+    }
+    .fs-freshness.stale { color: rgba(251,191,36,0.5); animation: fsFreshBlink 2s ease-in-out infinite; }
+    .fs-freshness.fresh { color: rgba(74,222,128,0.6); }
+    @keyframes fsFreshBlink { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    /* Help Overlay */
+    .fs-help-overlay {
+      position: absolute; inset: 0; z-index: 10; background: rgba(6,11,24,0.92);
+      backdrop-filter: blur(12px); display: none; align-items: center; justify-content: center;
+    }
+    .fs-help-overlay.open { display: flex; }
+    .fs-help-box {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1.5vmin; padding: 3vmin 4vmin; max-width: 50vmin;
+    }
+    .fs-help-title { font-size: 2vmin; font-weight: 700; color: white; margin-bottom: 2vmin; }
+    .fs-help-row { display: flex; justify-content: space-between; padding: 0.6vmin 0; font-size: 1.3vmin; color: rgba(255,255,255,0.6); }
+    .fs-help-row kbd {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.2vmin 0.8vmin; border-radius: 0.4vmin; font-family: var(--mono);
+      color: rgba(255,255,255,0.8); font-size: 1.1vmin; min-width: 3vmin; text-align: center;
+    }
+
+    /* Typewriter effect */
+    .fs-typewriter { overflow: hidden; border-right: 2px solid rgba(0,165,229,0.6); white-space: pre-wrap; }
+    .fs-typewriter.done { border-right-color: transparent; }
+
+    /* AI Slide */
+    .fs-ai-insights { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5vmin; flex: 1; overflow: hidden; }
+    .fs-ai-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 1vmin; padding: 2vmin; border-left: 0.4vmin solid var(--blue-secondary);
+      opacity: 0; animation: fsCardIn 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    .fs-ai-card-title { font-size: 1.1vmin; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,165,229,0.7); margin-bottom: 0.8vmin; }
+    .fs-ai-card-body { font-size: 1.3vmin; line-height: 1.7; color: rgba(255,255,255,0.6); }
+
+    /* Achievements Slide */
+    .fs-badge-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(18vmin, 1fr)); gap: 1.2vmin;
+    }
+    .fs-badge-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 1vmin; padding: 1.5vmin 2vmin; text-align: center;
+      opacity: 0; animation: fsCardIn 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    .fs-badge-card.locked { opacity: 0.25; }
+    .fs-badge-icon { font-size: 4vmin; line-height: 1; margin-bottom: 0.5vmin; }
+    .fs-badge-label { font-size: 1.1vmin; color: rgba(255,255,255,0.6); }
+
+    .fs-health-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(20vmin, 1fr)); gap: 1vmin; }
+    .fs-health-item {
+      display: flex; align-items: center; gap: 1vmin; padding: 1vmin 1.2vmin;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 0.6vmin; opacity: 0; animation: fsCardIn 0.6s ease-out forwards;
+    }
+    .fs-health-score {
+      font-family: var(--mono); font-size: 2vmin; font-weight: 700; min-width: 4vmin; text-align: center;
+    }
+    .fs-health-score.good { color: #4ade80; }
+    .fs-health-score.warn { color: #fbbf24; }
+    .fs-health-score.risk { color: #f87171; }
+    .fs-health-name { font-size: 1.2vmin; color: rgba(255,255,255,0.7); }
+
+    /* Globe slide */
+    .fs-globe-container { width: 100%; height: 100%; min-height: 30vmin; background: transparent; border-radius: 0.8vmin; overflow: hidden; }
+    .fs-lang-bars { display: flex; flex-direction: column; gap: 0.8vmin; }
+    .fs-lang-row { display: flex; align-items: center; gap: 0.8vmin; }
+    .fs-lang-name { font-size: 1.1vmin; color: rgba(255,255,255,0.5); min-width: 10vmin; text-align: right; }
+    .fs-lang-bar-bg { flex: 1; height: 1.8vmin; background: rgba(255,255,255,0.04); border-radius: 0.3vmin; overflow: hidden; }
+    .fs-lang-bar-fill { height: 100%; border-radius: 0.3vmin; transition: width 1.2s cubic-bezier(.34,1.56,.64,1); }
+    .fs-lang-pct { font-family: var(--mono); font-size: 1vmin; color: rgba(255,255,255,0.3); min-width: 5vmin; }
 
     /* === COMMAND PALETTE (Cmd+K) === */
     .cmd-overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.45); backdrop-filter:blur(6px); display:none; align-items:flex-start; justify-content:center; padding-top:min(20vh,180px); }
@@ -3191,8 +3311,22 @@ let fsRefreshInterval = null;
 let fsClockInterval = null;
 let fsSlideInterval = null;
 let fsCurrentSlide = 0;
-let fsSlideCount = 5;
-const FS_SLIDE_DURATION = 12000;
+let fsSlideCount = 8;
+let fsSlideDuration = 12000;
+let fsAutoPlay = true;
+let fsCursorTimer = null;
+let fsHelpOpen = false;
+let fsTouchStartX = 0;
+let fsTouchStartY = 0;
+let fsLastRefreshTime = Date.now();
+let fsLangData = null;
+
+const FS_SLIDE_NAMES = ['GitHub', 'Vercel', 'Supabase', 'Uptime', 'Aufwand', 'Globe', 'Badges', 'AI Report'];
+const FS_SLIDE_COLORS = [
+  'rgba(59,130,246,0.12)', 'rgba(16,185,129,0.12)', 'rgba(99,102,241,0.12)',
+  'rgba(245,158,11,0.12)', 'rgba(139,92,246,0.12)', 'rgba(0,165,229,0.12)',
+  'rgba(236,72,153,0.12)', 'rgba(20,184,166,0.12)',
+];
 
 let fsData = { gh: null, infra: null, uptime: null };
 
@@ -3244,26 +3378,38 @@ function buildKioskHTML() {
     </path>`;
   });
 
+  const zvvLogo = `<svg viewBox="0 0 314 145" fill="white"><path d="M165.19,94.29l25.9-43.6h-23.77v-9.75h37.62v6.5l-25.9,43.6h27.19v9.75h-41.04v-6.5Z"/><path d="M209.4,40.94h11.2l14.19,40.78,14.28-40.78h10.77l-21.12,59.85h-8.21l-21.12-59.85Z"/><path d="M263.26,40.94h11.2l14.19,40.78,14.28-40.78h10.77l-21.12,59.85h-8.21l-21.12-59.85Z"/><path d="M40.59,36.41C52.46,13.72,72.94,7.91,78.6,6.59,106.6.04,125.66,15.08,125.66,15.08c-4.71,4.71-7.53,7.64-7.65,7.57-10.07-5.99-21.5-8.77-35-6.18-19.89,3.82-30.03,19.93-30.03,19.93h-12.4Z"/><path fill-rule="evenodd" d="M138.12,26.41c7.06,8.2,12.81,20.65,13.39,34.56,1.53,36.47-27.77,52.76-27.77,52.76l-7.46-7.83c10.41-5.74,24.93-19.41,24.63-43.5-.2-17.02-10.29-28.46-10.29-28.46,5.26-5.3,7.5-7.54,7.5-7.54Z"/><path fill-rule="evenodd" d="M45.7,52.91c-3.09,14.41-.1,28.5,8.79,40.19,8.97,11.8,27.43,22.24,44.04,19.04l8.68,8.75c-24.92,6.29-49.49-4.3-62.72-23.38-13.02-18.77-10.96-37.17-9.6-44.6h10.81Z"/><polygon points="78.6 66.63 145.03 .08 156.65 3.39 85.84 74.16 78.6 66.63"/><polygon points="46.17 52.91 60.68 52.91 137.17 132.72 134.06 144.11 46.17 52.91"/><polygon points=".25 39.4 100.87 39.4 90.28 49.99 6.6 49.99 .25 39.4"/></svg>`;
+
   return `
     <div class="fs-bg">
-      <div class="fs-bg-orb"></div>
-      <div class="fs-bg-orb"></div>
-      <div class="fs-bg-orb"></div>
+      <div class="fs-bg-orb" id="fsOrb0"></div>
+      <div class="fs-bg-orb" id="fsOrb1"></div>
+      <div class="fs-bg-orb" id="fsOrb2"></div>
     </div>
     <div class="fs-chrome">
       <div class="fs-topbar">
         <div class="fs-logo">
-          <div class="fs-logo-mark"><svg viewBox="0 0 314 145" fill="white"><path d="M165.19,94.29l25.9-43.6h-23.77v-9.75h37.62v6.5l-25.9,43.6h27.19v9.75h-41.04v-6.5Z"/><path d="M209.4,40.94h11.2l14.19,40.78,14.28-40.78h10.77l-21.12,59.85h-8.21l-21.12-59.85Z"/><path d="M263.26,40.94h11.2l14.19,40.78,14.28-40.78h10.77l-21.12,59.85h-8.21l-21.12-59.85Z"/><path d="M40.59,36.41C52.46,13.72,72.94,7.91,78.6,6.59,106.6.04,125.66,15.08,125.66,15.08c-4.71,4.71-7.53,7.64-7.65,7.57-10.07-5.99-21.5-8.77-35-6.18-19.89,3.82-30.03,19.93-30.03,19.93h-12.4Z"/><path fill-rule="evenodd" d="M138.12,26.41c7.06,8.2,12.81,20.65,13.39,34.56,1.53,36.47-27.77,52.76-27.77,52.76l-7.46-7.83c10.41-5.74,24.93-19.41,24.63-43.5-.2-17.02-10.29-28.46-10.29-28.46,5.26-5.3,7.5-7.54,7.5-7.54Z"/><path fill-rule="evenodd" d="M45.7,52.91c-3.09,14.41-.1,28.5,8.79,40.19,8.97,11.8,27.43,22.24,44.04,19.04l8.68,8.75c-24.92,6.29-49.49-4.3-62.72-23.38-13.02-18.77-10.96-37.17-9.6-44.6h10.81Z"/><polygon points="78.6 66.63 145.03 .08 156.65 3.39 85.84 74.16 78.6 66.63"/><polygon points="46.17 52.91 60.68 52.91 137.17 132.72 134.06 144.11 46.17 52.91"/><polygon points=".25 39.4 100.87 39.4 90.28 49.99 6.6 49.99 .25 39.4"/></svg></div>
+          <div class="fs-logo-mark">${zvvLogo}</div>
           <div>
             <div class="fs-logo-text">Workload-Portfolio</div>
             <div class="fs-logo-sub">Marcel Rapold · ICT Entwicklung & Betrieb</div>
           </div>
+          <div class="fs-status-leds" id="fsStatusLeds">
+            <div class="fs-led"><div class="fs-led-dot unknown" id="fsLedGh"></div>GH</div>
+            <div class="fs-led"><div class="fs-led-dot unknown" id="fsLedVcl"></div>VCL</div>
+            <div class="fs-led"><div class="fs-led-dot unknown" id="fsLedSb"></div>SB</div>
+            <div class="fs-led"><div class="fs-led-dot unknown" id="fsLedUp"></div>UP</div>
+          </div>
         </div>
-        <div style="text-align:right;">
-          <div class="fs-clock" id="fsClock">--:--:--</div>
-          <div class="fs-clock-date" id="fsClockDate"></div>
+        <div style="display:flex;align-items:center;gap:1.5vmin;">
+          <div class="fs-freshness" id="fsFreshness">wird geladen…</div>
+          <button class="fs-ctrl-btn" id="fsSoundToggle" title="Sound (Platzhalter)" onclick="this.classList.toggle('active');this.innerHTML=this.classList.contains('active')?'🔊':'🔇'">🔇</button>
+          <div style="text-align:right;">
+            <div class="fs-clock" id="fsClock">--:--:--</div>
+            <div class="fs-clock-date" id="fsClockDate"></div>
+          </div>
+          <button class="fs-close-btn" onclick="toggleFullscreen()">ESC</button>
         </div>
-        <button class="fs-close-btn" onclick="toggleFullscreen()">ESC</button>
       </div>
 
       <div class="fs-stage" id="fsStage">
@@ -3287,7 +3433,7 @@ function buildKioskHTML() {
           </div>
         </div>
 
-        <!-- Slide 1: Infrastructure -->
+        <!-- Slide 1: Vercel -->
         <div class="fs-slide" data-slide="1">
           <div class="fs-slide-title">Vercel Deployments & Infrastructure</div>
           <div class="fs-kpi-grid" id="fsSlide1Kpis"></div>
@@ -3348,19 +3494,92 @@ function buildKioskHTML() {
           </div>
         </div>
 
+        <!-- Slide 5: Globe + Sprachen -->
+        <div class="fs-slide" data-slide="5">
+          <div class="fs-slide-title">Deployment Globe & Sprachen</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2vmin;flex:1;overflow:hidden;">
+            <div class="fs-globe-container" id="fsGlobeContainer"></div>
+            <div style="display:flex;flex-direction:column;gap:1.2vmin;">
+              <div style="font-size:1.2vmin;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:0.5vmin;">Sprachen (Bytes)</div>
+              <div class="fs-lang-bars" id="fsLangBars"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 6: Achievements + Health -->
+        <div class="fs-slide" data-slide="6">
+          <div class="fs-slide-title">Achievements & Health Scores</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2vmin;flex:1;overflow:hidden;">
+            <div>
+              <div style="font-size:1.2vmin;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:1vmin;">Badges</div>
+              <div class="fs-badge-grid" id="fsBadgeGrid"></div>
+            </div>
+            <div>
+              <div style="font-size:1.2vmin;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:1vmin;">Projekt Health</div>
+              <div class="fs-health-list" id="fsHealthList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 7: AI Wochenbericht -->
+        <div class="fs-slide" data-slide="7">
+          <div class="fs-slide-title">AI Wochenbericht</div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:2vmin;flex:1;overflow:hidden;">
+            <div>
+              <div style="font-size:1.2vmin;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:1vmin;">Zusammenfassung</div>
+              <div style="font-size:1.4vmin;line-height:1.9;color:rgba(255,255,255,0.6);max-height:70%;overflow-y:auto;" id="fsAiTypewriter"></div>
+            </div>
+            <div>
+              <div style="font-size:1.2vmin;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.25);margin-bottom:1vmin;">Strategische Beobachtungen</div>
+              <div class="fs-ai-insights" id="fsAiCards"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="fs-progress"><div class="fs-progress-fill" id="fsProgressFill"></div></div>
       </div>
 
-      <div class="fs-dots" id="fsDots"></div>
+      <!-- Controls bar -->
+      <div class="fs-controls" id="fsControls">
+        <button class="fs-ctrl-btn" onclick="fsPrevSlide()" title="Zurück">◀</button>
+        <button class="fs-ctrl-btn" id="fsPlayPauseBtn" onclick="fsToggleAutoPlay()" title="Play/Pause">⏸</button>
+        <button class="fs-ctrl-btn" onclick="fsNextSlideManual()" title="Weiter">▶</button>
+        <div class="fs-ctrl-sep"></div>
+        <button class="fs-speed-btn fs-ctrl-btn" onclick="fsSetDuration(8000)" data-dur="8000">8s</button>
+        <button class="fs-speed-btn fs-ctrl-btn active" onclick="fsSetDuration(12000)" data-dur="12000">12s</button>
+        <button class="fs-speed-btn fs-ctrl-btn" onclick="fsSetDuration(20000)" data-dur="20000">20s</button>
+        <button class="fs-speed-btn fs-ctrl-btn" onclick="fsSetDuration(30000)" data-dur="30000">30s</button>
+        <div class="fs-ctrl-sep"></div>
+        <div class="fs-dots" id="fsDots"></div>
+        <div class="fs-slide-counter" id="fsSlideCounter">1 / ${fsSlideCount}</div>
+        <div class="fs-ctrl-sep"></div>
+        <button class="fs-ctrl-btn" onclick="fsTakeScreenshot()" title="Screenshot">📷</button>
+        <button class="fs-ctrl-btn" onclick="fsShowHelp()" title="Hilfe">?</button>
+      </div>
+
+      <!-- Help overlay -->
+      <div class="fs-help-overlay" id="fsHelpOverlay">
+        <div class="fs-help-box">
+          <div class="fs-help-title">Kiosk Shortcuts</div>
+          <div class="fs-help-row"><span>Navigation</span><kbd>◀</kbd> <kbd>▶</kbd></div>
+          <div class="fs-help-row"><span>Play / Pause</span><kbd>Space</kbd></div>
+          <div class="fs-help-row"><span>Direkt zu Slide</span><kbd>1</kbd>–<kbd>8</kbd></div>
+          <div class="fs-help-row"><span>Screenshot</span><kbd>S</kbd></div>
+          <div class="fs-help-row"><span>Diese Hilfe</span><kbd>?</kbd></div>
+          <div class="fs-help-row"><span>Beenden</span><kbd>ESC</kbd></div>
+          <div style="text-align:center;margin-top:2vmin;"><button class="fs-ctrl-btn" onclick="fsCloseHelp()">Schliessen</button></div>
+        </div>
+      </div>
     </div>`;
 }
 
 function fsGoToSlide(idx) {
   const slides = fsOverlay.querySelectorAll('.fs-slide');
   const dots = fsOverlay.querySelectorAll('.fs-dot');
+  const prev = fsCurrentSlide;
   slides.forEach((s, i) => {
     s.classList.remove('active', 'exit');
-    if (i === fsCurrentSlide && i !== idx) s.classList.add('exit');
+    if (i === prev && i !== idx) s.classList.add('exit');
   });
   fsCurrentSlide = idx;
   requestAnimationFrame(() => {
@@ -3368,12 +3587,17 @@ function fsGoToSlide(idx) {
     dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     fsResetProgress();
     fsReanimateCards(slides[idx]);
+    fsUpdateSlideCounter();
+    fsApplySlideColor(idx);
+    if (idx === 5) fsInitKioskGlobe();
+    if (idx === 6) fsRenderBadgesSlide();
+    if (idx === 7) fsStartTypewriter();
   });
 }
 
 function fsReanimateCards(slide) {
   if (!slide) return;
-  const cards = slide.querySelectorAll('.fs-kpi-card, .fs-supa-card, .fs-uptime-card, .fs-feed-line, .fs-chart-card');
+  const cards = slide.querySelectorAll('.fs-kpi-card, .fs-supa-card, .fs-uptime-card, .fs-feed-line, .fs-chart-card, .fs-badge-card, .fs-health-item, .fs-ai-card, .fs-lang-row');
   cards.forEach((c, i) => {
     c.style.animation = 'none';
     c.offsetHeight;
@@ -3385,6 +3609,11 @@ function fsReanimateCards(slide) {
     bar.style.height = '0';
     setTimeout(() => { bar.style.height = bar.dataset.targetH + '%'; }, 300 + i * 80);
   });
+  const lbars = slide.querySelectorAll('.fs-lang-bar-fill[data-w]');
+  lbars.forEach((b, i) => {
+    b.style.width = '0';
+    setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 200 + i * 100);
+  });
 }
 
 function fsResetProgress() {
@@ -3392,9 +3621,10 @@ function fsResetProgress() {
   if (!fill) return;
   fill.style.transition = 'none';
   fill.style.width = '0%';
+  if (!fsAutoPlay) return;
   requestAnimationFrame(() => {
     fill.classList.add('running');
-    fill.style.transition = `width ${FS_SLIDE_DURATION}ms linear`;
+    fill.style.transition = `width ${fsSlideDuration}ms linear`;
     fill.style.width = '100%';
   });
 }
@@ -3402,25 +3632,323 @@ function fsResetProgress() {
 function fsNextSlide() {
   fsGoToSlide((fsCurrentSlide + 1) % fsSlideCount);
 }
+function fsPrevSlide() {
+  fsGoToSlide((fsCurrentSlide - 1 + fsSlideCount) % fsSlideCount);
+  fsRestartAutoSlideIfPlaying();
+}
+function fsNextSlideManual() {
+  fsNextSlide();
+  fsRestartAutoSlideIfPlaying();
+}
+function fsRestartAutoSlideIfPlaying() {
+  clearInterval(fsSlideInterval);
+  if (fsAutoPlay) fsSlideInterval = setInterval(fsNextSlide, fsSlideDuration);
+}
+
+function fsToggleAutoPlay() {
+  fsAutoPlay = !fsAutoPlay;
+  const btn = document.getElementById('fsPlayPauseBtn');
+  if (btn) btn.textContent = fsAutoPlay ? '⏸' : '▶';
+  clearInterval(fsSlideInterval);
+  if (fsAutoPlay) {
+    fsSlideInterval = setInterval(fsNextSlide, fsSlideDuration);
+    fsResetProgress();
+  } else {
+    const fill = document.getElementById('fsProgressFill');
+    if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; }
+  }
+}
+
+function fsSetDuration(ms) {
+  fsSlideDuration = ms;
+  document.querySelectorAll('.fs-speed-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.dur) === ms));
+  clearInterval(fsSlideInterval);
+  if (fsAutoPlay) {
+    fsSlideInterval = setInterval(fsNextSlide, fsSlideDuration);
+    fsResetProgress();
+  }
+}
+
+function fsUpdateSlideCounter() {
+  const el = document.getElementById('fsSlideCounter');
+  if (el) el.textContent = `${fsCurrentSlide + 1} / ${fsSlideCount}`;
+}
+
+function fsApplySlideColor(idx) {
+  const orbs = fsOverlay.querySelectorAll('.fs-bg-orb');
+  const color = FS_SLIDE_COLORS[idx] || FS_SLIDE_COLORS[0];
+  orbs.forEach(o => { o.style.background = color; o.style.transition = 'background 1.2s ease'; });
+}
+
+function fsUpdateStatusLeds() {
+  const { gh, infra, uptime } = fsData;
+  const set = (id, ok) => { const el = document.getElementById(id); if (el) { el.className = 'fs-led-dot' + (ok === null ? ' unknown' : ok ? '' : ' off'); } };
+  set('fsLedGh', gh ? true : null);
+  set('fsLedVcl', infra?.vercel && !infra.vercel.error ? true : infra?.vercel?.error ? false : null);
+  set('fsLedSb', infra?.supabase && !infra.supabase.error ? (infra.supabase.allHealthy ? true : false) : null);
+  set('fsLedUp', uptime ? (uptime.allOk ? true : false) : null);
+}
+
+function fsUpdateFreshness() {
+  const el = document.getElementById('fsFreshness');
+  if (!el) return;
+  const ago = Math.floor((Date.now() - fsLastRefreshTime) / 1000);
+  if (ago < 60) el.textContent = `vor ${ago}s aktualisiert`;
+  else el.textContent = `vor ${Math.floor(ago / 60)}m aktualisiert`;
+  el.className = 'fs-freshness' + (ago > 120 ? ' stale' : ago < 5 ? ' fresh' : '');
+}
+
+function fsCursorShow() {
+  document.body.classList.remove('fs-cursor-hidden');
+  clearTimeout(fsCursorTimer);
+  fsCursorTimer = setTimeout(() => { if (fsActive) document.body.classList.add('fs-cursor-hidden'); }, 3000);
+}
+
+function fsShowHelp() { fsHelpOpen = true; const el = document.getElementById('fsHelpOverlay'); if (el) el.classList.add('open'); }
+function fsCloseHelp() { fsHelpOpen = false; const el = document.getElementById('fsHelpOverlay'); if (el) el.classList.remove('open'); }
+
+function fsTakeScreenshot() {
+  if (typeof html2canvas === 'undefined') return;
+  const stage = document.getElementById('fsStage');
+  if (!stage) return;
+  html2canvas(stage, { backgroundColor: '#060b18', scale: 2 }).then(canvas => {
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `kiosk-slide-${fsCurrentSlide + 1}-${Date.now()}.png`;
+    a.click();
+  });
+}
 
 async function fsRefreshData() {
-  const [gh, infra, up] = await Promise.all([
+  const [gh, infra, up, lang] = await Promise.all([
     fetch('/api/github-stats').then(r => r.json()).catch(() => null),
     fetch('/api/infra-stats').then(r => r.json()).catch(() => null),
     fetch('/api/health-check').then(r => r.json()).catch(() => null),
+    fetch('/api/language-stats').then(r => r.json()).catch(() => null),
   ]);
   fsData = { gh, infra, uptime: up };
+  fsLangData = lang;
+  fsLastRefreshTime = Date.now();
   fsRenderAllSlides();
+  fsUpdateStatusLeds();
+  fsRenderLangSlide();
 }
 
 function fsKpiCard(val, label, cls = '', delay = 0) {
   return `<div class="fs-kpi-card" style="animation-delay:${delay}s"><div class="fs-kpi-val ${cls}">${val}</div><div class="fs-kpi-label">${label}</div><div class="fs-kpi-accent"></div></div>`;
 }
 
+function fsRenderLangSlide() {
+  const el = document.getElementById('fsLangBars');
+  if (!el || !fsLangData?.languages) return;
+  const langs = Object.entries(fsLangData.languages).sort((a,b) => b[1] - a[1]).slice(0, 12);
+  const max = langs[0]?.[1] || 1;
+  const colors = ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6','#f97316','#6366f1','#ef4444','#84cc16','#06b6d4','#a855f7'];
+  el.innerHTML = langs.map(([name, bytes], i) => {
+    const pct = (bytes / max * 100).toFixed(1);
+    const size = bytes > 1e6 ? (bytes/1e6).toFixed(1) + ' MB' : (bytes/1e3).toFixed(0) + ' KB';
+    return `<div class="fs-lang-row" style="animation-delay:${i*0.08}s;opacity:0;animation:fsCardIn 0.6s ease-out ${i*0.08}s forwards;">
+      <div class="fs-lang-name">${name}</div>
+      <div class="fs-lang-bar-bg"><div class="fs-lang-bar-fill" style="background:${colors[i%colors.length]};width:0;" data-w="${pct}"></div></div>
+      <div class="fs-lang-pct">${size}</div>
+    </div>`;
+  }).join('');
+}
+
+let fsKioskGlobeInit = false;
+async function fsInitKioskGlobe() {
+  if (fsKioskGlobeInit) return;
+  const container = document.getElementById('fsGlobeContainer');
+  if (!container) return;
+  fsKioskGlobeInit = true;
+  try {
+    const THREE = await import('three');
+    const { Scene, PerspectiveCamera, WebGLRenderer, SphereGeometry, MeshBasicMaterial, MeshPhongMaterial, Mesh,
+      ShaderMaterial, LineBasicMaterial, BufferGeometry, Vector3, Line, AmbientLight, DirectionalLight,
+      Group, Color, PointsMaterial, BufferAttribute, Points, AdditiveBlending, BackSide } = THREE;
+
+    const W = container.clientWidth, H = container.clientHeight;
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(45, W/H, 0.1, 100);
+    camera.position.z = 2.6;
+    const renderer = new WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    const globe = new Group(); scene.add(globe);
+    globe.add(new Mesh(new SphereGeometry(0.97, 48, 48), new MeshPhongMaterial({ color: 0x0a1628, transparent: true, opacity: 0.9 })));
+    globe.add(new Mesh(new SphereGeometry(1.0, 28, 28), new MeshBasicMaterial({ color: 0x1a3a5c, wireframe: true, transparent: true, opacity: 0.1 })));
+
+    const atmosMat = new ShaderMaterial({
+      vertexShader: `varying vec3 vN;void main(){vN=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+      fragmentShader: `varying vec3 vN;void main(){float i=pow(0.65-dot(vN,vec3(0,0,1)),2.);gl_FragColor=vec4(0.,0.4,0.9,1.)*i*0.5;}`,
+      side: BackSide, blending: AdditiveBlending, transparent: true
+    });
+    globe.add(new Mesh(new SphereGeometry(1.1, 48, 48), atmosMat));
+
+    scene.add(new AmbientLight(0x334466, 0.7));
+    const dl = new DirectionalLight(0x88bbff, 0.5); dl.position.set(3, 2, 4); scene.add(dl);
+
+    function llv(lat, lon, r=1.01) {
+      const phi = (90-lat)*Math.PI/180, theta = (lon+180)*Math.PI/180;
+      return new Vector3(-r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta));
+    }
+
+    const zh = { lat: 47.37, lon: 8.54 };
+    const edges = [
+      {lat:37.77,lon:-122.42},{lat:40.71,lon:-73.97},{lat:51.51,lon:-0.13},{lat:48.86,lon:2.35},
+      {lat:35.68,lon:139.69},{lat:1.35,lon:103.87},{lat:-33.87,lon:151.21},{lat:52.52,lon:13.41},
+      {lat:19.08,lon:72.88},{lat:-26.2,lon:28.04},{lat:25.2,lon:55.27},{lat:22.32,lon:114.17}
+    ];
+
+    const hubGeo = new SphereGeometry(0.025, 16, 16);
+    globe.add(new Mesh(hubGeo, new MeshBasicMaterial({ color: 0xf59e0b })));
+    const hubPos = llv(zh.lat, zh.lon, 1.01);
+    globe.children[globe.children.length-1].position.copy(hubPos);
+
+    edges.forEach(e => {
+      const p = llv(e.lat, e.lon, 1.01);
+      const dot = new Mesh(new SphereGeometry(0.012, 8, 8), new MeshBasicMaterial({ color: 0x00a5e5 }));
+      dot.position.copy(p);
+      globe.add(dot);
+
+      const mid = hubPos.clone().add(p).multiplyScalar(0.5).normalize().multiplyScalar(1.25);
+      const curve = new THREE.QuadraticBezierCurve3(hubPos, mid, p);
+      const pts = curve.getPoints(30);
+      const lineGeo = new BufferGeometry().setFromPoints(pts);
+      globe.add(new Line(lineGeo, new LineBasicMaterial({ color: 0x00a5e5, transparent: true, opacity: 0.25 })));
+    });
+
+    const starsGeo = new BufferGeometry();
+    const sp = new Float32Array(400 * 3);
+    for (let i=0; i<400; i++) { sp[i*3]=(Math.random()-0.5)*20; sp[i*3+1]=(Math.random()-0.5)*20; sp[i*3+2]=(Math.random()-0.5)*20; }
+    starsGeo.setAttribute('position', new BufferAttribute(sp, 3));
+    scene.add(new Points(starsGeo, new PointsMaterial({ color: 0xffffff, size: 0.02, transparent: true, opacity: 0.5 })));
+
+    function animate() {
+      requestAnimationFrame(animate);
+      globe.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    new ResizeObserver(() => {
+      const w = container.clientWidth, h = container.clientHeight;
+      camera.aspect = w/h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+    }).observe(container);
+  } catch(e) { container.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:1.4vmin;text-align:center;padding:5vmin;">Globe nicht verfügbar</div>'; }
+}
+
+function fsRenderBadgesSlide() {
+  const bg = document.getElementById('fsBadgeGrid');
+  const hl = document.getElementById('fsHealthList');
+  if (!bg || !hl) return;
+
+  const { gh } = fsData;
+  const badges = [];
+  if (gh) {
+    if (gh.today >= 1) badges.push({ icon: '🔥', label: 'Daily Committer', unlocked: true });
+    if (gh.week >= 20) badges.push({ icon: '🚀', label: '20+ Commits/Woche', unlocked: true });
+    else badges.push({ icon: '🚀', label: '20+ Commits/Woche', unlocked: false });
+    if (gh.month >= 80) badges.push({ icon: '💎', label: '80+ Commits/Monat', unlocked: true });
+    else badges.push({ icon: '💎', label: '80+ Commits/Monat', unlocked: false });
+    if (gh.openPRs === 0) badges.push({ icon: '✅', label: 'Clean PR Queue', unlocked: true });
+    else badges.push({ icon: '✅', label: 'Clean PR Queue', unlocked: false });
+  }
+  badges.push({ icon: '🏗️', label: '26 Initiativen', unlocked: true });
+  badges.push({ icon: '⚡', label: 'Multi-Stack Dev', unlocked: true });
+  badges.push({ icon: '🌐', label: 'Full-Stack', unlocked: true });
+  badges.push({ icon: '🤖', label: 'AI-Augmented', unlocked: true });
+
+  bg.innerHTML = badges.map((b, i) =>
+    `<div class="fs-badge-card${b.unlocked ? '' : ' locked'}" style="animation-delay:${i*0.1}s">
+      <div class="fs-badge-icon">${b.icon}</div>
+      <div class="fs-badge-label">${b.label}</div>
+    </div>`
+  ).join('');
+
+  const projs = DATA.map(d => {
+    let score = 50;
+    if (d.mode === 'Produktiv') score += 20;
+    if (d.krit === 'Hoch') score += 10;
+    if (d.krit === 'Mittel') score += 5;
+    if (d.jw) score += 10;
+    return { name: d.name.replace('ZVV ', ''), score: Math.min(score, 100) };
+  }).sort((a,b) => b.score - a.score);
+
+  hl.innerHTML = projs.slice(0, 10).map((p, i) => {
+    const cls = p.score >= 80 ? 'good' : p.score >= 60 ? 'warn' : 'risk';
+    return `<div class="fs-health-item" style="animation-delay:${i*0.06}s">
+      <div class="fs-health-score ${cls}">${p.score}</div>
+      <div class="fs-health-name">${p.name}</div>
+    </div>`;
+  }).join('');
+}
+
+let fsTypewriterTimeout = null;
+function fsStartTypewriter() {
+  const el = document.getElementById('fsAiTypewriter');
+  const cardsEl = document.getElementById('fsAiCards');
+  if (!el) return;
+
+  const { gh } = fsData;
+  const lines = [];
+  lines.push(`Kalenderwoche ${getWeekNumber(new Date())} — Workload Report`);
+  lines.push('');
+  if (gh) {
+    lines.push(`Diese Woche: ${gh.week} Commits über die gesamte Organisation.`);
+    lines.push(`Tagesschnitt: ${gh.avgPerDay} Commits.`);
+    if (gh.velocity > 0) lines.push(`Velocity: +${gh.velocity}% gegenüber Vorwoche — steigend.`);
+    else if (gh.velocity < 0) lines.push(`Velocity: ${gh.velocity}% gegenüber Vorwoche — rückläufig.`);
+    lines.push(`Open Issues: ${gh.openIssues} · Open PRs: ${gh.openPRs}`);
+  }
+  lines.push('');
+  lines.push('26 aktive Initiativen in 4 Kategorien verteilt.');
+  lines.push('Geschätzte Gesamtlast: ~280 PT/Jahr (Auslastung >127%).');
+  lines.push('One-Man-Show Risiko bleibt bestehen.');
+
+  const fullText = lines.join('\n');
+  el.textContent = '';
+  el.classList.remove('done');
+  let charIdx = 0;
+  clearTimeout(fsTypewriterTimeout);
+
+  function typeChar() {
+    if (charIdx < fullText.length && fsActive && fsCurrentSlide === 7) {
+      el.textContent += fullText[charIdx];
+      charIdx++;
+      fsTypewriterTimeout = setTimeout(typeChar, 18);
+    } else {
+      el.classList.add('done');
+    }
+  }
+  typeChar();
+
+  if (cardsEl) {
+    const insights = [
+      { title: 'Kapazitätsrisiko', body: 'Einzelperson trägt 26 Initiativen — Bus-Faktor = 1.' },
+      { title: 'Technologie-Breite', body: 'Next.js, Python, R, n8n — hohe Vielseitigkeit, aber Wissenskonzentration.' },
+      { title: 'Produktive Services', body: '14 Systeme in Produktion erfordern laufende Wartung und Incident-Response.' },
+      { title: 'Empfehlung', body: 'Priorisierung und selektives Outsourcing einzelner Run-Aufgaben prüfen.' },
+    ];
+    cardsEl.innerHTML = insights.map((ins, i) =>
+      `<div class="fs-ai-card" style="animation-delay:${0.3 + i*0.2}s">
+        <div class="fs-ai-card-title">${ins.title}</div>
+        <div class="fs-ai-card-body">${ins.body}</div>
+      </div>`
+    ).join('');
+  }
+}
+
+function getWeekNumber(d) {
+  const onejan = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil(((d - onejan) / 86400000 + onejan.getDay() + 1) / 7);
+}
+
 function fsRenderAllSlides() {
   const { gh, infra, uptime } = fsData;
 
-  // Slide 0: GitHub
   const s0 = document.getElementById('fsSlide0Kpis');
   if (s0 && gh) {
     const velCls = gh.velocity > 0 ? 'green' : gh.velocity < 0 ? 'red' : '';
@@ -3442,7 +3970,6 @@ function fsRenderAllSlides() {
     ).join('');
   }
 
-  // Slide 1: Vercel
   const s1 = document.getElementById('fsSlide1Kpis');
   if (s1 && infra?.vercel && !infra.vercel.error) {
     const v = infra.vercel;
@@ -3470,7 +3997,6 @@ function fsRenderAllSlides() {
     }
   }
 
-  // Slide 2: Supabase
   const s2 = document.getElementById('fsSlide2Kpis');
   if (s2 && infra?.supabase && !infra.supabase.error) {
     const sb = infra.supabase;
@@ -3493,7 +4019,6 @@ function fsRenderAllSlides() {
     }
   }
 
-  // Slide 3: Uptime
   const s3 = document.getElementById('fsSlide3Kpis');
   if (s3 && uptime) {
     const uCls = uptime.allOk ? 'green' : 'red';
@@ -3520,26 +4045,44 @@ function toggleFullscreen() {
 
   if (fsActive) {
     fsCurrentSlide = 0;
+    fsAutoPlay = true;
+    fsSlideDuration = 12000;
+    fsHelpOpen = false;
+    fsKioskGlobeInit = false;
     fsOverlay.innerHTML = buildKioskHTML();
+
     const dotsEl = document.getElementById('fsDots');
-    dotsEl.innerHTML = Array.from({ length: fsSlideCount }, (_, i) =>
-      `<div class="fs-dot${i === 0 ? ' active' : ''}" onclick="fsGoToSlide(${i})"></div>`
-    ).join('');
+    if (dotsEl) {
+      dotsEl.innerHTML = FS_SLIDE_NAMES.map((name, i) =>
+        `<div class="fs-dot${i === 0 ? ' active' : ''}" onclick="fsGoToSlide(${i})">${name}</div>`
+      ).join('');
+    }
 
     fsUpdateClock();
     fsClockInterval = setInterval(fsUpdateClock, 1000);
     fsResetProgress();
-    fsSlideInterval = setInterval(fsNextSlide, FS_SLIDE_DURATION);
+    fsSlideInterval = setInterval(fsNextSlide, fsSlideDuration);
 
     fsRefreshData();
     fsRefreshInterval = setInterval(fsRefreshData, 60000);
 
+    setInterval(fsUpdateFreshness, 1000);
+
+    document.body.classList.add('fs-cursor-hidden');
+    fsOverlay.addEventListener('mousemove', fsCursorShow);
+    fsOverlay.addEventListener('touchstart', fsTouchStart, { passive: true });
+    fsOverlay.addEventListener('touchend', fsTouchEnd, { passive: true });
+
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen().catch(() => {});
     }
+    fsApplySlideColor(0);
   } else {
     [fsRefreshInterval, fsClockInterval, fsSlideInterval].forEach(i => i && clearInterval(i));
     fsRefreshInterval = fsClockInterval = fsSlideInterval = null;
+    clearTimeout(fsCursorTimer);
+    clearTimeout(fsTypewriterTimeout);
+    document.body.classList.remove('fs-cursor-hidden');
     fsOverlay.innerHTML = '';
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
@@ -3547,12 +4090,35 @@ function toggleFullscreen() {
   }
 }
 
+function fsTouchStart(e) {
+  if (e.touches.length === 1) {
+    fsTouchStartX = e.touches[0].clientX;
+    fsTouchStartY = e.touches[0].clientY;
+  }
+}
+function fsTouchEnd(e) {
+  if (!e.changedTouches.length) return;
+  const dx = e.changedTouches[0].clientX - fsTouchStartX;
+  const dy = e.changedTouches[0].clientY - fsTouchStartY;
+  if (Math.abs(dx) < 40 && Math.abs(dy) < 40) { fsToggleAutoPlay(); return; }
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx < -50) fsNextSlideManual();
+    else if (dx > 50) { fsPrevSlide(); }
+  }
+}
+
 fsToggle.addEventListener('click', toggleFullscreen);
 document.addEventListener('keydown', e => {
   if (!fsActive) return;
+  if (fsHelpOpen) { fsCloseHelp(); e.preventDefault(); return; }
   if (e.key === 'Escape') toggleFullscreen();
-  if (e.key === 'ArrowRight' || e.key === ' ') { clearInterval(fsSlideInterval); fsNextSlide(); fsSlideInterval = setInterval(fsNextSlide, FS_SLIDE_DURATION); }
-  if (e.key === 'ArrowLeft') { clearInterval(fsSlideInterval); fsGoToSlide((fsCurrentSlide - 1 + fsSlideCount) % fsSlideCount); fsSlideInterval = setInterval(fsNextSlide, FS_SLIDE_DURATION); }
+  if (e.key === 'ArrowRight') { fsNextSlideManual(); e.preventDefault(); }
+  if (e.key === 'ArrowLeft') { fsPrevSlide(); e.preventDefault(); }
+  if (e.key === ' ') { fsToggleAutoPlay(); e.preventDefault(); }
+  if (e.key === 's' || e.key === 'S') fsTakeScreenshot();
+  if (e.key === '?' || e.key === '/') fsShowHelp();
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= fsSlideCount) { fsGoToSlide(num - 1); fsRestartAutoSlideIfPlaying(); }
 });
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement && fsActive) {
