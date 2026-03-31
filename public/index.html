@@ -427,28 +427,128 @@
     .infra-stat .is-value { font-size: 1.15rem; font-weight: 600; color: var(--text); }
     .infra-stat .is-detail { font-size: 0.72rem; color: var(--text-sec); }
 
-    /* Sticky Nav */
+    /* Sticky Nav (Mailer-Glassmorphism) */
     .sticky-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      transform: translateY(-100%); transition: transform 0.3s ease;
-      box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.72); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid rgba(0,80,147,0.08);
+      transform: translateY(-100%); transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
     }
-    [data-theme="dark"] .sticky-nav { background: rgba(15,23,42,0.92); }
+    [data-theme="dark"] .sticky-nav { background: rgba(15,23,42,0.82); border-bottom-color: rgba(255,255,255,0.06); }
     .sticky-nav.visible { transform: translateY(0); }
     .sticky-nav-inner {
-      max-width: 1240px; margin: 0 auto; padding: 0.5rem 1.5rem;
+      max-width: 1240px; margin: 0 auto; padding: 0.45rem 1.5rem;
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
     }
-    .sticky-nav-title { font-weight: 600; font-size: 0.82rem; color: var(--blue); white-space: nowrap; }
-    .sticky-nav-links { display: flex; gap: 0.2rem; overflow-x: auto; }
+    .sticky-nav-title { font-weight: 700; font-size: 0.8rem; color: var(--blue); white-space: nowrap; letter-spacing: -0.01em; }
+    .sticky-nav-links { display: flex; gap: 0.15rem; overflow-x: auto; scrollbar-width: none; }
+    .sticky-nav-links::-webkit-scrollbar { display: none; }
     .sticky-nav-links a {
-      padding: 0.3rem 0.65rem; font-size: 0.68rem; font-weight: 500;
-      color: var(--text-sec); text-decoration: none; border-radius: 4px;
-      white-space: nowrap; transition: 0.15s;
+      padding: 0.3rem 0.7rem; font-size: 0.68rem; font-weight: 500;
+      color: var(--text-sec); text-decoration: none; border-radius: 6px;
+      white-space: nowrap; transition: all 0.2s cubic-bezier(.4,0,.2,1);
     }
-    .sticky-nav-links a:hover, .sticky-nav-links a.active { background: var(--blue-light); color: var(--blue); }
+    .sticky-nav-links a:hover { background: rgba(0,80,147,0.06); color: var(--text); }
+    .sticky-nav-links a.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+
+    /* Mobile Bottom Nav */
+    .mobile-bottom-nav {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+      background: rgba(255,255,255,0.82); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-top: 1px solid rgba(0,80,147,0.08);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      box-shadow: 0 -1px 3px rgba(0,0,0,0.04), 0 -4px 12px rgba(0,0,0,0.03);
+    }
+    [data-theme="dark"] .mobile-bottom-nav { background: rgba(15,23,42,0.85); border-top-color: rgba(255,255,255,0.06); }
+    body.fs-active .mobile-bottom-nav { display: none !important; }
+    .mobile-bottom-nav-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .mobile-bottom-nav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+      padding: 0.5rem 0.25rem; text-decoration: none;
+      color: var(--text-muted); font-size: 0.6rem; font-weight: 500;
+      transition: color 0.15s;
+    }
+    .mobile-bottom-nav-item svg { width: 1.15rem; height: 1.15rem; stroke-width: 1.8; }
+    .mobile-bottom-nav-item.active { color: var(--blue); }
+    .mobile-bottom-nav-item.active svg { stroke: var(--blue); }
+
+    /* Build-Info Badge */
+    .build-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.25rem 0.6rem; border-radius: 20px; cursor: pointer;
+      font-family: var(--mono); font-size: 0.62rem; font-weight: 500;
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.75); transition: all 0.2s; white-space: nowrap;
+      position: relative;
+    }
+    .build-badge:hover { background: rgba(255,255,255,0.25); color: white; }
+    .build-badge .new-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #4ade80;
+      box-shadow: 0 0 6px rgba(74,222,128,0.5); animation: newPulse 2s ease-in-out infinite;
+    }
+    @keyframes newPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* Changelog Panel */
+    .changelog-panel {
+      position: absolute; top: 100%; right: 0; margin-top: 0.5rem;
+      width: 340px; max-height: 80vh; overflow-y: auto;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+      z-index: 100; display: none; font-family: var(--font);
+      animation: clPanelIn 0.2s ease-out;
+    }
+    [data-theme="dark"] .changelog-panel { box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+    .changelog-panel.open { display: block; }
+    @keyframes clPanelIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .changelog-panel-backdrop { position: fixed; inset: 0; z-index: 99; display: none; }
+    .changelog-panel-backdrop.open { display: block; }
+
+    .cl-header { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .cl-header-title { font-weight: 600; font-size: 0.78rem; color: var(--text); }
+    .cl-env-badge {
+      font-size: 0.58rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 10px;
+      background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2);
+    }
+    .cl-grid { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+    .cl-grid-row { display: flex; align-items: center; justify-content: space-between; padding: 0.3rem 0; font-size: 0.7rem; }
+    .cl-grid-label { color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; }
+    .cl-grid-label svg { width: 0.8rem; height: 0.8rem; opacity: 0.5; }
+    .cl-grid-val { font-weight: 500; color: var(--text); font-family: var(--mono); font-size: 0.65rem; }
+    .cl-grid-val a { color: var(--blue); text-decoration: none; }
+    .cl-grid-val a:hover { text-decoration: underline; }
+
+    .cl-news { padding: 0.85rem 1rem; background: rgba(0,80,147,0.03); border-bottom: 1px solid var(--border); }
+    [data-theme="dark"] .cl-news { background: rgba(0,165,229,0.04); }
+    .cl-news-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; font-size: 0.75rem; font-weight: 600; color: var(--text); }
+    .cl-news-header svg { width: 0.9rem; height: 0.9rem; color: var(--blue); }
+
+    .cl-entry { padding: 0.6rem 0.7rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
+    .cl-entry-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; }
+    .cl-entry-version {
+      font-size: 0.55rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 10px;
+      background: rgba(0,80,147,0.08); color: var(--blue); border: 1px solid rgba(0,80,147,0.12);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .cl-entry-new {
+      font-size: 0.52rem; font-weight: 700; padding: 0.1rem 0.35rem; border-radius: 10px;
+      background: rgba(74,222,128,0.1); color: #4ade80; letter-spacing: 0.04em;
+    }
+    .cl-entry-date { font-size: 0.58rem; color: var(--text-muted); }
+    .cl-entry-title { font-size: 0.72rem; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+    .cl-entry-summary { font-size: 0.65rem; color: var(--text-sec); line-height: 1.55; }
+    .cl-entry-details { list-style: none; padding: 0; margin: 0.4rem 0 0; }
+    .cl-entry-details li {
+      font-size: 0.62rem; color: var(--text-muted); padding: 0.3rem 0.5rem;
+      background: rgba(0,0,0,0.02); border: 1px solid var(--border); border-radius: 6px;
+      margin-bottom: 0.25rem;
+    }
+    [data-theme="dark"] .cl-entry-details li { background: rgba(255,255,255,0.02); }
+
+    .cl-footer { padding: 0.6rem 1rem; border-top: 1px solid var(--border); text-align: center; }
+    .cl-footer-version { font-family: var(--mono); font-size: 0.6rem; color: var(--text-muted); }
 
     /* Scroll Reveal */
     .reveal {
@@ -1369,6 +1469,9 @@
       .sticky-nav-links { display: none; }
       .sticky-nav-inner { padding: 0.4rem 0.75rem; }
       .sticky-nav-title { font-size: 0.75rem; }
+      .mobile-bottom-nav { display: block; }
+      body { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+      .build-badge { font-size: 0.55rem; padding: 0.2rem 0.45rem; }
 
       .tabs { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .tab { padding: 0.45rem 0.7rem; font-size: 0.7rem; min-height: 36px; }
@@ -1532,6 +1635,15 @@
       </div>
     </div>
     <div class="header-actions">
+      <div style="position:relative;">
+        <button class="build-badge" id="buildBadge" title="Build & Changelog">
+          <span class="new-dot" id="buildNewDot"></span>
+          <span id="buildBadgeText">v3.0.0 | 30.03.26 | main</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:0.7rem;height:0.7rem;opacity:0.5;"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="changelog-panel-backdrop" id="clBackdrop" onclick="closeBuildPanel()"></div>
+        <div class="changelog-panel" id="clPanel"></div>
+      </div>
       <button class="pdf-btn" id="screenshotBtn" title="Screenshot als PNG">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="13" r="3"/><path d="M5 7h.01M19 7h.01"/></svg>
         PNG
@@ -2075,12 +2187,122 @@
 <!-- Screenshot Toast -->
 <div class="screenshot-toast" id="screenshotToast">Screenshot gespeichert!</div>
 
+<!-- Mobile Bottom Nav -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <div class="mobile-bottom-nav-grid">
+    <a href="#timeline" class="mobile-bottom-nav-item" data-section="timeline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Timeline
+    </a>
+    <a href="#activity" class="mobile-bottom-nav-item" data-section="activity">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      KPIs
+    </a>
+    <a href="#portfolio" class="mobile-bottom-nav-item" data-section="portfolio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Portfolio
+    </a>
+    <a href="#" class="mobile-bottom-nav-item" onclick="toggleFullscreen();return false;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      Kiosk
+    </a>
+  </div>
+</nav>
+
 <footer class="footer">
   Automatisiert generiert auf Basis einer Repository-Analyse (30.03.2026) · GitHub-Organisation zvvch
   <span style="margin-left:0.5rem;opacity:0.4;">PWA · Offline-fähig</span>
+  <div class="cl-footer-version" id="footerVersion">v3.0.0 · main</div>
 </footer>
 
 <script>
+const APP_VERSION = '3.0.0';
+const APP_BUILD_DATE = '2026-03-30T22:00:00+02:00';
+const APP_GIT_BRANCH = 'main';
+const APP_GIT_COMMIT = '6ab13a0';
+const APP_GITHUB_REPO = 'zvvch/zvv-workload-portfolio';
+
+const CHANGELOG = [
+  {
+    version: '3.0.0',
+    date: '2026-03-30',
+    title: 'Kiosk Ultimate 15 + Mailer-Style Nav',
+    summary: '15 neue Kiosk-Features, Glassmorphism-Navigation, Mobile Bottom Nav, Build-Info und Changelog-System.',
+    details: [
+      'Play/Pause, Skip, Dauer-Optionen (8/12/20/30s)',
+      '3 neue Slides: Globe + Sprachen, Achievements, AI Wochenbericht',
+      'Status-LEDs, Data Freshness, Typewriter-Effekt',
+      'Touch/Swipe-Support und Screenshot-Export',
+      'Mailer-inspirierte Glassmorphism-Navigation',
+      'Mobile Bottom Nav mit 4 Sektionen',
+      'Build-Info Badge mit Changelog-Panel',
+    ],
+    audience: 'all',
+  },
+  {
+    version: '2.5.0',
+    date: '2026-03-29',
+    title: '15 Sexy Features',
+    summary: 'AI Insights, 3D Globe, Gamification, Command Palette, PWA, Live Ticker und mehr.',
+    details: [
+      'AI-generierter Wochenbericht und strategische Beobachtungen',
+      '3D Deployment Globe mit Three.js',
+      'Gamification Badges und Projekt Health Scores',
+      'Command Palette (Cmd+K)',
+      'PWA mit Offline-Support und Service Worker',
+      'Live Event Ticker und Sprachen-Breakdown',
+    ],
+    audience: 'all',
+  },
+  {
+    version: '2.0.0',
+    date: '2026-03-28',
+    title: 'Fullscreen Kiosk Mode',
+    summary: 'Executive-Carousel mit 5 Slides, 4K-Optimierung, animierten Charts und ZVV-Branding.',
+    details: [
+      '5-Slide Auto-Carousel mit Progress-Bar',
+      'Animated SVG Donut- und Bar-Charts',
+      'Live-Daten-Refresh alle 60 Sekunden',
+      'Responsive vmin-basierte Skalierung',
+    ],
+    audience: 'all',
+  },
+  {
+    version: '1.5.0',
+    date: '2026-03-27',
+    title: 'Live KPIs und Infrastruktur-Metriken',
+    summary: 'Echtzeit GitHub-Stats, Vercel Deployments, Supabase Health und Uptime-Monitor.',
+    details: [
+      'GitHub Stats API mit Commit-Feed',
+      'Vercel Deployment-Metriken und Erfolgsrate',
+      'Supabase Projekt-Health und Latenz',
+      'Automatisierte GitHub Action (3x täglich)',
+    ],
+    audience: 'all',
+  },
+  {
+    version: '1.0.0',
+    date: '2026-03-25',
+    title: 'Initial Release',
+    summary: 'Portfolio-Dashboard mit Timeline, Aufwandsverteilung und Projekt-Matrix.',
+    details: [
+      'Executive Summary und Workload-Modell',
+      'Interaktive Projekt-Timeline mit Commit-Intensität',
+      'Konsolidierte Portfolio-Tabelle',
+      'SEO, OG-Tags und Dark Mode',
+    ],
+    audience: 'all',
+  },
+];
+
+const RECENT_WINDOW_DAYS = 10;
+
+function isRecentRelease(dateStr) {
+  const releaseDate = new Date(dateStr);
+  const now = new Date();
+  return (now - releaseDate) < RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+}
+
 const DATA = [
   { name:'ZVV Mailer', purpose:'E-Mail-Kampagnen- und Newsletter-Plattform', work:'Fullstack, Auth, API, Releases', mode:'build', modeLabel:'Build / Improve', lc:'prod', lcLabel:'Produktiv', pt:'50–60', ptMid:55, cat:'change',
     lcNote:'Seit Dez 2025 in Produktion, laufende Weiterentwicklung', forecast:'Ja — laufender Betrieb + Features',
@@ -2491,27 +2713,133 @@ const statsObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 statsObs.observe(document.getElementById('statsRow'));
 
-// === FEATURE: Sticky Nav ===
+// === FEATURE: Sticky Nav + Mobile Bottom Nav ===
 const stickyNav = document.getElementById('stickyNav');
 const header = document.getElementById('pageTop');
+const mobileBottomItems = document.querySelectorAll('.mobile-bottom-nav-item[data-section]');
 let lastScroll = 0;
+
+const NAV_SECTIONS = ['summary','timeline','activity','insights','techstack','languages','aiInsights','portfolio','capacity','charts','infra'];
+const MOBILE_NAV_MAP = { timeline: 'timeline', activity: 'activity', insights: 'activity', techstack: 'activity', languages: 'activity', aiInsights: 'activity', portfolio: 'portfolio', capacity: 'portfolio', charts: 'portfolio', infra: 'portfolio', summary: 'timeline' };
+
 function updateNav() {
   const y = window.scrollY;
   const headerH = header.offsetHeight;
   stickyNav.classList.toggle('visible', y > headerH + 100);
-  // Active link
-  const sections = ['summary','timeline','activity','insights','techstack','portfolio','capacity','charts','infra'];
   let active = '';
-  sections.forEach(id => {
+  NAV_SECTIONS.forEach(id => {
     const el = document.getElementById(id);
     if (el && el.getBoundingClientRect().top < 150) active = id;
   });
-  stickyNav.querySelectorAll('a').forEach(a => {
+  stickyNav.querySelectorAll('.sticky-nav-links a').forEach(a => {
     a.classList.toggle('active', a.getAttribute('href') === '#' + active);
+  });
+  const mobileActive = MOBILE_NAV_MAP[active] || '';
+  mobileBottomItems.forEach(item => {
+    item.classList.toggle('active', item.dataset.section === mobileActive);
   });
   lastScroll = y;
 }
 window.addEventListener('scroll', updateNav, { passive: true });
+
+// === FEATURE: Build Badge + Changelog Panel ===
+function formatDateShort(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+function formatDateFull(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function renderChangelogPanel() {
+  const panel = document.getElementById('clPanel');
+  if (!panel) return;
+  const latest = CHANGELOG[0];
+  const showNew = latest && isRecentRelease(latest.date);
+  const dot = document.getElementById('buildNewDot');
+  if (dot) dot.style.display = showNew ? 'inline-block' : 'none';
+
+  const githubCommitUrl = `https://github.com/${APP_GITHUB_REPO}/commit/${APP_GIT_COMMIT}`;
+
+  let entriesHtml = '';
+  CHANGELOG.slice(0, 3).forEach((entry, i) => {
+    const isNew = isRecentRelease(entry.date);
+    const detailsHtml = i === 0 && entry.details.length
+      ? `<ul class="cl-entry-details">${entry.details.map(d => `<li>${d}</li>`).join('')}</ul>`
+      : '';
+    entriesHtml += `<div class="cl-entry">
+      <div class="cl-entry-meta">
+        <span class="cl-entry-version">v${entry.version}</span>
+        ${isNew ? '<span class="cl-entry-new">NEW</span>' : ''}
+        <span class="cl-entry-date">${formatDateFull(entry.date)}</span>
+      </div>
+      <div class="cl-entry-title">${entry.title}</div>
+      <div class="cl-entry-summary">${entry.summary}</div>
+      ${detailsHtml}
+    </div>`;
+  });
+
+  panel.innerHTML = `
+    <div class="cl-header">
+      <span class="cl-header-title">Build & Changelog</span>
+      <span class="cl-env-badge">Production</span>
+    </div>
+    <div class="cl-grid">
+      <div class="cl-grid-row">
+        <span class="cl-grid-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>Version</span>
+        <span class="cl-grid-val">v${APP_VERSION}</span>
+      </div>
+      <div class="cl-grid-row">
+        <span class="cl-grid-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Build</span>
+        <span class="cl-grid-val">${formatDateFull(APP_BUILD_DATE)}</span>
+      </div>
+      <div class="cl-grid-row">
+        <span class="cl-grid-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>Branch</span>
+        <span class="cl-grid-val">${APP_GIT_BRANCH}</span>
+      </div>
+      <div class="cl-grid-row">
+        <span class="cl-grid-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>Commit</span>
+        <span class="cl-grid-val"><a href="${githubCommitUrl}" target="_blank" rel="noopener">${APP_GIT_COMMIT}</a></span>
+      </div>
+    </div>
+    <div class="cl-news">
+      <div class="cl-news-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Was ist neu?
+      </div>
+      ${entriesHtml}
+    </div>
+    <div class="cl-footer">
+      <div class="cl-footer-version">v${APP_VERSION} · ${APP_GIT_BRANCH} · ${APP_GIT_COMMIT} · © ${new Date().getFullYear()} ZVV ICT</div>
+    </div>
+  `;
+}
+
+function openBuildPanel() {
+  renderChangelogPanel();
+  document.getElementById('clPanel').classList.add('open');
+  document.getElementById('clBackdrop').classList.add('open');
+}
+function closeBuildPanel() {
+  document.getElementById('clPanel').classList.remove('open');
+  document.getElementById('clBackdrop').classList.remove('open');
+}
+
+document.getElementById('buildBadge').addEventListener('click', function(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('clPanel');
+  if (panel.classList.contains('open')) closeBuildPanel();
+  else openBuildPanel();
+});
+
+(function initBuildBadge() {
+  const showNew = CHANGELOG[0] && isRecentRelease(CHANGELOG[0].date);
+  const dot = document.getElementById('buildNewDot');
+  if (dot) dot.style.display = showNew ? 'inline-block' : 'none';
+  const fv = document.getElementById('footerVersion');
+  if (fv) fv.textContent = `v${APP_VERSION} · ${APP_GIT_BRANCH} · ${APP_GIT_COMMIT}`;
+})();
 
 // === FEATURE: Back to Top ===
 const btt = document.getElementById('bttBtn');
@@ -4764,22 +5092,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 't' || e.key === 'T') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
 });
 
-// Sticky nav update with new sections
-const sections2 = ['summary','timeline','activity','insights','techstack','languages','aiInsights','velocitySection','gamification','portfolio','capacity','charts','infra'];
-
-// Update sticky nav links
-(function() {
-  const navLinks = document.querySelector('.sticky-nav-links');
-  if (navLinks) {
-    const existing = navLinks.innerHTML;
-    if (!existing.includes('Ticker')) {
-      const tickerLink = document.createElement('a');
-      tickerLink.href = '#ticker';
-      tickerLink.textContent = 'Ticker';
-      navLinks.insertBefore(tickerLink, navLinks.firstChild.nextSibling);
-    }
-  }
-})();
+// (Sticky nav sections handled centrally in updateNav() via NAV_SECTIONS)
 
 // Request notification permission after first user interaction
 document.addEventListener('click', function reqNotif() {
