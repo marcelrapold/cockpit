@@ -1997,15 +1997,17 @@
       <h2 class="card-title">Velocity & Jahresprognose</h2>
       <div class="charts-2col">
         <div class="chart-card">
-          <h3>Commit-Velocity (30-Tage-Trend)</h3>
-          <canvas id="chartVelocity" height="160"></canvas>
+          <h3>Commit-Velocity (letzte 12 Monate)</h3>
+          <canvas id="chartVelocity" height="180"></canvas>
         </div>
         <div class="chart-card velocity-card">
           <h3>Jahresprognose 2026</h3>
-          <div class="velocity-line"><span class="v-num" id="velTotal">–</span><span class="v-label">Commits bisher (2026)</span></div>
-          <div class="velocity-line" style="margin-top:0.4rem;"><span class="v-num" id="velProjected">–</span><span class="v-label">Prognose Jahresende</span></div>
-          <div class="velocity-proj" id="velProj">Basierend auf aktuellem Tempo</div>
-          <div style="margin-top:0.75rem;"><canvas id="chartMonthly" height="120"></canvas></div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+            <div class="velocity-line"><span class="v-num" id="velTotal">–</span><span class="v-label">Commits bisher (2026)</span></div>
+            <div class="velocity-line"><span class="v-num" id="velProjected">–</span><span class="v-label">Prognose Jahresende</span></div>
+          </div>
+          <div class="velocity-proj" id="velProj" style="font-size:0.72rem;color:var(--text-sec);line-height:1.65;">Basierend auf aktuellem Tempo</div>
+          <div style="margin-top:0.75rem;"><canvas id="chartMonthly" height="130"></canvas></div>
         </div>
       </div>
     </div>
@@ -4631,44 +4633,115 @@ document.getElementById('compareOverlay').addEventListener('click', e => {
 
 // === FEATURE 8: VELOCITY & PROGNOSE ===
 function renderVelocity(data) {
-  if (!data || !data.repos) return;
   const monthlyCommits = {};
   DATA.forEach(d => {
+    if (!d.commits) return;
     Object.entries(d.commits).forEach(([m, c]) => {
       monthlyCommits[m] = (monthlyCommits[m] || 0) + c;
     });
   });
+
+  if (Object.keys(monthlyCommits).length === 0) return;
+
   const months2026 = Object.entries(monthlyCommits).filter(([m]) => m.startsWith('2026')).sort();
   const total2026 = months2026.reduce((s, [, c]) => s + c, 0);
   const elapsedMonths = months2026.length || 1;
+  const avgPerMonth = Math.round(total2026 / elapsedMonths);
   const projected = Math.round(total2026 / elapsedMonths * 12);
+
+  const totalAll = Object.values(monthlyCommits).reduce((s, c) => s + c, 0);
+  const allMonths = Object.entries(monthlyCommits).sort();
+  const months2025 = allMonths.filter(([m]) => m.startsWith('2025'));
+  const total2025 = months2025.reduce((s, [, c]) => s + c, 0);
+
   const velTotalEl = document.getElementById('velTotal');
   const velProjEl = document.getElementById('velProjected');
   if (velTotalEl) velTotalEl.textContent = total2026.toLocaleString('de-CH');
   if (velProjEl) velProjEl.textContent = '~' + projected.toLocaleString('de-CH');
-  document.getElementById('velProj').textContent = `Ø ${Math.round(total2026 / elapsedMonths)} Commits/Monat · ${elapsedMonths} Monate erfasst`;
 
-  const allMonths = Object.entries(monthlyCommits).sort().slice(-12);
+  const yoyGrowth = total2025 > 0 ? Math.round((projected / total2025 - 1) * 100) : 0;
+  const yoyStr = yoyGrowth > 0 ? `+${yoyGrowth}%` : `${yoyGrowth}%`;
+  const activeRepos = DATA.filter(d => d.commits && months2026.some(([m]) => (d.commits[m] || 0) > 0)).length;
+
+  document.getElementById('velProj').innerHTML =
+    `<div style="display:flex;flex-wrap:wrap;gap:0.5rem 1.5rem;margin-top:0.3rem;">
+      <span>Ø <strong>${avgPerMonth}</strong> Commits/Monat</span>
+      <span><strong>${elapsedMonths}</strong> Monate erfasst</span>
+      <span><strong>${activeRepos}</strong> aktive Repos in 2026</span>
+      <span><strong>${totalAll.toLocaleString('de-CH')}</strong> Commits total</span>
+      ${total2025 > 0 ? `<span>YoY: <strong style="color:${yoyGrowth >= 0 ? '#059669' : '#dc2626'}">${yoyStr}</strong> vs. ${total2025.toLocaleString('de-CH')} (2025)</span>` : ''}
+    </div>`;
+
+  const last12 = allMonths.slice(-12);
   const ctxV = document.getElementById('chartVelocity');
   if (ctxV) {
+    const gradient = ctxV.getContext('2d').createLinearGradient(0, 0, 0, 160);
+    gradient.addColorStop(0, 'rgba(0,80,147,0.25)');
+    gradient.addColorStop(1, 'rgba(0,80,147,0.02)');
     new Chart(ctxV, {
       type: 'line',
       data: {
-        labels: allMonths.map(([m]) => m.split('-')[1] + '/' + m.split('-')[0].slice(2)),
-        datasets: [{ data: allMonths.map(([,c]) => c), borderColor:'#005093', backgroundColor:'#00509320', fill:true, tension:0.35, pointRadius:3 }]
+        labels: last12.map(([m]) => {
+          const [y, mo] = m.split('-');
+          return ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+mo] + ' ' + y.slice(2);
+        }),
+        datasets: [{
+          data: last12.map(([,c]) => c),
+          borderColor: '#005093', backgroundColor: gradient, fill: true, tension: 0.4,
+          pointRadius: 4, pointBackgroundColor: '#005093', pointBorderColor: '#fff', pointBorderWidth: 2,
+          pointHoverRadius: 6, pointHoverBackgroundColor: '#005093',
+        }]
       },
-      options: { responsive:true, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, ticks:{callback:v=>v}}, x:{ticks:{font:{size:10}}} } }
+      options: {
+        responsive: true,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#fff',
+            padding: 10, cornerRadius: 8, displayColors: false,
+            callbacks: { label: ctx => `${ctx.parsed.y} Commits` }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } }
+        }
+      }
     });
   }
+
   const ctxM = document.getElementById('chartMonthly');
   if (ctxM && months2026.length) {
+    const barColors = months2026.map(([m]) => {
+      const mn = +m.split('-')[1];
+      const now = new Date().getMonth() + 1;
+      return mn === now ? '#005093' : 'rgba(0,80,147,0.4)';
+    });
     new Chart(ctxM, {
       type: 'bar',
       data: {
         labels: months2026.map(([m]) => ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+m.split('-')[1]]),
-        datasets: [{ data: months2026.map(([,c]) => c), backgroundColor:'#005093', borderRadius:4 }]
+        datasets: [{
+          data: months2026.map(([,c]) => c), backgroundColor: barColors, borderRadius: 6,
+          hoverBackgroundColor: '#005093',
+        }]
       },
-      options: { responsive:true, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true}, x:{ticks:{font:{size:10}}} } }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#fff',
+            padding: 10, cornerRadius: 8, displayColors: false,
+            callbacks: { label: ctx => `${ctx.parsed.y} Commits` }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+      }
     });
   }
 }
