@@ -2,8 +2,10 @@
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-const ORG = 'zvvch';
-const HUMAN_AUTHORS = new Set(['muraschal', 'ALONELY19XX', 'frankhofmann', 'jannik868']);
+const ORG = process.env.GITHUB_ORG || 'your-org';
+const HUMAN_AUTHORS = new Set(
+  (process.env.GITHUB_HUMAN_AUTHORS || process.env.GITHUB_USER || '').split(',').map(s => s.trim()).filter(Boolean)
+);
 const BOTS = new Set(['github-actions[bot]', 'dependabot[bot]', 'renovate[bot]']);
 
 if (!TOKEN) { console.error('GITHUB_TOKEN required'); process.exit(1); }
@@ -15,7 +17,7 @@ async function ghFetch(url) {
     headers: {
       Authorization: `token ${TOKEN}`,
       Accept: 'application/vnd.github+json',
-      'User-Agent': 'zvv-workload-dashboard',
+      'User-Agent': 'workload-portfolio-dashboard',
     },
   });
   if (!res.ok) {
@@ -141,7 +143,7 @@ async function main() {
   const humanAuthors = {};
   for (const [login, count] of Object.entries(authors)) {
     if (BOTS.has(login)) continue;
-    if (HUMAN_AUTHORS.has(login)) humanAuthors[login] = count;
+    if (HUMAN_AUTHORS.size === 0 || HUMAN_AUTHORS.has(login)) humanAuthors[login] = count;
     else aiAuthors[login] = count;
   }
 

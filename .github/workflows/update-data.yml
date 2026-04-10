@@ -2,13 +2,13 @@ name: Update Dashboard Data
 
 on:
   schedule:
-    # 07:00, 12:00, 18:00 CEST (UTC+2 summer) / CET (UTC+1 winter)
-    # Using CEST offsets: 05:00, 10:00, 16:00 UTC
+    # Runs 3x daily — adjust to your preferred times (UTC)
     - cron: '0 5,10,16 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   update:
@@ -23,11 +23,16 @@ jobs:
       - name: Generate dashboard data
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
+          GITHUB_USER: ${{ vars.GITHUB_USER }}
+          GITHUB_HUMAN_AUTHORS: ${{ vars.GITHUB_HUMAN_AUTHORS }}
         run: node scripts/generate-data.mjs
 
       - name: Scan dependencies
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
+          GITHUB_USER: ${{ vars.GITHUB_USER }}
         run: node scripts/scan-deps.mjs
 
       - name: Commit and push if changed
@@ -45,22 +50,28 @@ jobs:
       - name: Health check & alerting
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          APP_URL: ${{ vars.APP_URL }}
+          GITHUB_REPO: ${{ github.repository }}
         run: |
-          HEALTH=$(curl -sf "https://zvv-workload-portfolio.vercel.app/api/health-check" || echo '{"allOk":false}')
+          if [ -z "$APP_URL" ]; then
+            echo "APP_URL not set — skipping health check"
+            exit 0
+          fi
+          HEALTH=$(curl -sf "${APP_URL}/api/health-check" || echo '{"allOk":false}')
           ALL_OK=$(echo "$HEALTH" | jq -r '.allOk // false')
           if [ "$ALL_OK" != "true" ]; then
             DOWN=$(echo "$HEALTH" | jq -r '[.services[]? | select(.ok==false) | .name] | join(", ")')
-            EXISTING=$(gh issue list --repo zvvch/zvv-workload-portfolio --label "alert" --state open --json number --jq length 2>/dev/null || echo "0")
+            EXISTING=$(gh issue list --repo "$GITHUB_REPO" --label "alert" --state open --json number --jq length 2>/dev/null || echo "0")
             if [ "$EXISTING" = "0" ]; then
               gh issue create \
-                --repo zvvch/zvv-workload-portfolio \
-                --title "Alert: Dienste nicht erreichbar — $DOWN" \
-                --body "Automatische Prüfung um $(date -u +'%Y-%m-%d %H:%M UTC') hat Ausfälle erkannt.\n\n**Betroffene Dienste:** $DOWN\n\n**Response:**\n\`\`\`json\n$HEALTH\n\`\`\`\n\nDieses Issue wird automatisch erstellt und schliesst sich bei der nächsten erfolgreichen Prüfung." \
+                --repo "$GITHUB_REPO" \
+                --title "Alert: Services unreachable — $DOWN" \
+                --body "Automated check at $(date -u +'%Y-%m-%d %H:%M UTC') detected failures.\n\n**Affected services:** $DOWN\n\n**Response:**\n\`\`\`json\n$HEALTH\n\`\`\`\n\nThis issue is auto-created and will be closed when services recover." \
                 --label "alert" || echo "Could not create issue"
             fi
           else
-            OPEN=$(gh issue list --repo zvvch/zvv-workload-portfolio --label "alert" --state open --json number --jq '.[].number' 2>/dev/null)
+            OPEN=$(gh issue list --repo "$GITHUB_REPO" --label "alert" --state open --json number --jq '.[].number' 2>/dev/null)
             for NUM in $OPEN; do
-              gh issue close "$NUM" --repo zvvch/zvv-workload-portfolio --comment "Automatisch geschlossen — alle Dienste wieder erreichbar ($(date -u +'%Y-%m-%d %H:%M UTC'))." || true
+              gh issue close "$NUM" --repo "$GITHUB_REPO" --comment "Auto-closed — all services reachable again ($(date -u +'%Y-%m-%d %H:%M UTC'))." || true
             done
           fi

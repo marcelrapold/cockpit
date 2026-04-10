@@ -1,12 +1,19 @@
-const VERCEL_TEAM = 'team_lLeixJvuVuXTtChUs2G9qKUL';
+const VERCEL_TEAM = process.env.VERCEL_TEAM_ID || '';
 
-const SUPABASE_PROJECTS = [
-  { id: 'tlevzyumphawvwmshgiw', name: 'ZVV Mailer', host: 'db.tlevzyumphawvwmshgiw.supabase.co' },
-  { id: 'idiwijltdmhzxyqmzsor', name: 'Entdeckungsreise', host: 'db.idiwijltdmhzxyqmzsor.supabase.co' },
-  { id: 'jvalxijthygyinyahhqo', name: 'ZVV TAMA', host: 'db.jvalxijthygyinyahhqo.supabase.co' },
-  { id: 'ecojqvbmmzatjzabbttg', name: 'Medienspiegel', host: 'db.ecojqvbmmzatjzabbttg.supabase.co' },
-  { id: 'gwpkjbufvktcrpwjoxwy', name: 'Mailer Integration', host: 'db.gwpkjbufvktcrpwjoxwy.supabase.co' },
+// Configure your Supabase projects here or via SUPABASE_PROJECTS env var (JSON array)
+const DEFAULT_SUPABASE_PROJECTS = [
+  // { id: 'your-project-id', name: 'Project Name', host: 'db.your-project-id.supabase.co' },
 ];
+
+const SUPABASE_PROJECTS = (() => {
+  try {
+    return process.env.SUPABASE_PROJECTS
+      ? JSON.parse(process.env.SUPABASE_PROJECTS)
+      : DEFAULT_SUPABASE_PROJECTS;
+  } catch {
+    return DEFAULT_SUPABASE_PROJECTS;
+  }
+})();
 
 async function vercelFetch(path, token) {
   const res = await fetch(`https://api.vercel.com${path}`, {
@@ -91,8 +98,9 @@ module.exports = async function handler(req, res) {
       const mondayTs = startOfWeek(now).getTime();
       const todayTs = new Date(today).getTime();
 
+      const teamParam = VERCEL_TEAM ? `&teamId=${VERCEL_TEAM}` : '';
       const { projects } = await vercelFetch(
-        `/v9/projects?teamId=${VERCEL_TEAM}&limit=50`, vercelToken
+        `/v9/projects?limit=50${teamParam}`, vercelToken
       );
 
       const projectList = (projects || []).map(p => ({ id: p.id, name: p.name }));
@@ -108,7 +116,7 @@ module.exports = async function handler(req, res) {
       await Promise.all(topProjects.map(async (proj) => {
         try {
           const data = await vercelFetch(
-            `/v6/deployments?projectId=${proj.id}&teamId=${VERCEL_TEAM}&limit=20&since=${mondayTs}`,
+            `/v6/deployments?projectId=${proj.id}${teamParam}&limit=20&since=${mondayTs}`,
             vercelToken
           );
           const deps = data.deployments || [];
@@ -161,49 +169,51 @@ module.exports = async function handler(req, res) {
   }
 
   const sbToken = process.env.SUPABASE_ACCESS_TOKEN;
-  try {
-    let projects;
-    if (sbToken) {
-      projects = await Promise.all(
-        SUPABASE_PROJECTS.map(p => getSupabaseProjectStats(p, sbToken))
+  if (SUPABASE_PROJECTS.length > 0) {
+    try {
+      let projects;
+      if (sbToken) {
+        projects = await Promise.all(
+          SUPABASE_PROJECTS.map(p => getSupabaseProjectStats(p, sbToken))
+        );
+      } else {
+        projects = await Promise.all(
+          SUPABASE_PROJECTS.map(async (project) => {
+            const url = `https://${project.id}.supabase.co/rest/v1/`;
+            try {
+              const start = Date.now();
+              const r = await fetch(url, {
+                headers: { apikey: 'placeholder' },
+                signal: AbortSignal.timeout(5000),
+              });
+              const latency = Date.now() - start;
+              const ok = r.status < 500;
+              return { name: project.name, ok, latency, status: ok ? 'healthy' : 'degraded' };
+            } catch {
+              return { name: project.name, ok: false, latency: null, status: 'unreachable' };
+            }
+          })
+        );
+      }
+
+      const allHealthy = projects.every(h => h.ok);
+      const avgLatency = Math.round(
+        projects.filter(h => h.latency).reduce((s, h) => s + h.latency, 0) /
+        (projects.filter(h => h.latency).length || 1)
       );
-    } else {
-      projects = await Promise.all(
-        SUPABASE_PROJECTS.map(async (project) => {
-          const url = `https://${project.id}.supabase.co/rest/v1/`;
-          try {
-            const start = Date.now();
-            const res = await fetch(url, {
-              headers: { apikey: 'placeholder' },
-              signal: AbortSignal.timeout(5000),
-            });
-            const latency = Date.now() - start;
-            const ok = res.status < 500;
-            return { name: project.name, ok, latency, status: ok ? 'healthy' : 'degraded' };
-          } catch {
-            return { name: project.name, ok: false, latency: null, status: 'unreachable' };
-          }
-        })
-      );
+      const dbVersions = [...new Set(projects.map(p => p.dbVersion).filter(Boolean))];
+
+      result.supabase = {
+        totalProjects: SUPABASE_PROJECTS.length,
+        healthy: projects.filter(h => h.ok).length,
+        allHealthy,
+        avgLatency,
+        dbVersions,
+        projects,
+      };
+    } catch (err) {
+      result.supabase = { error: err.message };
     }
-
-    const allHealthy = projects.every(h => h.ok);
-    const avgLatency = Math.round(
-      projects.filter(h => h.latency).reduce((s, h) => s + h.latency, 0) /
-      (projects.filter(h => h.latency).length || 1)
-    );
-    const dbVersions = [...new Set(projects.map(p => p.dbVersion).filter(Boolean))];
-
-    result.supabase = {
-      totalProjects: SUPABASE_PROJECTS.length,
-      healthy: projects.filter(h => h.ok).length,
-      allHealthy,
-      avgLatency,
-      dbVersions,
-      projects,
-    };
-  } catch (err) {
-    result.supabase = { error: err.message };
   }
 
   return res.status(200).json(result);

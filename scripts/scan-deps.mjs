@@ -1,17 +1,23 @@
 #!/usr/bin/env node
 /**
- * Scans ZVV repos for dependencies (local + GitHub API fallback).
+ * Scans org repos for dependencies (local + GitHub API fallback).
  * Outputs to public/data-deps.json
+ *
+ * Configure via environment variables:
+ *   GITHUB_ORG      - GitHub organization name (required for GitHub scan)
+ *   GITHUB_TOKEN    - GitHub personal access token
+ *   GITHUB_USER     - Your GitHub username (for contributor filtering)
+ *   SCAN_ROOT       - Local directory path for local scan mode
  */
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import { join, basename } from 'path';
 import { execSync } from 'child_process';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-const ORG = 'zvvch';
+const ORG = process.env.GITHUB_ORG || 'your-org';
 const LOCAL_ROOT = process.env.SCAN_ROOT || '';
-const SKIP = new Set(['tamagui', '.github', 'node_modules']);
-const MY_AUTHORS = ['muraschal', 'marcelrapold'];
+const SKIP = new Set(['.github', 'node_modules']);
+const MY_AUTHORS = (process.env.GITHUB_USER || '').split(',').map(s => s.trim()).filter(Boolean);
 
 const CATEGORIES = {
   'next': 'Framework', 'react': 'Framework', 'react-dom': 'Framework', 'vue': 'Framework',
@@ -140,7 +146,7 @@ async function scanGitHub() {
         `https://api.github.com/repos/${ORG}/${repo.name}/contributors?per_page=100`,
         { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' } }
       );
-      if (contribRes.ok) {
+      if (MY_AUTHORS.length > 0 && contribRes.ok) {
         const contribs = await contribRes.json();
         const logins = (Array.isArray(contribs) ? contribs : []).map(c => c.login?.toLowerCase());
         if (!MY_AUTHORS.some(a => logins.includes(a.toLowerCase()))) {

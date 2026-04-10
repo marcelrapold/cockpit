@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zvv-portfolio-v1';
+const CACHE_NAME = 'workload-portfolio-v1';
 const PRECACHE_URLS = [
   '/',
   '/data.json',
@@ -125,7 +125,7 @@ self.addEventListener('activate', (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((name) => name.startsWith('zvv-portfolio-') && name !== CACHE_NAME)
+            .filter((name) => name.startsWith('workload-portfolio-') && name !== CACHE_NAME)
             .map((name) => caches.delete(name))
         )
       )
@@ -176,7 +176,7 @@ self.addEventListener('push', (event) => {
       payload = { title: '', body: event.data.text() || '', icon: '' };
     }
   }
-  const title = payload.title || 'ZVV Workload';
+  const title = payload.title || 'Workload Portfolio';
   const options = {
     body: payload.body || '',
     icon: payload.icon || '/favicon.svg',

@@ -1,5 +1,5 @@
-const ORG = 'zvvch';
-const USER = 'muraschal';
+const ORG = process.env.GITHUB_ORG || 'your-org';
+const USER = process.env.GITHUB_USER || 'your-username';
 
 async function ghFetch(url, token) {
   const res = await fetch(url, {

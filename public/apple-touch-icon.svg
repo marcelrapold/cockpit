@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-  <rect width="180" height="180" rx="36" fill="#005093"/>
+  <rect width="180" height="180" rx="36" fill="#1e293b"/>
   <text x="90" y="105" font-family="Helvetica Neue, Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff" text-anchor="middle">W</text>
-  <rect x="30" y="130" width="120" height="10" rx="5" fill="#00a5e5"/>
-  <text x="90" y="160" font-family="Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="500" fill="#94a3b8" text-anchor="middle">ZVV ICT</text>
+  <rect x="30" y="130" width="120" height="10" rx="5" fill="#3b82f6"/>
+  <text x="90" y="160" font-family="Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="500" fill="#94a3b8" text-anchor="middle">Portfolio</text>
 </svg>

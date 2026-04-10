@@ -1,4 +1,4 @@
-const ORG = 'zvvch';
+const ORG = process.env.GITHUB_ORG || 'your-org';
 
 async function ghFetch(url, token) {
   const res = await fetch(url, {
