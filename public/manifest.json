@@ -1,13 +1,14 @@
 {
-  "name": "Workload-Portfolio",
-  "short_name": "Workload",
-  "description": "Management-grade workload and delivery portfolio dashboard — Live KPIs, Commit Calendar, Uptime Monitor, Tech Stack",
+  "name": "Cockpit — Engineering Dashboard",
+  "short_name": "Cockpit",
+  "description": "Cross-platform engineering dashboard — GitHub, Vercel, Supabase. Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack.",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
-  "background_color": "#1e293b",
-  "theme_color": "#1e293b",
+  "background_color": "#0f172a",
+  "theme_color": "#005093",
   "orientation": "any",
-  "categories": ["business", "productivity"],
+  "categories": ["business", "productivity", "developer"],
   "icons": [
     {
       "src": "/favicon.svg",
@@ -26,13 +27,13 @@
       "name": "Kiosk Mode",
       "short_name": "Kiosk",
       "url": "/#kiosk",
-      "description": "Start fullscreen dashboard"
+      "description": "Fullscreen dashboard rotation"
     },
     {
       "name": "Portfolio",
       "short_name": "Portfolio",
       "url": "/#portfolio",
-      "description": "Portfolio overview"
+      "description": "Project portfolio overview"
     }
   ]
 }

@@ -6,9 +6,9 @@
 import { writeFileSync, mkdirSync } from 'fs';
 
 const OUT = 'public';
-const APP_NAME = process.env.APP_NAME || 'Workload-Portfolio';
-const APP_DOMAIN = process.env.APP_DOMAIN || 'your-portfolio.vercel.app';
-const APP_REPO_LABEL = process.env.APP_REPO_LABEL || 'Fork me on GitHub';
+const APP_NAME = process.env.APP_NAME || 'Cockpit';
+const APP_DOMAIN = process.env.APP_DOMAIN || 'cockpit.rapold.io';
+const APP_REPO_LABEL = process.env.APP_REPO_LABEL || 'github.com/marcelrapold/cockpit';
 
 // OG Image (1200x630)
 const ogSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
@@ -70,17 +70,17 @@ const ogSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"
 
 // Favicon SVG (32x32 logical)
 const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="6" fill="#1e293b"/>
-  <text x="16" y="22" font-family="Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">W</text>
-  <rect x="4" y="26" width="24" height="2.5" rx="1.25" fill="#3b82f6"/>
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <text x="16" y="22" font-family="Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">C</text>
+  <rect x="4" y="26" width="24" height="2.5" rx="1.25" fill="#005093"/>
 </svg>`;
 
 // Apple touch icon (180x180)
 const appleSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-  <rect width="180" height="180" rx="36" fill="#1e293b"/>
-  <text x="90" y="105" font-family="Helvetica Neue, Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff" text-anchor="middle">W</text>
-  <rect x="30" y="130" width="120" height="10" rx="5" fill="#3b82f6"/>
-  <text x="90" y="160" font-family="Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="500" fill="#94a3b8" text-anchor="middle">Portfolio</text>
+  <rect width="180" height="180" rx="36" fill="#0f172a"/>
+  <text x="90" y="105" font-family="Helvetica Neue, Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff" text-anchor="middle">C</text>
+  <rect x="30" y="130" width="120" height="10" rx="5" fill="#005093"/>
+  <text x="90" y="160" font-family="Helvetica Neue, Arial, sans-serif" font-size="16" font-weight="500" fill="#94a3b8" text-anchor="middle">Cockpit</text>
 </svg>`;
 
 writeFileSync(`${OUT}/og-image.svg`, ogSvg);

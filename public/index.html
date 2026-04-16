@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary Meta -->
-  <title>Workload-Portfolio</title>
-  <meta name="description" content="Interactive workload dashboard: Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack. Management-grade delivery portfolio.">
+  <title>Cockpit — Engineering Dashboard</title>
+  <meta name="description" content="Cross-platform engineering dashboard tracking GitHub, Vercel and Supabase activity. Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack.">
   <meta name="author" content="Marcel Rapold">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="/">
+  <link rel="canonical" href="https://cockpit.rapold.io/">
 
   <!-- Favicon & Icons -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -18,32 +18,34 @@
   <meta name="theme-color" content="#005093">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Workload">
+  <meta name="apple-mobile-web-app-title" content="Cockpit">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="/">
-  <meta property="og:title" content="Workload-Portfolio">
-  <meta property="og:description" content="Interactive dashboard: Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack. Management-grade delivery portfolio.">
-  <meta property="og:image" content="/og-image.svg">
+  <meta property="og:url" content="https://cockpit.rapold.io/">
+  <meta property="og:title" content="Cockpit — Engineering Dashboard">
+  <meta property="og:description" content="Cross-platform engineering dashboard: Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack.">
+  <meta property="og:image" content="https://cockpit.rapold.io/og-image.svg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Workload-Portfolio">
-  <meta name="twitter:description" content="Live KPIs, Commit Calendar, Uptime Monitor — management-grade delivery dashboard.">
-  <meta name="twitter:image" content="/og-image.svg">
+  <meta name="twitter:title" content="Cockpit — Engineering Dashboard">
+  <meta name="twitter:description" content="Live KPIs, Commit Calendar, Uptime Monitor — cross-platform engineering dashboard.">
+  <meta name="twitter:image" content="https://cockpit.rapold.io/og-image.svg">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Workload-Portfolio",
-    "description": "Interactive workload and delivery portfolio dashboard with live KPIs, commit calendar, uptime monitoring and tech stack analysis.",
+    "name": "Cockpit",
+    "url": "https://cockpit.rapold.io",
+    "description": "Cross-platform engineering dashboard tracking GitHub, Vercel and Supabase activity with live KPIs, commit calendar, uptime monitoring and tech stack analysis.",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
+    "author": { "@type": "Person", "name": "Marcel Rapold", "url": "https://rapold.io" },
     "isAccessibleForFree": true
   }
   </script>
@@ -1749,7 +1751,7 @@
         $ git log --oneline
       </button>
       <div class="live-feed-console" id="feedConsole">
-        <div class="console-header">~/your-org — git log --oneline --since="1 week" — <span id="feedCount">0</span> commits</div>
+        <div class="console-header">~/muraschal — git log --oneline --since="1 week" — <span id="feedCount">0</span> commits</div>
         <div id="feedList"></div>
       </div>
     </div>
@@ -2210,7 +2212,7 @@ const APP_VERSION = '3.0.0';
 const APP_BUILD_DATE = '2026-03-30T22:00:00+02:00';
 const APP_GIT_BRANCH = 'main';
 const APP_GIT_COMMIT = '6ab13a0';
-const APP_GITHUB_REPO = 'your-org/workload-portfolio';
+const APP_GITHUB_REPO = 'marcelrapold/cockpit';
 
 const CHANGELOG = [
   {

@@ -1,50 +1,138 @@
-# Workload-Portfolio
+# Cockpit
 
-Forkbares, statisches **Workload- und Delivery-Dashboard** mit Live-KPIs (GitHub, Vercel, Supabase), Commit-Kalender, Tech-Stack-Analyse, Uptime-Checks und Kiosk-Modus. Deploy auf [Vercel](https://vercel.com) mit Serverless-APIs unter `api/`.
+Cross-platform engineering dashboard that tracks **GitHub**, **Vercel** and **Supabase** activity in a single view. Static SPA with Vercel Serverless Functions — no build step, no framework, zero npm dependencies.
 
-## Schnellstart
+**Live:** [cockpit.rapold.io](https://cockpit.rapold.io)
 
-1. **Fork** dieses Repository.
-2. **Vercel**: Projekt importieren, Root belassen, `outputDirectory` ist `public` (siehe `vercel.json`).
-3. **Umgebungsvariablen** in Vercel (oder lokal `.env` aus `.env.example`) setzen — siehe unten.
-4. **Daten aktualisieren**: `node scripts/generate-data.mjs` und `node scripts/scan-deps.mjs` (benötigen `GITHUB_TOKEN` und `GITHUB_ORG`), oder GitHub Actions Workflow `.github/workflows/update-data.yml` mit Secrets/Variablen verbinden.
+---
 
-## Umgebungsvariablen
+## Features
 
-| Variable | Zweck |
-|----------|--------|
-| `GITHUB_TOKEN` | GitHub PAT für APIs und Skripte |
-| `GITHUB_ORG` | Organisation (oder User-Name bei User-Repos — dann ggf. Code anpassen) |
-| `GITHUB_USER` | Dein GitHub-Login (u.a. `github-stats`, `scan-deps`) |
-| `GITHUB_HUMAN_AUTHORS` | Optional: kommaseparierte Logins für Human/AI-Split in `generate-data` |
-| `VERCEL_API_KEY` | Optional: Vercel REST API für Infra-Kachel |
-| `VERCEL_TEAM_ID` | Optional: Team-ID; leer lassen für Hobby/Personal |
-| `SUPABASE_ACCESS_TOKEN` | Optional: Management API für DB-Details |
-| `SUPABASE_PROJECTS` | Optional: JSON-Array von Projekten (siehe `api/infra-stats.js`) |
-| `HEALTH_TARGETS` | Optional: JSON-Array `{ name, url }` für `/api/health-check` |
+| Module | What it shows |
+|--------|---------------|
+| **KPI Tiles** | Commits today / week / month, velocity trend, open Issues & PRs |
+| **Commit Calendar** | GitHub-style contribution heatmap (12 months) |
+| **Hour / Day Heatmap** | Work pattern matrix (when you code) |
+| **Active Repos** | Most-active repositories this week, across all orgs |
+| **Language Stats** | Aggregated language breakdown, per-repo detail |
+| **Infra Stats** | Vercel deployments & success rate, Supabase DB health |
+| **Dependency Scanner** | Package usage, framework distribution, category breakdown |
+| **Health Monitor** | Uptime checks for arbitrary URLs |
+| **Live Feed** | Real-time event ticker (push, PR, issue, review) |
+| **Kiosk Mode** | Fullscreen auto-rotating slides for wall displays |
 
-Repository-Variablen für Actions (unter *Settings → Secrets and variables*): `GH_PAT` (Secret), sowie `GITHUB_ORG`, `GITHUB_USER`, `APP_URL` (Variables).
+Multi-org support: track commits, issues and deployments across **multiple GitHub organisations**, personal repos, **multiple Vercel teams** and **all Supabase projects** you own.
 
-## Lokale Entwicklung
+---
 
-```bash
-# Keine npm-Dependencies nötig — Node 20+
-cp .env.example .env
-# .env ausfüllen
+## Architecture
 
-node scripts/generate-data.mjs
-node scripts/scan-deps.mjs
-node scripts/generate-assets.mjs
+```
+public/
+  index.html          ← Entire UI (vanilla JS, CDN libs)
+  manifest.json       ← PWA manifest
+  data.json           ← Pre-generated commit data (GitHub Actions)
+  data-deps.json      ← Pre-generated dependency data
+  data-history.json   ← Historical trend data
+
+api/
+  github-stats.js     ← Live GitHub KPIs (commits, issues, PRs)
+  language-stats.js   ← Language breakdown + event ticker
+  infra-stats.js      ← Vercel + Supabase metrics
+  health-check.js     ← URL uptime probe
+
+scripts/
+  generate-data.mjs   ← Batch commit fetcher (runs in CI)
+  scan-deps.mjs       ← Dependency scanner (runs in CI)
+  generate-assets.mjs ← SVG favicon, OG image, touch icon
+
+.github/workflows/
+  update-data.yml     ← Scheduled data refresh (3×/day)
 ```
 
-Vercel CLI: `vercel dev` (führt `api/*` lokal aus).
+No `npm install` required. Node 20+ only needed for scripts and serverless functions.
 
-## Anpassung
+---
 
-- **Portfolio-Tabelle & Texte**: `public/index.html` — Konstante `DATA`, Texte, `APP_GITHUB_REPO`.
-- **Branding**: `scripts/generate-assets.mjs` (Farben, Titel), danach `node scripts/generate-assets.mjs`.
-- **Health-Checks**: `api/health-check.js` oder nur `HEALTH_TARGETS`.
+## Quick Start
 
-## Lizenz
+### 1. Fork & Deploy
 
-MIT — siehe `LICENSE`.
+```bash
+# Import on Vercel — no build command, output directory is "public"
+```
+
+### 2. Environment Variables
+
+Set these in **Vercel → Project Settings → Environment Variables** (or copy `.env.example` to `.env` for local dev):
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `GITHUB_TOKEN` | Yes | GitHub PAT with `repo` + `read:org` scope |
+| `GITHUB_USER` | Yes | Your GitHub login |
+| `GITHUB_ORGS` | Yes | Comma-separated org names |
+| `VERCEL_API_KEY` | No | Vercel REST API token |
+| `VERCEL_TEAM_IDS` | No | Comma-separated Vercel Team IDs |
+| `SUPABASE_ACCESS_TOKEN` | No | Supabase Management API token |
+| `HEALTH_TARGETS` | No | JSON array of `{ name, url }` for uptime checks |
+
+> **Security note:** All tokens are server-side only (Vercel Serverless Functions). They are never exposed to the browser.
+
+### 3. Generate Static Data
+
+```bash
+node scripts/generate-data.mjs    # → public/data.json + data-history.json
+node scripts/scan-deps.mjs        # → public/data-deps.json
+node scripts/generate-assets.mjs  # → public/og-image.svg, favicon.svg, apple-touch-icon.svg
+```
+
+### 4. GitHub Actions (optional)
+
+The included workflow (`.github/workflows/update-data.yml`) runs 3×/day and on manual dispatch. Required repository secrets:
+
+| Secret | Value |
+|--------|-------|
+| `GH_PAT` | GitHub PAT |
+| `COCKPIT_USER` | GitHub login |
+| `COCKPIT_ORGS` | Comma-separated org names |
+| `COCKPIT_HUMAN_AUTHORS` | Optional: human author logins |
+
+Repository variable: `APP_URL` (e.g. `https://cockpit.rapold.io`) for health-check alerting.
+
+---
+
+## Local Development
+
+```bash
+cp .env.example .env
+# Fill in your tokens
+
+vercel dev          # Runs serverless functions locally
+```
+
+No dependencies to install. Open `http://localhost:3000`.
+
+---
+
+## Customisation
+
+- **Portfolio table & project links** — edit the `DATA` array in `public/index.html`
+- **Branding & colors** — `scripts/generate-assets.mjs`, then regenerate
+- **Health targets** — set `HEALTH_TARGETS` env var or edit `api/health-check.js`
+- **Tracked orgs** — update `GITHUB_ORGS` (env var), no code changes needed
+
+---
+
+## Security
+
+- No secrets in the repository — verified via automated audit
+- `.env`, `.env.local`, `.env.*.local` are git-ignored
+- All API tokens stay server-side (Vercel Serverless Functions)
+- `GITHUB_` prefix variables use repository **secrets** (not variables) in GitHub Actions due to naming restrictions
+- Content Security: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` headers set via `vercel.json`
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
