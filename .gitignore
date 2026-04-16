@@ -2,8 +2,9 @@
 node_modules/
 .next/
 
-# Vercel
-.vercel
+# Vercel (Projekt-Link committen, Secrets nicht)
+.vercel/*
+!.vercel/project.json
 
 # Environment (secrets!)
 .env
