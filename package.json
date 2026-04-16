@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "private": false,
   "description": "Management-grade workload and delivery portfolio dashboard — forkable, configurable via environment variables",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@upstash/redis": "^1.37.0"
+  }
 }
