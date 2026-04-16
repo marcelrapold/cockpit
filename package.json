@@ -5,6 +5,6 @@
   "description": "Management-grade workload and delivery portfolio dashboard — forkable, configurable via environment variables",
   "license": "MIT",
   "dependencies": {
-    "@upstash/redis": "^1.37.0"
+    "ioredis": "^5.10.1"
   }
 }

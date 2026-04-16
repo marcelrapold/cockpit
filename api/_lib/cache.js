@@ -1,9 +1,18 @@
-const { Redis } = require('@upstash/redis');
+const Redis = require('ioredis');
 
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+let redis;
+function getClient() {
+  if (!redis) {
+    const url = process.env.REDIS_URL;
+    if (!url) throw new Error('REDIS_URL not configured');
+    redis = new Redis(url, {
+      maxRetriesPerRequest: 1,
+      connectTimeout: 5000,
+      lazyConnect: true,
+    });
+  }
+  return redis;
+}
 
 const KEYS = {
   portfolio: 'cache:portfolio',
@@ -16,11 +25,13 @@ const KEYS = {
 const TTL = 600;
 
 async function get(key) {
-  return redis.get(key);
+  const raw = await getClient().get(key);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return raw; }
 }
 
 async function set(key, data) {
-  return redis.set(key, JSON.stringify(data), { ex: TTL });
+  return getClient().set(key, JSON.stringify(data), 'EX', TTL);
 }
 
-module.exports = { redis, KEYS, TTL, get, set };
+module.exports = { getClient, KEYS, TTL, get, set };
