@@ -1,6 +1,11 @@
 const USER = process.env.GITHUB_USER || 'muraschal';
 const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
 
+const SCOPES = [
+  ...ORGS.map(o => `org:${o}`),
+  `user:${USER}`,
+];
+
 async function ghFetch(url, token) {
   const res = await fetch(url, {
     headers: {
@@ -26,6 +31,26 @@ async function searchCommits(query, token, perPage = 1) {
   );
   if (!res.ok) return { total_count: 0, items: [] };
   return res.json();
+}
+
+async function searchCommitsMultiScope(scopes, authorQ, dateQ, token, perPage = 1) {
+  const results = await Promise.all(
+    scopes.map(scope =>
+      searchCommits(`${scope} ${authorQ} ${dateQ}`, token, perPage)
+    )
+  );
+  let totalCount = 0;
+  const allItems = [];
+  for (const r of results) {
+    totalCount += r.total_count || 0;
+    if (r.items) allItems.push(...r.items);
+  }
+  allItems.sort((a, b) => {
+    const da = a.commit?.committer?.date || '';
+    const db = b.commit?.committer?.date || '';
+    return db.localeCompare(da);
+  });
+  return { total_count: totalCount, items: allItems.slice(0, perPage) };
 }
 
 async function searchIssues(query, token) {
@@ -68,7 +93,7 @@ module.exports = async function handler(req, res) {
     const monday = startOfWeek(now).toISOString().split('T')[0];
     const monthStart = `${today.slice(0, 7)}-01`;
 
-    const baseQ = `author:${USER}`;
+    const authorQ = `author:${USER}`;
 
     const prevMonday = new Date(startOfWeek(now));
     prevMonday.setDate(prevMonday.getDate() - 7);
@@ -82,11 +107,11 @@ module.exports = async function handler(req, res) {
       : `author:${USER}`;
 
     const [todayData, weekData, monthData, prevWeekData, recentData, events, openIssues, openPRs] = await Promise.all([
-      searchCommits(`${baseQ} committer-date:${today}`, token),
-      searchCommits(`${baseQ} committer-date:>=${monday}`, token),
-      searchCommits(`${baseQ} committer-date:>=${monthStart}`, token),
-      searchCommits(`${baseQ} committer-date:${prevMondayStr}..${prevSundayStr}`, token),
-      searchCommits(`${baseQ} committer-date:>=${monday}`, token, 30),
+      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:${today}`, token),
+      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monday}`, token),
+      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monthStart}`, token),
+      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:${prevMondayStr}..${prevSundayStr}`, token),
+      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monday}`, token, 30),
       ghFetch(`https://api.github.com/users/${USER}/events?per_page=100`, token),
       searchIssues(`${issueScopes} is:issue is:open assignee:${USER}`, token).catch(() => ({ total_count: 0 })),
       searchIssues(`${issueScopes} is:pr is:open author:${USER}`, token).catch(() => ({ total_count: 0 })),

@@ -91,19 +91,34 @@ async function main() {
     cur = next;
   }
 
-  console.log(`Fetching commits for author:${USER} across ${months.length} months...`);
+  const scopes = [
+    ...ORGS.map(o => `org:${o}`),
+    `user:${USER}`,
+  ];
+
+  console.log(`Fetching commits for author:${USER} across ${scopes.length} scopes × ${months.length} months...`);
 
   const allCommits = [];
+  const seen = new Set();
   for (const { from, to } of months) {
     console.log(`  ${from} → ${to}`);
-    try {
-      const items = await searchCommits(`author:${USER} committer-date:${from}..${to}`);
-      allCommits.push(...items);
-      console.log(`    → ${items.length} commits`);
-    } catch (e) {
-      console.warn(`    ⚠ Error: ${e.message}`);
+    for (const scope of scopes) {
+      try {
+        const items = await searchCommits(`${scope} author:${USER} committer-date:${from}..${to}`);
+        let added = 0;
+        for (const c of items) {
+          if (c.sha && !seen.has(c.sha)) {
+            seen.add(c.sha);
+            allCommits.push(c);
+            added++;
+          }
+        }
+        if (added > 0) console.log(`    ${scope}: ${added} commits`);
+      } catch (e) {
+        console.warn(`    ⚠ ${scope}: ${e.message}`);
+      }
+      await sleep(1500);
     }
-    await sleep(3000);
   }
 
   console.log(`Total fetched: ${allCommits.length} commits`);
