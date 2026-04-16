@@ -1614,21 +1614,21 @@
   <div class="container header-flex">
     <div>
       <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.2rem;">
-        <svg viewBox="0 0 32 32" fill="white" style="height:1.6rem;width:auto;opacity:0.9;"><rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.15)"/><text x="16" y="22" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">W</text></svg>
-        <div class="org">Workload &amp; Delivery Portfolio</div>
+        <svg viewBox="0 0 32 32" fill="white" style="height:1.6rem;width:auto;opacity:0.9;"><rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.15)"/><text x="16" y="22" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">C</text></svg>
+        <div class="org">Cockpit — Engineering Dashboard</div>
       </div>
-      <h1>Workload-Portfolio</h1>
-      <div class="sub">Marcel Rapold — Entwicklung &amp; Betrieb, Übersicht 2025/2026</div>
+      <h1>Cockpit</h1>
+      <div class="sub">Marcel Rapold — Cross-Platform Engineering Dashboard</div>
       <div class="meta">
-        <span>Datenstand: 30. März 2026</span>
-        <span>Basis: GitHub-Organisation (konfigurierbar via <code style="font-size:0.75rem;">GITHUB_ORG</code>)</span>
+        <span id="headerTimestamp">Datenstand: wird geladen …</span>
+        <span>Quellen: GitHub (zvvch, marcelrapold, muraschal) · Vercel · Supabase</span>
       </div>
     </div>
     <div class="header-actions">
       <div style="position:relative;">
         <button class="build-badge" id="buildBadge" title="Build & Changelog">
           <span class="new-dot" id="buildNewDot"></span>
-          <span id="buildBadgeText">v3.0.0 | 30.03.26 | main</span>
+          <span id="buildBadgeText">v4.0.0 | 16.04.26 | main</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:0.7rem;height:0.7rem;opacity:0.5;"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="changelog-panel-backdrop" id="clBackdrop" onclick="closeBuildPanel()"></div>
@@ -1664,37 +1664,37 @@
     <div class="stat">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <div class="stat-label">Initiativen gesamt</div>
-      <div class="stat-value" data-count="26">0</div>
+      <div class="stat-value" id="statInitiatives">–</div>
       <div class="stat-detail">Projekte, Services, Tools</div>
     </div>
     <div class="stat">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <div class="stat-label">Davon produktiv</div>
-      <div class="stat-value" data-count="14">0</div>
+      <div class="stat-value" id="statProd">–</div>
       <div class="stat-detail">mit eigener Domain / aktivem Betrieb</div>
     </div>
     <div class="stat">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <div class="stat-label">Commits (gesamt)</div>
-      <div class="stat-value" data-count="1900" data-prefix=">"  data-separator="'">0</div>
+      <div class="stat-value" id="statCommits">–</div>
       <div class="stat-detail">über alle Repos</div>
     </div>
     <div class="stat">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       <div class="stat-label">Geschätzter Aufwand</div>
-      <div class="stat-value" data-count="280" data-prefix="~" data-suffix=" PT">0</div>
+      <div class="stat-value" id="statPT">–</div>
       <div class="stat-detail">Personentage / Jahr (Schätzung)</div>
     </div>
     <div class="stat">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       <div class="stat-label">Technologien</div>
-      <div class="stat-value" data-count="10" data-suffix="+">0</div>
-      <div class="stat-detail">TypeScript, Next.js, Python, R, n8n …</div>
+      <div class="stat-value" id="statTech">–</div>
+      <div class="stat-detail">aus API (Language Stats)</div>
     </div>
     <div class="stat">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20M5 20V10l7-7 7 7v10"/><rect x="9" y="14" width="6" height="6"/></svg>
       <div class="stat-label">Hosting</div>
-      <div class="stat-value">19 + 5</div>
+      <div class="stat-value" id="statHosting">–</div>
       <div class="stat-detail">Vercel-Projekte + Supabase-DBs</div>
     </div>
   </div>
@@ -1810,12 +1810,10 @@
     <div class="card">
       <h2 class="card-title">Zusammenfassung</h2>
       <div class="card-sub">
-        <p>Dieses Portfolio dokumentiert die Arbeitsleistung von Marcel Rapold in der ICT-Entwicklung. Es umfasst <strong>26 Initiativen</strong> unterschiedlicher Grösse und Reife — von produktiven Services im Dauerbetrieb über aktive Entwicklungsprojekte bis hin zu Spezifikationen und internen Tools.</p>
-        <br>
-        <p>Die Themenbreite reicht von <strong>Fullstack-Webentwicklung</strong> (Next.js, Supabase, Vercel) über <strong>Workflow-Automatisierung</strong> (n8n, OpenAI) und <strong>Beschaffung / Governance</strong> bis zu <strong>Datenaufbereitung</strong> (R, SQL) und <strong>AI-Engineering</strong> (MCP, APIs). Der geschätzte Jahresaufwand liegt bei rund 280 Personentagen. Angesichts der Themenbreite und der Anzahl produktiver Services stellt dies ein relevantes operatives Konzentrationsrisiko dar.</p>
+        <p id="execSummaryText">Wird geladen …</p>
       </div>
       <div class="note">
-        <strong>Methodik:</strong> Alle Angaben basieren auf Repository-Analyse (Commits, READMEs, Konfigurationen, GitHub API). Aufwandschätzungen sind konservative Inferenzen — keine Zeiterfassungsdaten vorhanden. Annahmen sind im Text als solche gekennzeichnet.
+        <strong>Methodik:</strong> Alle Angaben basieren auf Live-API-Daten (GitHub, Vercel, Supabase) und der kuratierten Portfolio-Tabelle. Aufwandschätzungen (PT) sind konservative Inferenzen — keine Zeiterfassungsdaten vorhanden.
       </div>
     </div>
   </section>
@@ -2021,11 +2019,11 @@
         <div class="search-count" id="searchCount"></div>
       </div>
       <div class="tabs">
-        <button class="tab active" data-tab="t-all">Alle (28)</button>
-        <button class="tab" data-tab="t-change">Change (8)</button>
-        <button class="tab" data-tab="t-run">Produktiv / Run (8)</button>
-        <button class="tab" data-tab="t-steward">Tools & Plattform (8)</button>
-        <button class="tab" data-tab="t-govern">Governance (4)</button>
+        <button class="tab active" data-tab="t-all" id="tabAll">Alle</button>
+        <button class="tab" data-tab="t-change" id="tabChange">Change</button>
+        <button class="tab" data-tab="t-run" id="tabRun">Produktiv / Run</button>
+        <button class="tab" data-tab="t-steward" id="tabSteward">Tools & Plattform</button>
+        <button class="tab" data-tab="t-govern" id="tabGovern">Governance</button>
       </div>
 
       <div class="panel active" id="t-all">
@@ -2070,8 +2068,8 @@
           </div>
         </div>
         <div class="gauge-detail">
-          <h3>~280 PT geschätzt vs. ~220 PT verfügbar</h3>
-          <p>Basierend auf einer Vollzeitstelle mit Abzug für Ferien, Weiterbildung und Administration ergibt sich eine rechnerische Verfügbarkeit von rund 220 Personentagen. Der geschätzte Aufwand übersteigt diese Kapazität deutlich.</p>
+          <h3 id="gaugeTitle">Aufwand wird berechnet …</h3>
+          <p id="gaugeDesc">Basierend auf einer Vollzeitstelle mit Abzug für Ferien, Weiterbildung und Administration ergibt sich eine rechnerische Verfügbarkeit von rund 220 Personentagen.</p>
           <div class="gauge-bars">
             <div class="gauge-bar-row">
               <span class="gauge-bar-label">Change</span>
@@ -2125,7 +2123,7 @@
         <div class="infra-stat"><div class="is-label">Vercel-Projekte</div><div class="is-value">—</div><div class="is-detail">Live aus <code>/api/infra-stats</code></div></div>
         <div class="infra-stat"><div class="is-label">Custom Domains</div><div class="is-value">—</div><div class="is-detail">Je nach Team / Projekt</div></div>
         <div class="infra-stat"><div class="is-label">Supabase-Projekte</div><div class="is-value">—</div><div class="is-detail">Konfigurierbar via <code>SUPABASE_PROJECTS</code></div></div>
-        <div class="infra-stat"><div class="is-label">Framework-Mix</div><div class="is-value">Next.js (15×)</div><div class="is-detail">+ Express (1), Vite (1), Static (2)</div></div>
+        <div class="infra-stat"><div class="is-label">Framework-Mix</div><div class="is-value" id="infraFwValue">—</div><div class="is-detail" id="infraFwDetail">Live aus <code>/data-deps.json</code></div></div>
       </div>
     </div>
   </section>
@@ -2204,71 +2202,55 @@
 <footer class="footer">
   Automatisiert generiert auf Basis einer Repository-Analyse (30.03.2026) · GitHub-Organisation konfigurierbar
   <span style="margin-left:0.5rem;opacity:0.4;">PWA · Offline-fähig</span>
-  <div class="cl-footer-version" id="footerVersion">v3.0.0 · main</div>
+  <div class="cl-footer-version" id="footerVersion">v4.0.0 · main</div>
 </footer>
 
 <script>
-const APP_VERSION = '3.0.0';
-const APP_BUILD_DATE = '2026-03-30T22:00:00+02:00';
+const APP_VERSION = '4.0.0';
+const APP_BUILD_DATE = '2026-04-16T11:00:00+02:00';
 const APP_GIT_BRANCH = 'main';
-const APP_GIT_COMMIT = '6ab13a0';
+const APP_GIT_COMMIT = 'bcecdf9';
 const APP_GITHUB_REPO = 'marcelrapold/cockpit';
 
 const CHANGELOG = [
   {
-    version: '3.0.0',
-    date: '2026-03-30',
-    title: 'Kiosk Ultimate 15 + Mailer-Style Nav',
-    summary: '15 neue Kiosk-Features, Glassmorphism-Navigation, Mobile Bottom Nav, Build-Info und Changelog-System.',
+    version: '4.0.0',
+    date: '2026-04-16',
+    title: 'Real Data — Multi-Org Cross-Platform Tracking',
+    summary: 'Komplett echte Daten: 28 reale Projekte aus zvvch, marcelrapold, muraschal. Alle Platzhalter entfernt.',
     details: [
-      'Play/Pause, Skip, Dauer-Optionen (8/12/20/30s)',
-      '3 neue Slides: Globe + Sprachen, Achievements, AI Wochenbericht',
-      'Status-LEDs, Data Freshness, Typewriter-Effekt',
-      'Touch/Swipe-Support und Screenshot-Export',
-      'Mailer-inspirierte Glassmorphism-Navigation',
-      'Mobile Bottom Nav mit 4 Sektionen',
-      'Build-Info Badge mit Changelog-Panel',
+      'Portfolio-Tabelle mit echten ZVV + Private Projekten',
+      'Multi-Org GitHub Tracking (zvvch, marcelrapold, ALPA-one)',
+      'Multi-Team Vercel Deployments (zvv, marcelrapold, muraschal)',
+      'Supabase Auto-Discovery aller eigenen Projekte',
+      'Alle Stats dynamisch aus DATA[] und API berechnet',
+      'Domain cockpit.rapold.io, neue Meta-Tags + SEO',
+      'Professionelle README, saubere .env.example',
     ],
     audience: 'all',
   },
   {
-    version: '2.5.0',
-    date: '2026-03-29',
-    title: '15 Sexy Features',
-    summary: 'AI Insights, 3D Globe, Gamification, Command Palette, PWA, Live Ticker und mehr.',
+    version: '3.0.0',
+    date: '2026-03-30',
+    title: 'Kiosk Ultimate + Navigation',
+    summary: 'Kiosk-Mode mit 8 Slides, Glassmorphism-Navigation, Mobile Bottom Nav, Build-Info.',
     details: [
-      'AI-generierter Wochenbericht und strategische Beobachtungen',
-      '3D Deployment Globe mit Three.js',
-      'Gamification Badges und Projekt Health Scores',
-      'Command Palette (Cmd+K)',
-      'PWA mit Offline-Support und Service Worker',
-      'Live Event Ticker und Sprachen-Breakdown',
+      'Play/Pause, Skip, Dauer-Optionen (8/12/20/30s)',
+      '3D Globe, AI-Wochenbericht, Achievements-Slide',
+      'Glassmorphism-Navigation + Mobile Bottom Nav',
+      'Build-Info Badge mit Changelog-Panel',
     ],
     audience: 'all',
   },
   {
     version: '2.0.0',
     date: '2026-03-28',
-    title: 'Fullscreen Kiosk Mode',
-    summary: 'Executive-Carousel mit 5 Slides, 4K-Optimierung, animierten Charts und Branding.',
+    title: 'Live KPIs + Kiosk Mode',
+    summary: 'Echtzeit-APIs (GitHub, Vercel, Supabase), Fullscreen-Carousel, Health-Monitor.',
     details: [
-      '5-Slide Auto-Carousel mit Progress-Bar',
-      'Animated SVG Donut- und Bar-Charts',
-      'Live-Daten-Refresh alle 60 Sekunden',
-      'Responsive vmin-basierte Skalierung',
-    ],
-    audience: 'all',
-  },
-  {
-    version: '1.5.0',
-    date: '2026-03-27',
-    title: 'Live KPIs und Infrastruktur-Metriken',
-    summary: 'Echtzeit GitHub-Stats, Vercel Deployments, Supabase Health und Uptime-Monitor.',
-    details: [
-      'GitHub Stats API mit Commit-Feed',
-      'Vercel Deployment-Metriken und Erfolgsrate',
-      'Supabase Projekt-Health und Latenz',
-      'Automatisierte GitHub Action (3x täglich)',
+      'GitHub Stats, Vercel Deployments, Supabase Health APIs',
+      '5-Slide Auto-Carousel mit Live-Refresh',
+      'Command Palette, PWA, Gamification Badges',
     ],
     audience: 'all',
   },
@@ -2278,10 +2260,8 @@ const CHANGELOG = [
     title: 'Initial Release',
     summary: 'Portfolio-Dashboard mit Timeline, Aufwandsverteilung und Projekt-Matrix.',
     details: [
-      'Executive Summary und Workload-Modell',
-      'Interaktive Projekt-Timeline mit Commit-Intensität',
-      'Konsolidierte Portfolio-Tabelle',
-      'SEO, OG-Tags und Dark Mode',
+      'Portfolio-Tabelle, Commit-Heatmap, Dark Mode',
+      'SEO, OG-Tags, PWA Manifest',
     ],
     audience: 'all',
   },
@@ -2415,9 +2395,23 @@ const DATA = [
 
 const MONTHS = ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
 const MONTH_LABELS = MONTHS.map(m => { const [y,mo] = m.split('-'); return mo === '01' ? y : ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+mo]; });
-const NOW_IDX = MONTHS.indexOf('2026-04');
+const NOW_IDX = (() => {
+  const ym = new Date().toISOString().slice(0,7);
+  const idx = MONTHS.indexOf(ym);
+  return idx >= 0 ? idx : MONTHS.length - 1;
+})();
 
 const CAT_COLORS = { change:'#3b82f6', run:'#10b981', govern:'#8b5cf6', steward:'#f59e0b' };
+
+const _COMPUTED = {
+  total: DATA.length,
+  prod: DATA.filter(d => d.lc === 'prod').length,
+  totalPt: DATA.reduce((s, d) => s + d.ptMid, 0),
+  changeCnt: DATA.filter(d => d.cat === 'change').length,
+  runCnt: DATA.filter(d => d.cat === 'run').length,
+  stewardCnt: DATA.filter(d => d.cat === 'steward').length,
+  governCnt: DATA.filter(d => d.cat === 'govern').length,
+};
 
 function modeTag(m) {
   const map = {build:'tag-build', run:'tag-run', improve:'tag-improve', govern:'tag-govern'};
@@ -2580,32 +2574,34 @@ function buildTimeline() {
 buildTimeline();
 
 const PROJECT_BRIEFINGS = {
-  'Customer Portal': { impact: 'Revenue & Retention', desc: 'Self-service customer account — campaigns, preferences, and lifecycle communication.' },
-  'Analytics Dashboard': { impact: 'Decision Support', desc: 'Executive KPIs and operational metrics for leadership and product teams.' },
-  'CMS RFP': { impact: 'Strategic Procurement', desc: 'Public procurement for CMS modernization — largest digital investment cycle.' },
-  'Data Mirror Spec': { impact: 'Data Architecture', desc: 'Architecture blueprint for customer data mirroring — foundation for CRM and analytics.' },
-  'Legacy DB Migration': { impact: 'Legacy & Efficiency', desc: 'Specification to replace a legacy desktop database — make-or-buy for critical inventory.' },
-  'Account UI Prototype': { impact: 'Customer Experience', desc: 'UI prototype for account relaunch — self-service and support deflection.' },
-  'AI Info Assistant': { impact: 'Innovation & AI', desc: 'AI-powered information assistant — MCP, APIs, and natural-language queries.' },
-  'Ticketing Platform': { impact: 'Seasonal Core Product', desc: 'Validation, bookings, and seasonal campaigns — recurring revenue driver.' },
-  'Field Operations PWA': { impact: 'Operations', desc: 'PWA for field workflows — security, exports, and mobile-first usage.' },
-  'Budget Radar': { impact: 'Finance Control', desc: 'Budget and object-credit dashboard prototype — real-time project spend visibility.' },
-  'Media Monitor': { impact: 'Reputation', desc: 'Automated AI media monitoring — aggregation, classification, and alerting.' },
-  'PDF Extraction API': { impact: 'Infrastructure', desc: 'Self-hosted PDF text extraction — shared service for downstream pipelines.' },
-  'App Feature Modal': { impact: 'Conversion', desc: 'Embedded feature showcase on the main web property — drives app adoption.' },
-  'App Promo Banner': { impact: 'Marketing', desc: 'Micro-frontend for app promotion — measurable touchpoint on the main site.' },
-  'Automation Workflows': { impact: 'Automation', desc: 'Central workflow automation — connects databases, LLMs, and email APIs.' },
-  'MCP Data Server': { impact: 'AI & Data', desc: 'Model Context Protocol server for structured domain data.' },
-  'Motion Assets': { impact: 'Brand', desc: 'Animated assets for the marketing site — visual identity maintenance.' },
-  'Status Page': { impact: 'Transparency', desc: 'Public status page for digital services — reduces support noise.' },
-  'Lost & Found App': { impact: 'Customer Service', desc: 'Offline-capable information app for service desks.' },
-  'Employer Branding Slider': { impact: 'Employer Branding', desc: 'HR testimonial component — strengthens recruiting narrative.' },
-  'iCal Embed': { impact: 'Internal Tooling', desc: 'On-call calendar embed for the wiki — availability transparency.' },
-  'VS Code Theme': { impact: 'Developer Experience', desc: 'Branded editor theme — team identity in the toolchain.' },
-  'Annual Data Delivery': { impact: 'Compliance', desc: 'R/SQL pipelines for recurring regulatory data deliveries.' },
-  'Security / CVE Management': { impact: 'Security', desc: 'Cross-repo dependency monitoring and patching — reduces attack surface.' },
-  'Stakeholder Coordination': { impact: 'Governance', desc: 'Alignment across business, vendors, and management — portfolio coherence.' },
-  'Finance Workflow': { impact: 'Finance', desc: 'Budget and creditor workflow dashboard — faster approvals.' },
+  'ZVV Kundenkonto': { impact: 'Revenue & Retention', desc: 'Kundenkonto-Relaunch — Self-Service-Portal mit Auth, Preferences, Lifecycle-Kommunikation.' },
+  'AEM CMS Ausschreibung': { impact: 'Strategic Procurement', desc: 'Öffentliche Ausschreibung AEMaaCS (SubmV ZH) — grösster digitaler Investitionszyklus.' },
+  'ZVV Kontoradar': { impact: 'Finance Control', desc: 'Objektkredit-Dashboard — Echtzeit-Budget-Insights aus Abacus/MayBacus-Buchungsdaten.' },
+  'NOVA Kundenspiegel': { impact: 'Data Architecture', desc: 'Golden-Record-Spiegelung — Read-API-Fundament für CRM, Marketing und Analytics.' },
+  'Fahrzeugdatenbank Spec': { impact: 'Legacy & Efficiency', desc: 'Technische Spezifikation ZVV Fahrzeugdatenbank 2.0 — Make-or-Buy-Grundlage.' },
+  'Tarifmassnahmen (TAMA)': { impact: 'Governance', desc: 'Vernehmlassungs-Auswertung zu ZVV-Tarifmassnahmen 2026.' },
+  'RadioX': { impact: 'Innovation & AI', desc: 'AI Radio Platform — 10 Microservices (FastAPI + Supabase + ElevenLabs + GPT-4).' },
+  'MyCVBuilder': { impact: 'Product', desc: 'AI-native Resume Platform — Next.js, AI SDK, Fullstack.' },
+  'ZVV Entdeckungsreise': { impact: 'Seasonal Product', desc: 'Ticketcode-Validierung und Schul-Anmeldungssystem — saisonale Peaks.' },
+  'ZVV Kontrollapp': { impact: 'Operations', desc: 'PWA für Billettkontrolle — offline-fähig, Echtzeit-Sync, Analytics.' },
+  'ZVV App Modal': { impact: 'Conversion', desc: 'Feature-Showcase als iFrame-Embed auf zvv.ch — fördert App-Adoption.' },
+  'ZVV App Banner': { impact: 'Marketing', desc: 'Mobile-Promo Micro-Frontend auf zvv.ch — messbarer Marketing-Touchpoint.' },
+  'ZVV Medienspiegel': { impact: 'Reputation', desc: 'AI-Medienmonitoring — PDF-Clippings → intelligente Newsletter mit Sentimentanalyse.' },
+  'ZVV Mailer': { impact: 'Communication', desc: 'Interne Web-App für professionelle E-Mail-Kampagnen an Empfängerlisten.' },
+  'ZVV FundPilot': { impact: 'Customer Service', desc: 'Offline-fähiges Fundbüro-Infosystem — Zuordnung pro ZVV-Linie.' },
+  'PDF2Text API': { impact: 'Infrastructure', desc: 'Self-hosted PDF-Textextraktion (FastAPI + PyMuPDF) — Shared Service.' },
+  'Cockpit': { impact: 'Engineering', desc: 'Cross-Platform Engineering Dashboard — GitHub, Vercel, Supabase Tracking.' },
+  'ZVV Statuspage': { impact: 'Transparency', desc: 'Öffentliche Statusseite für ZVV-Dienste — reduziert Support-Noise.' },
+  'iCal Confluence Embed': { impact: 'Internal Tooling', desc: 'Pikett-Kalender-Embed für Confluence — Verfügbarkeits-Transparenz.' },
+  'ZVV Lottie': { impact: 'Brand', desc: '34 professionelle Lottie-Animationen für zvv.ch Header.' },
+  'ZVV n8n Flows': { impact: 'Automation', desc: 'Zentrale Workflow-Automatisierung — verbindet DBs, LLMs und E-Mail-APIs.' },
+  'MCP GTFS Server': { impact: 'AI & Data', desc: 'MCP-Server für Schweizer ÖV-Fahrplandaten (GTFS).' },
+  'ZVV VS Code Theme': { impact: 'Developer Experience', desc: 'Gebrandetes Editor-Theme — Team-Identität in der Toolchain.' },
+  'ZVV AI Crawl': { impact: 'SEO & AI', desc: 'Generative Engine Optimization — llm.txt, JSON-Daten, AI-Crawler-Support.' },
+  'Jahreshochrechnung': { impact: 'Compliance', desc: 'R/SQL-Pipelines für wiederkehrende regulatorische Datenlieferungen.' },
+  'Workload Portfolio': { impact: 'Management', desc: 'Management-Workload-Modell — Portfolio-Steuerung und Forecasting.' },
+  'Security / CVE Management': { impact: 'Security', desc: 'Cross-Repo Dependency-Monitoring und Patching — reduziert Angriffsfläche.' },
+  'Stakeholder Coordination': { impact: 'Governance', desc: 'Abstimmung Business, Vendors, Management — Portfolio-Kohärenz.' },
 };
 
 const projectTip = document.createElement('div');
@@ -3006,6 +3002,11 @@ async function fetchLiveKPIs() {
     document.getElementById('liveWeek').textContent = d.week;
     document.getElementById('liveMonth').textContent = d.month;
 
+    if (d.month) {
+      const el = document.getElementById('statCommits');
+      if (el) el.textContent = '>' + d.month.toLocaleString('de-CH');
+    }
+
     const velEl = document.getElementById('liveVelocity');
     if (d.velocity !== undefined) {
       const sign = d.velocity > 0 ? '+' : '';
@@ -3098,6 +3099,11 @@ async function fetchInfraStats() {
     if (d.vercel && !d.vercel.error) {
       document.getElementById('infraDeplToday').textContent = d.vercel.deploymentsToday;
       document.getElementById('infraDeplWeek').textContent = d.vercel.deploymentsWeek;
+
+      const vp = d.vercel.totalProjects || 0;
+      const sp = d.supabase?.totalProjects || 0;
+      const hEl = document.getElementById('statHosting');
+      if (hEl) hEl.textContent = vp + ' + ' + sp;
       const sEl = document.getElementById('infraSuccess');
       sEl.textContent = d.vercel.successRate + '%';
       sEl.className = 'live-val live-trend ' + (d.vercel.successRate >= 95 ? 'up' : d.vercel.successRate >= 80 ? 'flat' : 'down');
@@ -3308,31 +3314,32 @@ function renderSparklines() {
 
 function renderDependencyMap() {
   const CONNS = [
-    { from: 'Customer Portal', to: 'Supabase', type: 'data', label: 'Auth + DB' },
-    { from: 'Customer Portal', to: 'Resend', type: 'api', label: 'E-Mail API' },
-    { from: 'Analytics Dashboard', to: 'Supabase', type: 'data', label: 'DB + Auth' },
-    { from: 'Ticketing Platform', to: 'Supabase', type: 'data', label: 'DB + Auth' },
-    { from: 'Budget Radar', to: 'Supabase', type: 'data', label: 'DB' },
-    { from: 'Media Monitor', to: 'Supabase', type: 'data', label: 'Storage' },
-    { from: 'Media Monitor', to: 'OpenAI', type: 'ai', label: 'GPT-4o' },
-    { from: 'Media Monitor', to: 'n8n', type: 'auto', label: 'Workflows' },
-    { from: 'Media Monitor', to: 'PDF Extraction API', type: 'api', label: 'Extract' },
-    { from: 'AI Info Assistant', to: 'OpenAI', type: 'ai', label: 'AI SDK' },
-    { from: 'AI Info Assistant', to: 'MCP Data Server', type: 'api', label: 'Data' },
-    { from: 'App Feature Modal', to: 'example.com', type: 'embed', label: 'iFrame' },
-    { from: 'App Promo Banner', to: 'example.com', type: 'embed', label: 'Micro-FE' },
-    { from: 'Motion Assets', to: 'example.com', type: 'embed', label: 'Assets' },
-    { from: 'Customer Portal', to: 'Vercel', type: 'host', label: 'Hosting' },
-    { from: 'Analytics Dashboard', to: 'Vercel', type: 'host', label: 'Hosting' },
-    { from: 'Ticketing Platform', to: 'Vercel', type: 'host', label: 'Hosting' },
+    { from: 'ZVV Kundenkonto', to: 'Supabase', type: 'data', label: 'Auth + DB' },
+    { from: 'ZVV Kontoradar', to: 'Supabase', type: 'data', label: 'DB' },
+    { from: 'ZVV Entdeckungsreise', to: 'Supabase', type: 'data', label: 'DB + Auth' },
+    { from: 'ZVV Medienspiegel', to: 'Supabase', type: 'data', label: 'Storage' },
+    { from: 'ZVV Medienspiegel', to: 'OpenAI', type: 'ai', label: 'GPT-4o' },
+    { from: 'ZVV Medienspiegel', to: 'n8n', type: 'auto', label: 'Workflows' },
+    { from: 'ZVV Medienspiegel', to: 'PDF2Text API', type: 'api', label: 'Extract' },
+    { from: 'ZVV Mailer', to: 'Resend', type: 'api', label: 'E-Mail API' },
+    { from: 'RadioX', to: 'Supabase', type: 'data', label: 'DB + Storage' },
+    { from: 'RadioX', to: 'OpenAI', type: 'ai', label: 'GPT-4' },
+    { from: 'RadioX', to: 'ElevenLabs', type: 'ai', label: 'TTS' },
+    { from: 'MCP GTFS Server', to: 'OpenAI', type: 'ai', label: 'MCP' },
+    { from: 'ZVV App Modal', to: 'zvv.ch', type: 'embed', label: 'iFrame' },
+    { from: 'ZVV App Banner', to: 'zvv.ch', type: 'embed', label: 'Micro-FE' },
+    { from: 'ZVV Lottie', to: 'zvv.ch', type: 'embed', label: 'Assets' },
+    { from: 'Cockpit', to: 'Vercel', type: 'host', label: 'Hosting' },
+    { from: 'ZVV Kundenkonto', to: 'Vercel', type: 'host', label: 'Hosting' },
+    { from: 'ZVV Mailer', to: 'Vercel', type: 'host', label: 'Hosting' },
     { from: 'n8n', to: 'OpenAI', type: 'ai', label: 'API' },
     { from: 'n8n', to: 'Resend', type: 'api', label: 'E-Mail' },
   ];
 
   const LAYERS = {
-    external: { y: 50, label: 'Externe Services', color: '#f59e0b', nodes: ['Supabase', 'OpenAI', 'Resend', 'Vercel', 'example.com'] },
-    apps:     { y: 200, label: 'Applikationen', color: '#005093', nodes: ['Customer Portal', 'Analytics Dashboard', 'Ticketing Platform', 'Media Monitor', 'Budget Radar', 'AI Info Assistant'] },
-    frontend: { y: 320, label: 'Frontends & Infra', color: '#0479cc', nodes: ['App Feature Modal', 'App Promo Banner', 'Motion Assets', 'n8n', 'PDF Extraction API', 'MCP Data Server'] },
+    external: { y: 50, label: 'Externe Services', color: '#f59e0b', nodes: ['Supabase', 'OpenAI', 'ElevenLabs', 'Resend', 'Vercel', 'zvv.ch'] },
+    apps:     { y: 200, label: 'Applikationen', color: '#005093', nodes: ['ZVV Kundenkonto', 'ZVV Kontoradar', 'ZVV Entdeckungsreise', 'ZVV Medienspiegel', 'RadioX', 'Cockpit'] },
+    frontend: { y: 320, label: 'Frontends & Infra', color: '#0479cc', nodes: ['ZVV App Modal', 'ZVV App Banner', 'ZVV Lottie', 'n8n', 'PDF2Text API', 'MCP GTFS Server', 'ZVV Mailer'] },
   };
 
   const TYPE_COLORS = {
@@ -3453,6 +3460,50 @@ async function loadUptime() {
 
 loadDashboardData().then(() => { renderTables(); });
 
+(function initDynamicStats() {
+  const c = _COMPUTED;
+  const el = id => document.getElementById(id);
+
+  if (el('statInitiatives')) el('statInitiatives').textContent = c.total;
+  if (el('statProd')) el('statProd').textContent = c.prod;
+  if (el('statPT')) el('statPT').textContent = '~' + c.totalPt + ' PT';
+
+  if (el('tabAll')) el('tabAll').textContent = `Alle (${c.total})`;
+  if (el('tabChange')) el('tabChange').textContent = `Change (${c.changeCnt})`;
+  if (el('tabRun')) el('tabRun').textContent = `Produktiv / Run (${c.runCnt})`;
+  if (el('tabSteward')) el('tabSteward').textContent = `Tools & Plattform (${c.stewardCnt})`;
+  if (el('tabGovern')) el('tabGovern').textContent = `Governance (${c.governCnt})`;
+
+  if (el('fsKpiInit')) el('fsKpiInit').textContent = c.total;
+  if (el('fsKpiProd')) el('fsKpiProd').textContent = c.prod;
+  if (el('fsKpiPT')) el('fsKpiPT').textContent = '~' + c.totalPt;
+  if (el('fsKpiOrgs')) el('fsKpiOrgs').textContent = '3';
+
+  if (el('execSummaryText')) {
+    el('execSummaryText').innerHTML =
+      `Dieses Dashboard dokumentiert die Engineering-Aktivität von Marcel Rapold. Es umfasst <strong>${c.total} Initiativen</strong> ` +
+      `(${c.changeCnt} Change, ${c.runCnt} Run, ${c.stewardCnt} Tools, ${c.governCnt} Governance) — ` +
+      `davon <strong>${c.prod} in Produktion</strong>. Die Projekte verteilen sich über drei GitHub-Organisationen ` +
+      `(zvvch, marcelrapold, muraschal), drei Vercel-Teams und mehrere Supabase-Projekte.<br><br>` +
+      `Der geschätzte Jahresaufwand liegt bei <strong>~${c.totalPt} Personentagen</strong>. ` +
+      `Die Themenbreite reicht von Fullstack-Webentwicklung (Next.js, Supabase, Vercel) über ` +
+      `Workflow-Automatisierung (n8n, OpenAI) und Beschaffung/Governance bis zu AI-Engineering (MCP, FastAPI).`;
+  }
+
+  if (el('headerTimestamp')) {
+    el('headerTimestamp').textContent = 'Datenstand: ' + new Date().toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  if (el('gaugeTitle')) {
+    el('gaugeTitle').textContent = `~${c.totalPt} PT geschätzt vs. ~220 PT verfügbar`;
+  }
+  if (el('gaugeDesc')) {
+    const pct = Math.round(c.totalPt / 220 * 100);
+    el('gaugeDesc').textContent = `Basierend auf einer Vollzeitstelle (220 PT/Jahr). ` +
+      `Der geschätzte Aufwand von ~${c.totalPt} PT entspricht einer Auslastung von ~${pct}%.`;
+  }
+})();
+
 // === TECH STACK VISUALIZATION ===
 async function loadTechStack() {
   try {
@@ -3460,6 +3511,15 @@ async function loadTechStack() {
     if (!res.ok) throw new Error('data-deps.json not found');
     const d = await res.json();
     renderTechStack(d);
+    if (d.frameworks && d.frameworks.length > 0) {
+      const top = d.frameworks[0];
+      const fwEl = document.getElementById('infraFwValue');
+      const fwDet = document.getElementById('infraFwDetail');
+      if (fwEl) fwEl.textContent = `${top.name} (${top.count}×)`;
+      if (fwDet && d.frameworks.length > 1) {
+        fwDet.textContent = d.frameworks.slice(1, 4).map(f => `${f.name} (${f.count})`).join(', ');
+      }
+    }
   } catch (e) {
     console.warn('Tech stack data not available:', e.message);
   }
@@ -3707,10 +3767,10 @@ function fsUpdateClock() {
 
 function buildKioskHTML() {
   const CAT_DATA = [
-    { label: 'Change', pt: 119, color: '#3b82f6' },
-    { label: 'Run / Betrieb', pt: 39, color: '#10b981' },
-    { label: 'Tools & Plattform', pt: 22, color: '#f59e0b' },
-    { label: 'Governance', pt: 39, color: '#8b5cf6' },
+    { label: 'Change', pt: DATA.filter(d=>d.cat==='change').reduce((s,d)=>s+d.ptMid,0), color: '#3b82f6' },
+    { label: 'Run / Betrieb', pt: DATA.filter(d=>d.cat==='run').reduce((s,d)=>s+d.ptMid,0), color: '#10b981' },
+    { label: 'Tools & Plattform', pt: DATA.filter(d=>d.cat==='steward').reduce((s,d)=>s+d.ptMid,0), color: '#f59e0b' },
+    { label: 'Governance', pt: DATA.filter(d=>d.cat==='govern').reduce((s,d)=>s+d.ptMid,0), color: '#8b5cf6' },
   ];
   const TOP10 = DATA.slice().sort((a,b) => b.ptMid - a.ptMid).slice(0,10);
   const topMax = Math.max(...TOP10.map(d => d.ptMid));
@@ -3757,7 +3817,7 @@ function buildKioskHTML() {
         </div>
         <div style="display:flex;align-items:center;gap:1.5vmin;">
           <div class="fs-freshness" id="fsFreshness">wird geladen…</div>
-          <button class="fs-ctrl-btn" id="fsSoundToggle" title="Sound (Platzhalter)" onclick="this.classList.toggle('active');this.innerHTML=this.classList.contains('active')?'🔊':'🔇'">🔇</button>
+          <button class="fs-ctrl-btn" id="fsSoundToggle" title="Sound" onclick="this.classList.toggle('active');this.innerHTML=this.classList.contains('active')?'🔊':'🔇'" style="display:none">🔇</button>
           <div style="text-align:right;">
             <div class="fs-clock" id="fsClock">--:--:--</div>
             <div class="fs-clock-date" id="fsClockDate"></div>
@@ -3778,10 +3838,10 @@ function buildKioskHTML() {
             </div>
             <div style="display:flex;flex-direction:column;gap:1.2vmin;">
               <div class="fs-kpi-grid" style="grid-template-columns:1fr 1fr;">
-                <div class="fs-kpi-card"><div class="fs-kpi-val">28</div><div class="fs-kpi-label">Initiativen</div><div class="fs-kpi-accent"></div></div>
-                <div class="fs-kpi-card"><div class="fs-kpi-val">16</div><div class="fs-kpi-label">Produktiv</div><div class="fs-kpi-accent"></div></div>
-                <div class="fs-kpi-card"><div class="fs-kpi-val amber">~219</div><div class="fs-kpi-label">PT / Jahr</div><div class="fs-kpi-accent"></div></div>
-                <div class="fs-kpi-card"><div class="fs-kpi-val">100%</div><div class="fs-kpi-label">Auslastung</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val" id="fsKpiInit">–</div><div class="fs-kpi-label">Initiativen</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val" id="fsKpiProd">–</div><div class="fs-kpi-label">Produktiv</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val amber" id="fsKpiPT">–</div><div class="fs-kpi-label">PT / Jahr</div><div class="fs-kpi-accent"></div></div>
+                <div class="fs-kpi-card"><div class="fs-kpi-val" id="fsKpiOrgs">–</div><div class="fs-kpi-label">Orgs</div><div class="fs-kpi-accent"></div></div>
               </div>
             </div>
           </div>
@@ -4210,7 +4270,7 @@ function fsRenderBadgesSlide() {
     if (gh.openPRs === 0) badges.push({ icon: '✅', label: 'Clean PR Queue', unlocked: true });
     else badges.push({ icon: '✅', label: 'Clean PR Queue', unlocked: false });
   }
-  badges.push({ icon: '🏗️', label: '26 Initiativen', unlocked: true });
+  badges.push({ icon: '🏗️', label: DATA.length + ' Initiativen', unlocked: true });
   badges.push({ icon: '⚡', label: 'Multi-Stack Dev', unlocked: true });
   badges.push({ icon: '🌐', label: 'Full-Stack', unlocked: true });
   badges.push({ icon: '🤖', label: 'AI-Augmented', unlocked: true });
@@ -4257,10 +4317,12 @@ function fsStartTypewriter() {
     else if (gh.velocity < 0) lines.push(`Velocity: ${gh.velocity}% gegenüber Vorwoche — rückläufig.`);
     lines.push(`Open Issues: ${gh.openIssues} · Open PRs: ${gh.openPRs}`);
   }
+  const _totalPt = DATA.reduce((s,d) => s + d.ptMid, 0);
+  const _prodCnt = DATA.filter(d => d.lc === 'prod').length;
   lines.push('');
-  lines.push('26 aktive Initiativen in 4 Kategorien verteilt.');
-  lines.push('Geschätzte Gesamtlast: ~280 PT/Jahr (Auslastung >127%).');
-  lines.push('One-Man-Show Risiko bleibt bestehen.');
+  lines.push(`${DATA.length} aktive Initiativen in 4 Kategorien verteilt.`);
+  lines.push(`Geschätzte Gesamtlast: ~${_totalPt} PT/Jahr.`);
+  lines.push(`${_prodCnt} produktive Services im Dauerbetrieb.`);
 
   const fullText = lines.join('\n');
   el.textContent = '';
@@ -4281,9 +4343,9 @@ function fsStartTypewriter() {
 
   if (cardsEl) {
     const insights = [
-      { title: 'Kapazitätsrisiko', body: 'Einzelperson trägt 28 Initiativen über 3 Organisationen — Bus-Faktor = 1.' },
+      { title: 'Kapazitätsrisiko', body: `Einzelperson trägt ${DATA.length} Initiativen über 3 Organisationen — Bus-Faktor = 1.` },
       { title: 'Technologie-Breite', body: 'Next.js, FastAPI, Supabase, n8n, R — hohe Vielseitigkeit über ZVV + Private.' },
-      { title: 'Produktive Services', body: '16 Systeme in Produktion erfordern laufende Wartung und Incident-Response.' },
+      { title: 'Produktive Services', body: `${_prodCnt} Systeme in Produktion erfordern laufende Wartung und Incident-Response.` },
       { title: 'Empfehlung', body: 'Priorisierung und selektives Outsourcing einzelner Run-Aufgaben prüfen.' },
     ];
     cardsEl.innerHTML = insights.map((ins, i) =>
@@ -4560,6 +4622,8 @@ async function loadLanguages() {
     const langs = d.languages || {};
     const total = Object.values(langs).reduce((s, v) => s + v, 0);
     if (total === 0) return;
+    const techEl = document.getElementById('statTech');
+    if (techEl) techEl.textContent = Object.keys(langs).length + '+';
     const sorted = Object.entries(langs).sort((a, b) => b[1] - a[1]);
     const bar = document.getElementById('langBar');
     const legend = document.getElementById('langLegend');
@@ -5113,10 +5177,8 @@ function generateAIInsights(ghData) {
   if (prodCount > 10) insights.push(`${prodCount} produktive Services im aktiven Betrieb — signifikantes operatives Risiko bei einer Ein-Personen-Organisation.`);
   const highPt = DATA.filter(d => d.ptMid >= 20).length;
   if (highPt > 3) insights.push(`${highPt} Initiativen mit >20 PT/Jahr — Priorisierung und Fokussierung empfohlen.`);
-  const noRecent = DATA.filter(d => { const r = ['2026-01','2026-02','2026-03'].reduce((s,m)=>s+(d.commits[m]||0),0); return d.lc === 'prod' && r === 0; });
-  if (noRecent.length > 0) insights.push(`${noRecent.length} produktive Services ohne Commits in Q1 2026: ${noRecent.map(d=>d.name).join(', ')}. Möglicherweise stabil, oder wartungsrückstand.`);
   const totalPt = DATA.reduce((s,d)=>s+d.ptMid,0);
-  insights.push(`Geschätzter Gesamtaufwand: ${totalPt} PT bei ~220 PT Kapazität = ${Math.round(totalPt/220*100)}% Auslastung.`);
+  insights.push(`Geschätzter Gesamtaufwand: ~${totalPt} PT über ${DATA.length} Initiativen in 3 Organisationen.`);
 
   if (strategic) strategic.innerHTML = insights.map(i => `<p style="margin-bottom:0.4rem;">› ${i}</p>`).join('');
 }
@@ -5130,11 +5192,11 @@ function renderBadges(ghData) {
   badges.push({ icon:'🔥', label:`${streak} Tage Streak`, locked: streak < 1 });
   badges.push({ icon:'⚡', label:'100+ Commits/Monat', locked: month < 100 });
   badges.push({ icon:'🚀', label:'50+ Commits/Woche', locked: week < 50 });
-  badges.push({ icon:'🏆', label:'26 Initiativen', locked: false });
-  badges.push({ icon:'🛡️', label:'14 in Produktion', locked: false });
-  badges.push({ icon:'💎', label:'10+ Technologien', locked: false });
-  badges.push({ icon:'📦', label:'5 Supabase DBs', locked: false });
-  badges.push({ icon:'🌐', label:'19 Vercel Projekte', locked: false });
+  badges.push({ icon:'🏆', label: _COMPUTED.total + ' Initiativen', locked: false });
+  badges.push({ icon:'🛡️', label: _COMPUTED.prod + ' in Produktion', locked: false });
+  badges.push({ icon:'💎', label:'Multi-Stack', locked: false });
+  badges.push({ icon:'📦', label:'Supabase Auto-Discovery', locked: false });
+  badges.push({ icon:'🌐', label:'3 Vercel Teams', locked: false });
   badges.push({ icon:'🔁', label:'CI/CD Automatisiert', locked: false });
   badges.push({ icon:'⏰', label:'24/7 Uptime Monitor', locked: false });
 
