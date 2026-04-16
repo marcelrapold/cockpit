@@ -6,7 +6,8 @@ const fetchLanguageStats = require('../_lib/fetch-language-stats');
 const fetchHealthCheck = require('../_lib/fetch-health-check');
 
 module.exports = async function handler(req, res) {
-  if (req.headers['authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+  const secret = (process.env.CRON_SECRET || '').trim();
+  if (!secret || req.headers['authorization'] !== `Bearer ${secret}`) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
