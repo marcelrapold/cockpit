@@ -1,5 +1,5 @@
-const ORG = process.env.GITHUB_ORG || 'your-org';
-const USER = process.env.GITHUB_USER || 'your-username';
+const USER = process.env.GITHUB_USER || 'muraschal';
+const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
 
 async function ghFetch(url, token) {
   const res = await fetch(url, {
@@ -68,7 +68,7 @@ module.exports = async function handler(req, res) {
     const monday = startOfWeek(now).toISOString().split('T')[0];
     const monthStart = `${today.slice(0, 7)}-01`;
 
-    const baseQ = `org:${ORG} author:${USER}`;
+    const baseQ = `author:${USER}`;
 
     const prevMonday = new Date(startOfWeek(now));
     prevMonday.setDate(prevMonday.getDate() - 7);
@@ -77,24 +77,28 @@ module.exports = async function handler(req, res) {
     const prevMondayStr = prevMonday.toISOString().split('T')[0];
     const prevSundayStr = prevSunday.toISOString().split('T')[0];
 
+    const issueScopes = ORGS.length > 0
+      ? ORGS.map(o => `org:${o}`).join(' ')
+      : `author:${USER}`;
+
     const [todayData, weekData, monthData, prevWeekData, recentData, events, openIssues, openPRs] = await Promise.all([
       searchCommits(`${baseQ} committer-date:${today}`, token),
       searchCommits(`${baseQ} committer-date:>=${monday}`, token),
       searchCommits(`${baseQ} committer-date:>=${monthStart}`, token),
       searchCommits(`${baseQ} committer-date:${prevMondayStr}..${prevSundayStr}`, token),
-      searchCommits(`${baseQ} committer-date:>=${monday}`, token, 12),
+      searchCommits(`${baseQ} committer-date:>=${monday}`, token, 30),
       ghFetch(`https://api.github.com/users/${USER}/events?per_page=100`, token),
-      searchIssues(`org:${ORG} is:issue is:open`, token).catch(() => ({ total_count: 0 })),
-      searchIssues(`org:${ORG} is:pr is:open`, token).catch(() => ({ total_count: 0 })),
+      searchIssues(`${issueScopes} is:issue is:open assignee:${USER}`, token).catch(() => ({ total_count: 0 })),
+      searchIssues(`${issueScopes} is:pr is:open author:${USER}`, token).catch(() => ({ total_count: 0 })),
     ]);
 
-    const pushEvents = (Array.isArray(events) ? events : [])
-      .filter(e => e.type === 'PushEvent' && e.org?.login === ORG);
+    const allEvents = Array.isArray(events) ? events : [];
+    const pushEvents = allEvents.filter(e => e.type === 'PushEvent');
 
     const lastPush = pushEvents[0];
     const lastCommit = lastPush ? {
       message: (lastPush.payload.commits?.slice(-1)[0]?.message || '').split('\n')[0],
-      repo: lastPush.repo.name.replace(`${ORG}/`, ''),
+      repo: lastPush.repo.name,
       time: lastPush.created_at,
     } : null;
 
@@ -106,7 +110,7 @@ module.exports = async function handler(req, res) {
       .slice(0, 10)
       .map(item => {
         const msg = (item.commit?.message || '').split('\n')[0];
-        const repo = (item.repository?.full_name || '').replace(`${ORG}/`, '');
+        const repo = item.repository?.full_name || '';
         return {
           sha: item.sha?.slice(0, 7),
           message: msg.length > 72 ? msg.slice(0, 69) + '…' : msg,
@@ -120,7 +124,7 @@ module.exports = async function handler(req, res) {
     pushEvents.forEach(e => {
       const d = e.created_at?.split('T')[0];
       if (d && d >= monday) {
-        const repo = e.repo.name.replace(`${ORG}/`, '');
+        const repo = e.repo.name;
         weekRepos[repo] = (weekRepos[repo] || 0) + (e.payload.size || 0);
       }
     });
@@ -163,9 +167,10 @@ module.exports = async function handler(req, res) {
       recentCommits,
       activeRepos: Object.entries(weekRepos)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
+        .slice(0, 8)
         .map(([name, commits]) => ({ name, commits })),
       streak,
+      orgs: ORGS,
       timestamp: now.toISOString(),
     });
   } catch (err) {

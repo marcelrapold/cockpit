@@ -1,4 +1,5 @@
-const ORG = process.env.GITHUB_ORG || 'your-org';
+const USER = process.env.GITHUB_USER || 'muraschal';
+const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
 
 async function ghFetch(url, token) {
   const res = await fetch(url, {
@@ -12,22 +13,21 @@ async function ghFetch(url, token) {
   return res.json();
 }
 
-async function fetchAllOrgRepos(token) {
+async function fetchPaginatedRepos(url, token) {
   const repos = [];
-  const pageErrors = [];
-  for (let page = 1; page <= 100; page++) {
-    const url = `https://api.github.com/orgs/${ORG}/repos?per_page=100&page=${page}&type=all`;
+  for (let page = 1; page <= 20; page++) {
+    const sep = url.includes('?') ? '&' : '?';
+    const pageUrl = `${url}${sep}per_page=100&page=${page}`;
     try {
-      const pageRepos = await ghFetch(url, token);
+      const pageRepos = await ghFetch(pageUrl, token);
       if (!Array.isArray(pageRepos) || pageRepos.length === 0) break;
       repos.push(...pageRepos);
       if (pageRepos.length < 100) break;
-    } catch (err) {
-      pageErrors.push({ page, message: err.message });
+    } catch {
       break;
     }
   }
-  return { repos, pageErrors };
+  return repos;
 }
 
 function aggregateLanguages(results) {
@@ -124,29 +124,51 @@ module.exports = async function handler(req, res) {
   const languagesByRepo = {};
   const errors = [];
 
-  let repos = [];
-  try {
-    const { repos: listed, pageErrors } = await fetchAllOrgRepos(token);
-    repos = listed;
-    for (const pe of pageErrors) {
-      errors.push({ step: 'listRepos', page: pe.page, message: pe.message });
+  let allRepos = [];
+  const seen = new Set();
+
+  for (const org of ORGS) {
+    try {
+      const orgRepos = await fetchPaginatedRepos(
+        `https://api.github.com/orgs/${org}/repos?type=all`, token
+      );
+      for (const r of orgRepos) {
+        if (!seen.has(r.full_name)) {
+          seen.add(r.full_name);
+          allRepos.push(r);
+        }
+      }
+    } catch (err) {
+      errors.push({ step: 'listOrgRepos', org, message: err.message });
     }
-  } catch (err) {
-    errors.push({ step: 'listRepos', message: err.message });
   }
 
-  if (repos.length > 0) {
+  try {
+    const userRepos = await fetchPaginatedRepos(
+      `https://api.github.com/users/${USER}/repos?type=owner`, token
+    );
+    for (const r of userRepos) {
+      if (!seen.has(r.full_name)) {
+        seen.add(r.full_name);
+        allRepos.push(r);
+      }
+    }
+  } catch (err) {
+    errors.push({ step: 'listUserRepos', message: err.message });
+  }
+
+  if (allRepos.length > 0) {
     const langResults = await Promise.all(
-      repos.map(async (repo) => {
-        const name = repo.name;
+      allRepos.map(async (repo) => {
+        const fullName = repo.full_name;
         try {
           const langs = await ghFetch(
-            `https://api.github.com/repos/${ORG}/${name}/languages`,
+            `https://api.github.com/repos/${fullName}/languages`,
             token
           );
-          return { name, langs };
+          return { name: fullName, langs };
         } catch (err) {
-          return { name, langs: null, error: err.message };
+          return { name: fullName, langs: null, error: err.message };
         }
       })
     );
@@ -160,25 +182,24 @@ module.exports = async function handler(req, res) {
   }
 
   let events = [];
-  let eventsError = null;
   try {
     const raw = await ghFetch(
-      `https://api.github.com/orgs/${ORG}/events?per_page=50`,
+      `https://api.github.com/users/${USER}/events?per_page=50`,
       token
     );
     const list = Array.isArray(raw) ? raw : [];
     events = list.map(formatTickerEvent).slice(0, 30);
   } catch (err) {
-    eventsError = err.message;
-    errors.push({ step: 'orgEvents', message: err.message });
+    errors.push({ step: 'userEvents', message: err.message });
   }
 
   return res.status(200).json({
     timestamp,
+    totalRepos: allRepos.length,
+    orgs: ORGS,
     languages,
     languagesByRepo,
     events,
-    ...(eventsError && { eventsError }),
     ...(errors.length > 0 && { errors }),
   });
 };

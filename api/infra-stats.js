@@ -1,17 +1,19 @@
-const VERCEL_TEAM = process.env.VERCEL_TEAM_ID || '';
-
-// Configure your Supabase projects here or via SUPABASE_PROJECTS env var (JSON array)
-const DEFAULT_SUPABASE_PROJECTS = [
-  // { id: 'your-project-id', name: 'Project Name', host: 'db.your-project-id.supabase.co' },
-];
+const VERCEL_TEAMS = (() => {
+  try {
+    const raw = process.env.VERCEL_TEAM_IDS || process.env.VERCEL_TEAM_ID || '';
+    return raw.split(',').map(s => s.trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+})();
 
 const SUPABASE_PROJECTS = (() => {
   try {
     return process.env.SUPABASE_PROJECTS
       ? JSON.parse(process.env.SUPABASE_PROJECTS)
-      : DEFAULT_SUPABASE_PROJECTS;
+      : [];
   } catch {
-    return DEFAULT_SUPABASE_PROJECTS;
+    return [];
   }
 })();
 
@@ -66,6 +68,7 @@ async function getSupabaseProjectStats(project, token) {
 
   return {
     name: project.name,
+    id: project.id,
     ok,
     latency,
     status: ok ? 'healthy' : status.toLowerCase(),
@@ -76,6 +79,67 @@ async function getSupabaseProjectStats(project, token) {
     dbSize,
     storageSize,
     monthlyApiRequests,
+  };
+}
+
+async function fetchTeamStats(teamId, vercelToken, mondayTs, todayTs) {
+  const teamParam = `&teamId=${teamId}`;
+  const { projects } = await vercelFetch(
+    `/v9/projects?limit=50${teamParam}`, vercelToken
+  );
+
+  const projectList = (projects || []).map(p => ({ id: p.id, name: p.name }));
+  const topProjects = projectList.slice(0, 12);
+
+  let deploymentsToday = 0;
+  let deploymentsWeek = 0;
+  let totalDeployments = 0;
+  let errors = 0;
+  let latestDeploy = null;
+  const projectDeployments = [];
+
+  await Promise.all(topProjects.map(async (proj) => {
+    try {
+      const data = await vercelFetch(
+        `/v6/deployments?projectId=${proj.id}${teamParam}&limit=20&since=${mondayTs}`,
+        vercelToken
+      );
+      const deps = data.deployments || [];
+      let projToday = 0, projWeek = 0, projErrors = 0;
+
+      deps.forEach(d => {
+        if (d.created >= todayTs) { deploymentsToday++; projToday++; }
+        if (d.created >= mondayTs) { deploymentsWeek++; projWeek++; }
+        totalDeployments++;
+        if (d.state === 'ERROR') { errors++; projErrors++; }
+        if (!latestDeploy || d.created > latestDeploy.created) {
+          latestDeploy = {
+            project: proj.name,
+            state: d.state,
+            created: d.created,
+            message: d.meta?.githubCommitMessage?.split('\n')[0] || '',
+            sha: d.meta?.githubCommitSha?.slice(0, 7) || '',
+          };
+        }
+      });
+
+      if (projWeek > 0) {
+        projectDeployments.push({
+          name: proj.name, today: projToday, week: projWeek, errors: projErrors,
+        });
+      }
+    } catch {}
+  }));
+
+  return {
+    teamId,
+    totalProjects: projectList.length,
+    deploymentsToday,
+    deploymentsWeek,
+    totalDeployments,
+    errors,
+    latestDeploy,
+    projectDeployments,
   };
 }
 
@@ -91,67 +155,44 @@ module.exports = async function handler(req, res) {
     supabase: null,
   };
 
-  if (vercelToken) {
+  if (vercelToken && VERCEL_TEAMS.length > 0) {
     try {
       const now = new Date();
       const today = now.toISOString().split('T')[0];
       const mondayTs = startOfWeek(now).getTime();
       const todayTs = new Date(today).getTime();
 
-      const teamParam = VERCEL_TEAM ? `&teamId=${VERCEL_TEAM}` : '';
-      const { projects } = await vercelFetch(
-        `/v9/projects?limit=50${teamParam}`, vercelToken
+      const teamResults = await Promise.all(
+        VERCEL_TEAMS.map(tid => fetchTeamStats(tid, vercelToken, mondayTs, todayTs))
       );
 
-      const projectList = (projects || []).map(p => ({ id: p.id, name: p.name }));
-      const topProjects = projectList.slice(0, 8);
-
+      let totalProjects = 0;
       let deploymentsToday = 0;
       let deploymentsWeek = 0;
       let totalDeployments = 0;
-      let errors = 0;
+      let totalErrors = 0;
       let latestDeploy = null;
-      const projectDeployments = [];
+      const allProjectDeployments = [];
 
-      await Promise.all(topProjects.map(async (proj) => {
-        try {
-          const data = await vercelFetch(
-            `/v6/deployments?projectId=${proj.id}${teamParam}&limit=20&since=${mondayTs}`,
-            vercelToken
-          );
-          const deps = data.deployments || [];
-          let projToday = 0, projWeek = 0, projErrors = 0;
-
-          deps.forEach(d => {
-            if (d.created >= todayTs) { deploymentsToday++; projToday++; }
-            if (d.created >= mondayTs) { deploymentsWeek++; projWeek++; }
-            totalDeployments++;
-            if (d.state === 'ERROR') { errors++; projErrors++; }
-            if (!latestDeploy || d.created > latestDeploy.created) {
-              latestDeploy = {
-                project: proj.name,
-                state: d.state,
-                created: d.created,
-                message: d.meta?.githubCommitMessage?.split('\n')[0] || '',
-                sha: d.meta?.githubCommitSha?.slice(0, 7) || '',
-              };
-            }
-          });
-
-          if (projWeek > 0) {
-            projectDeployments.push({
-              name: proj.name, today: projToday, week: projWeek, errors: projErrors,
-            });
-          }
-        } catch {}
-      }));
+      for (const t of teamResults) {
+        totalProjects += t.totalProjects;
+        deploymentsToday += t.deploymentsToday;
+        deploymentsWeek += t.deploymentsWeek;
+        totalDeployments += t.totalDeployments;
+        totalErrors += t.errors;
+        allProjectDeployments.push(...t.projectDeployments);
+        if (t.latestDeploy && (!latestDeploy || t.latestDeploy.created > latestDeploy.created)) {
+          latestDeploy = t.latestDeploy;
+        }
+      }
 
       const successRate = totalDeployments > 0
-        ? Math.round(((totalDeployments - errors) / totalDeployments) * 100)
+        ? Math.round(((totalDeployments - totalErrors) / totalDeployments) * 100)
         : 100;
 
       result.vercel = {
-        totalProjects: projectList.length,
+        teams: VERCEL_TEAMS.length,
+        totalProjects,
         deploymentsToday,
         deploymentsWeek,
         successRate,
@@ -159,9 +200,9 @@ module.exports = async function handler(req, res) {
           ...latestDeploy,
           time: new Date(latestDeploy.created).toISOString(),
         } : null,
-        activeProjects: projectDeployments
+        activeProjects: allProjectDeployments
           .sort((a, b) => b.week - a.week)
-          .slice(0, 6),
+          .slice(0, 8),
       };
     } catch (err) {
       result.vercel = { error: err.message };
@@ -169,48 +210,43 @@ module.exports = async function handler(req, res) {
   }
 
   const sbToken = process.env.SUPABASE_ACCESS_TOKEN;
-  if (SUPABASE_PROJECTS.length > 0) {
+
+  if (sbToken) {
     try {
-      let projects;
-      if (sbToken) {
-        projects = await Promise.all(
-          SUPABASE_PROJECTS.map(p => getSupabaseProjectStats(p, sbToken))
-        );
-      } else {
-        projects = await Promise.all(
-          SUPABASE_PROJECTS.map(async (project) => {
-            const url = `https://${project.id}.supabase.co/rest/v1/`;
-            try {
-              const start = Date.now();
-              const r = await fetch(url, {
-                headers: { apikey: 'placeholder' },
-                signal: AbortSignal.timeout(5000),
-              });
-              const latency = Date.now() - start;
-              const ok = r.status < 500;
-              return { name: project.name, ok, latency, status: ok ? 'healthy' : 'degraded' };
-            } catch {
-              return { name: project.name, ok: false, latency: null, status: 'unreachable' };
-            }
-          })
-        );
+      let projectList = SUPABASE_PROJECTS;
+
+      if (projectList.length === 0) {
+        const discovered = await supabaseMgmt('/v1/projects', sbToken);
+        if (Array.isArray(discovered)) {
+          projectList = discovered.map(p => ({
+            id: p.id,
+            name: p.name,
+            host: p.database?.host || `db.${p.id}.supabase.co`,
+          }));
+        }
       }
 
-      const allHealthy = projects.every(h => h.ok);
-      const avgLatency = Math.round(
-        projects.filter(h => h.latency).reduce((s, h) => s + h.latency, 0) /
-        (projects.filter(h => h.latency).length || 1)
-      );
-      const dbVersions = [...new Set(projects.map(p => p.dbVersion).filter(Boolean))];
+      if (projectList.length > 0) {
+        const projects = await Promise.all(
+          projectList.map(p => getSupabaseProjectStats(p, sbToken))
+        );
 
-      result.supabase = {
-        totalProjects: SUPABASE_PROJECTS.length,
-        healthy: projects.filter(h => h.ok).length,
-        allHealthy,
-        avgLatency,
-        dbVersions,
-        projects,
-      };
+        const allHealthy = projects.every(h => h.ok);
+        const avgLatency = Math.round(
+          projects.filter(h => h.latency).reduce((s, h) => s + h.latency, 0) /
+          (projects.filter(h => h.latency).length || 1)
+        );
+        const dbVersions = [...new Set(projects.map(p => p.dbVersion).filter(Boolean))];
+
+        result.supabase = {
+          totalProjects: projectList.length,
+          healthy: projects.filter(h => h.ok).length,
+          allHealthy,
+          avgLatency,
+          dbVersions,
+          projects,
+        };
+      }
     } catch (err) {
       result.supabase = { error: err.message };
     }

@@ -1,23 +1,18 @@
 #!/usr/bin/env node
 /**
- * Scans org repos for dependencies (local + GitHub API fallback).
+ * Scans repos for dependencies across multiple orgs + personal repos.
  * Outputs to public/data-deps.json
- *
- * Configure via environment variables:
- *   GITHUB_ORG      - GitHub organization name (required for GitHub scan)
- *   GITHUB_TOKEN    - GitHub personal access token
- *   GITHUB_USER     - Your GitHub username (for contributor filtering)
- *   SCAN_ROOT       - Local directory path for local scan mode
  */
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
-import { join, basename } from 'path';
+import { join } from 'path';
 import { execSync } from 'child_process';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-const ORG = process.env.GITHUB_ORG || 'your-org';
+const USER = process.env.GITHUB_USER || 'muraschal';
+const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
 const LOCAL_ROOT = process.env.SCAN_ROOT || '';
 const SKIP = new Set(['.github', 'node_modules']);
-const MY_AUTHORS = (process.env.GITHUB_USER || '').split(',').map(s => s.trim()).filter(Boolean);
+const MY_AUTHORS = (USER).split(',').map(s => s.trim()).filter(Boolean);
 
 const CATEGORIES = {
   'next': 'Framework', 'react': 'Framework', 'react-dom': 'Framework', 'vue': 'Framework',
@@ -131,30 +126,73 @@ function scanLocal(root) {
   return repos;
 }
 
+async function ghFetchJSON(url) {
+  const res = await fetch(url, {
+    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+async function fetchPaginatedRepos(url) {
+  const repos = [];
+  for (let page = 1; page <= 20; page++) {
+    const sep = url.includes('?') ? '&' : '?';
+    const data = await ghFetchJSON(`${url}${sep}per_page=100&page=${page}`);
+    if (!Array.isArray(data) || data.length === 0) break;
+    repos.push(...data);
+    if (data.length < 100) break;
+  }
+  return repos;
+}
+
 async function scanGitHub() {
   if (!TOKEN) return {};
 
   const repos = {};
-  const repoList = await fetch(`https://api.github.com/orgs/${ORG}/repos?per_page=100`, {
-    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' },
-  }).then(r => r.json());
+  const allRepos = [];
+  const seen = new Set();
 
-  for (const repo of (Array.isArray(repoList) ? repoList : [])) {
+  for (const org of ORGS) {
+    try {
+      const orgRepos = await fetchPaginatedRepos(`https://api.github.com/orgs/${org}/repos?type=all`);
+      for (const r of orgRepos) {
+        if (!seen.has(r.full_name)) {
+          seen.add(r.full_name);
+          allRepos.push(r);
+        }
+      }
+    } catch {}
+  }
+
+  try {
+    const userRepos = await fetchPaginatedRepos(`https://api.github.com/users/${USER}/repos?type=owner`);
+    for (const r of userRepos) {
+      if (!seen.has(r.full_name)) {
+        seen.add(r.full_name);
+        allRepos.push(r);
+      }
+    }
+  } catch {}
+
+  for (const repo of allRepos) {
     if (SKIP.has(repo.name)) continue;
     try {
-      const contribRes = await fetch(
-        `https://api.github.com/repos/${ORG}/${repo.name}/contributors?per_page=100`,
-        { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' } }
-      );
-      if (MY_AUTHORS.length > 0 && contribRes.ok) {
-        const contribs = await contribRes.json();
-        const logins = (Array.isArray(contribs) ? contribs : []).map(c => c.login?.toLowerCase());
-        if (!MY_AUTHORS.some(a => logins.includes(a.toLowerCase()))) {
-          continue;
+      if (MY_AUTHORS.length > 0) {
+        const contribRes = await fetch(
+          `https://api.github.com/repos/${repo.full_name}/contributors?per_page=100`,
+          { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github+json' } }
+        );
+        if (contribRes.ok) {
+          const contribs = await contribRes.json();
+          const logins = (Array.isArray(contribs) ? contribs : []).map(c => c.login?.toLowerCase());
+          if (!MY_AUTHORS.some(a => logins.includes(a.toLowerCase()))) {
+            continue;
+          }
         }
       }
       const content = await fetch(
-        `https://api.github.com/repos/${ORG}/${repo.name}/contents/package.json`,
+        `https://api.github.com/repos/${repo.full_name}/contents/package.json`,
         { headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.raw+json' } }
       );
       if (!content.ok) continue;
@@ -167,7 +205,7 @@ async function scanGitHub() {
       else if (deps.vite || devDeps.vite) framework = 'Vite';
       else if (deps.express) framework = 'Express';
 
-      repos[repo.name] = {
+      repos[repo.full_name] = {
         framework,
         dependencies: Object.entries(deps).map(([n, v]) => ({ name: n, version: v, dev: false })),
         devDependencies: Object.entries(devDeps).map(([n, v]) => ({ name: n, version: v, dev: true })),
@@ -182,7 +220,7 @@ async function scanGitHub() {
 }
 
 async function main() {
-  console.log('Scanning dependencies...');
+  console.log(`Scanning dependencies for ${USER} across ${ORGS.length} orgs + personal repos...`);
 
   let repos;
   if (LOCAL_ROOT && existsSync(LOCAL_ROOT)) {
@@ -222,6 +260,8 @@ async function main() {
 
   const output = {
     generated: new Date().toISOString(),
+    user: USER,
+    orgs: ORGS,
     repoCount: Object.keys(repos).length,
     uniquePackages: Object.keys(pkgUsage).length,
     repos: Object.fromEntries(

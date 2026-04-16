@@ -2,7 +2,6 @@ name: Update Dashboard Data
 
 on:
   schedule:
-    # Runs 3x daily — adjust to your preferred times (UTC)
     - cron: '0 5,10,16 * * *'
   workflow_dispatch:
 
@@ -23,16 +22,16 @@ jobs:
       - name: Generate dashboard data
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
           GITHUB_USER: ${{ vars.GITHUB_USER }}
+          GITHUB_ORGS: ${{ vars.GITHUB_ORGS }}
           GITHUB_HUMAN_AUTHORS: ${{ vars.GITHUB_HUMAN_AUTHORS }}
         run: node scripts/generate-data.mjs
 
       - name: Scan dependencies
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
           GITHUB_USER: ${{ vars.GITHUB_USER }}
+          GITHUB_ORGS: ${{ vars.GITHUB_ORGS }}
         run: node scripts/scan-deps.mjs
 
       - name: Commit and push if changed

@@ -2,9 +2,10 @@
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-const ORG = process.env.GITHUB_ORG || 'your-org';
+const USER = process.env.GITHUB_USER || 'muraschal';
+const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
 const HUMAN_AUTHORS = new Set(
-  (process.env.GITHUB_HUMAN_AUTHORS || process.env.GITHUB_USER || '').split(',').map(s => s.trim()).filter(Boolean)
+  (process.env.GITHUB_HUMAN_AUTHORS || USER).split(',').map(s => s.trim()).filter(Boolean)
 );
 const BOTS = new Set(['github-actions[bot]', 'dependabot[bot]', 'renovate[bot]']);
 
@@ -17,7 +18,7 @@ async function ghFetch(url) {
     headers: {
       Authorization: `token ${TOKEN}`,
       Accept: 'application/vnd.github+json',
-      'User-Agent': 'workload-portfolio-dashboard',
+      'User-Agent': 'cockpit-dashboard',
     },
   });
   if (!res.ok) {
@@ -90,13 +91,13 @@ async function main() {
     cur = next;
   }
 
-  console.log(`Fetching commits across ${months.length} months...`);
+  console.log(`Fetching commits for author:${USER} across ${months.length} months...`);
 
   const allCommits = [];
   for (const { from, to } of months) {
     console.log(`  ${from} → ${to}`);
     try {
-      const items = await searchCommits(`org:${ORG} committer-date:${from}..${to}`);
+      const items = await searchCommits(`author:${USER} committer-date:${from}..${to}`);
       allCommits.push(...items);
       console.log(`    → ${items.length} commits`);
     } catch (e) {
@@ -118,7 +119,7 @@ async function main() {
 
     const date = dateStr.split('T')[0];
     const login = c.author?.login || c.commit?.author?.name || 'unknown';
-    const repo = c.repository?.name || 'unknown';
+    const repo = c.repository?.full_name || c.repository?.name || 'unknown';
     const month = date.slice(0, 7);
 
     calendar[date] = (calendar[date] || 0) + 1;
@@ -147,7 +148,6 @@ async function main() {
     else aiAuthors[login] = count;
   }
 
-  // Weekly trend history
   const historyPath = 'public/data-history.json';
   let history = [];
   if (existsSync(historyPath)) {
@@ -161,7 +161,7 @@ async function main() {
   const activeReposThisWeek = new Set(allCommits.filter(c => {
     const d = c.commit?.author?.date?.split('T')[0];
     return d && d >= getWeekStart(now) && d <= today;
-  }).map(c => c.repository?.name)).size;
+  }).map(c => c.repository?.full_name || c.repository?.name)).size;
 
   const existing = history.findIndex(h => h.week === weekKey);
   const weekEntry = {
@@ -180,6 +180,8 @@ async function main() {
 
   const output = {
     generated: now.toISOString(),
+    user: USER,
+    orgs: ORGS,
     calendar,
     hourly,
     authors: { human: humanAuthors, ai: aiAuthors },
