@@ -2,6 +2,12 @@
 node_modules/
 .next/
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Vercel (Projekt-Link committen, Secrets nicht)
 .vercel/*
 !.vercel/project.json
@@ -15,7 +21,8 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Editor
+# Editor / Cursor
+.cursor/
 *.swp
 *.swo
 *~

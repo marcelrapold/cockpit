@@ -143,6 +143,31 @@ async function fetchTeamStats(teamId, vercelToken, mondayTs, todayTs) {
   };
 }
 
+function emptyVercelShell(hint) {
+  return {
+    configured: false,
+    teams: 0,
+    totalProjects: 0,
+    deploymentsToday: 0,
+    deploymentsWeek: 0,
+    successRate: 100,
+    latestDeploy: null,
+    activeProjects: [],
+    ...(hint ? { hint } : {}),
+  };
+}
+
+function emptySupabaseShell(hint) {
+  return {
+    configured: false,
+    totalProjects: 0,
+    healthy: 0,
+    avgLatency: 0,
+    projects: [],
+    ...(hint ? { hint } : {}),
+  };
+}
+
 module.exports = async function fetchInfraStats(opts = {}) {
   const vercelToken = process.env.VERCEL_API_KEY;
 
@@ -193,6 +218,7 @@ module.exports = async function fetchInfraStats(opts = {}) {
         : 100;
 
       result.vercel = {
+        configured: true,
         teams: VERCEL_TEAMS.length,
         totalProjects,
         deploymentsToday,
@@ -207,7 +233,11 @@ module.exports = async function fetchInfraStats(opts = {}) {
           .slice(0, 8),
       };
     } catch (err) {
-      result.vercel = { error: err.message };
+      result.vercel = {
+        ...emptyVercelShell(),
+        configured: true,
+        error: err.message,
+      };
     }
   }
 
@@ -241,6 +271,7 @@ module.exports = async function fetchInfraStats(opts = {}) {
         const dbVersions = [...new Set(projects.map(p => p.dbVersion).filter(Boolean))];
 
         result.supabase = {
+          configured: true,
           totalProjects: projectList.length,
           healthy: projects.filter(h => h.ok).length,
           allHealthy,
@@ -250,8 +281,23 @@ module.exports = async function fetchInfraStats(opts = {}) {
         };
       }
     } catch (err) {
-      result.supabase = { error: err.message };
+      result.supabase = {
+        ...emptySupabaseShell(),
+        configured: true,
+        error: err.message,
+      };
     }
+  }
+
+  if (!result.vercel) {
+    if (!vercelToken) result.vercel = emptyVercelShell('Vercel: VERCEL_API_KEY fehlt');
+    else if (VERCEL_TEAMS.length === 0) result.vercel = emptyVercelShell('Vercel: VERCEL_TEAM_IDS fehlt');
+    else result.vercel = emptyVercelShell();
+  }
+
+  if (!result.supabase) {
+    if (!sbToken) result.supabase = emptySupabaseShell('Supabase: SUPABASE_ACCESS_TOKEN fehlt');
+    else result.supabase = emptySupabaseShell('Keine Projekte gefunden');
   }
 
   return result;

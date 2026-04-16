@@ -17,9 +17,10 @@ module.exports = async function handler(req, res) {
     const data = await fetchDora({ days: rangeToDays(range) });
     return res.json(data);
   } catch (err) {
+    const days = rangeToDays(range);
     return res.status(200).json({
+      ...fetchDora.buildEmptyDoraPayload(days),
       error: err.message,
-      timestamp: new Date().toISOString(),
     });
   }
 };

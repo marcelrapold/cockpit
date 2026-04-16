@@ -3241,33 +3241,52 @@ async function fetchDORA() {
   try {
     const res = await fetch(`/api/dora?range=${window.RANGE}`);
     const d = await res.json();
-    if (d.error && !d.metrics) return;
-
     const m = d.metrics;
+    if (!m) return;
 
-    animateCounter(document.getElementById('doraDfVal'), m.deployFrequency.value);
-    setTrend(document.getElementById('doraDfTrend'), m.deployFrequency.trend);
-    setTier(document.getElementById('doraDfTier'), m.deployFrequency.tier);
-    renderSparkline(document.getElementById('doraDfSpark'), m.deployFrequency.sparkline, tierColors[m.deployFrequency.tier]);
+    const df = m.deployFrequency || {};
+    const lt = m.leadTime || {};
+    const cfr = m.changeFailureRate || {};
+    const mt = m.mttr || {};
 
-    const ltDisplay = m.leadTime.value > 120 ? Math.round(m.leadTime.value / 60 * 10) / 10 : m.leadTime.value;
-    const ltUnit = m.leadTime.value > 120 ? 'h' : 'min';
+    animateCounter(document.getElementById('doraDfVal'), df.value);
+    setTrend(document.getElementById('doraDfTrend'), df.trend);
+    setTier(document.getElementById('doraDfTier'), df.tier || 'unknown');
+    renderSparkline(document.getElementById('doraDfSpark'), df.sparkline, tierColors[df.tier] || tierColors.unknown);
+
+    const ltDisplay = lt.value > 120 ? Math.round(lt.value / 60 * 10) / 10 : lt.value;
+    const ltUnit = lt.value > 120 ? 'h' : 'min';
     animateCounter(document.getElementById('doraLtVal'), ltDisplay);
-    document.getElementById('doraLt').querySelector('.hc-unit').textContent = ltUnit;
-    setTrend(document.getElementById('doraLtTrend'), m.leadTime.trend);
-    setTier(document.getElementById('doraLtTier'), m.leadTime.tier);
+    const ltCard = document.getElementById('doraLt');
+    const ltUnitEl = ltCard && ltCard.querySelector('.hc-unit');
+    if (ltUnitEl) ltUnitEl.textContent = ltUnit;
+    setTrend(document.getElementById('doraLtTrend'), lt.trend);
+    setTier(document.getElementById('doraLtTier'), lt.tier || 'unknown');
+    if (lt.sparkline && lt.sparkline.length) {
+      renderSparkline(document.getElementById('doraLtSpark'), lt.sparkline, tierColors[lt.tier] || tierColors.unknown);
+    }
 
-    animateCounter(document.getElementById('doraCfrVal'), m.changeFailureRate.value);
-    setTrend(document.getElementById('doraCfrTrend'), m.changeFailureRate.trend);
-    setTier(document.getElementById('doraCfrTier'), m.changeFailureRate.tier);
+    animateCounter(document.getElementById('doraCfrVal'), cfr.value);
+    setTrend(document.getElementById('doraCfrTrend'), cfr.trend);
+    setTier(document.getElementById('doraCfrTier'), cfr.tier || 'unknown');
+    if (cfr.sparkline && cfr.sparkline.length) {
+      renderSparkline(document.getElementById('doraCfrSpark'), cfr.sparkline, tierColors[cfr.tier] || tierColors.unknown);
+    }
 
-    const mttrDisplay = m.mttr.value > 120 ? Math.round(m.mttr.value / 60 * 10) / 10 : m.mttr.value;
-    const mttrUnit = m.mttr.value > 120 ? 'h' : 'min';
+    const mttrDisplay = mt.value > 120 ? Math.round(mt.value / 60 * 10) / 10 : mt.value;
+    const mttrUnit = mt.value > 120 ? 'h' : 'min';
     animateCounter(document.getElementById('doraMttrVal'), mttrDisplay);
-    document.getElementById('doraMttr').querySelector('.hc-unit').textContent = mttrUnit;
-    setTier(document.getElementById('doraMttrTier'), m.mttr.tier);
+    const mtCard = document.getElementById('doraMttr');
+    const mtUnitEl = mtCard && mtCard.querySelector('.hc-unit');
+    if (mtUnitEl) mtUnitEl.textContent = mttrUnit;
+    setTier(document.getElementById('doraMttrTier'), mt.tier || 'unknown');
+    if (mt.sparkline && mt.sparkline.length) {
+      renderSparkline(document.getElementById('doraMttrSpark'), mt.sparkline, tierColors[mt.tier] || tierColors.unknown);
+    }
 
-  } catch {}
+  } catch (e) {
+    console.warn('fetchDORA:', e);
+  }
 }
 
 function updateHeroGitHub(d) {
@@ -3310,76 +3329,98 @@ async function fetchInfraStats() {
     const res = await fetch(`/api/infra-stats?range=${window.RANGE || '30d'}`);
     const d = await res.json();
     const bar = document.getElementById('infraBar');
+    if (!bar) return;
 
-    if (!d.vercel && !d.supabase) return;
+    const v = d.vercel || {};
+    const s = d.supabase || {};
     bar.style.display = '';
 
-    if (d.vercel && !d.vercel.error) {
-      document.getElementById('infraDeplToday').textContent = d.vercel.deploymentsToday;
-      document.getElementById('infraDeplWeek').textContent = d.vercel.deploymentsWeek;
+    const lastDeplEl = document.getElementById('infraLastDeploy');
+    if (v.error && lastDeplEl) {
+      lastDeplEl.innerHTML = '<span class="live-error">Vercel: ' + String(v.error).slice(0, 160) + '</span>';
+    } else if (v.hint && lastDeplEl && !v.latestDeploy) {
+      lastDeplEl.innerHTML = '<span style="color:var(--text-muted);font-size:0.72rem">' + v.hint + '</span>';
+    }
 
-      const vp = d.vercel.totalProjects || 0;
-      const sp = d.supabase?.totalProjects || 0;
+    if (!v.error) {
+      document.getElementById('infraDeplToday').textContent = v.deploymentsToday != null ? v.deploymentsToday : '–';
+      document.getElementById('infraDeplWeek').textContent = v.deploymentsWeek != null ? v.deploymentsWeek : '–';
+
+      const vp = v.totalProjects || 0;
+      const sp = s.totalProjects || 0;
       const hEl = document.getElementById('statHosting');
       if (hEl) hEl.textContent = vp + ' + ' + sp;
       const sEl = document.getElementById('infraSuccess');
-      sEl.textContent = d.vercel.successRate + '%';
-      sEl.className = 'live-val live-trend ' + (d.vercel.successRate >= 95 ? 'up' : d.vercel.successRate >= 80 ? 'flat' : 'down');
-      document.getElementById('infraVercelProjects').textContent = d.vercel.totalProjects;
+      const sr = v.successRate != null ? v.successRate : 100;
+      sEl.textContent = sr + '%';
+      sEl.className = 'live-val live-trend ' + (sr >= 95 ? 'up' : sr >= 80 ? 'flat' : 'down');
+      document.getElementById('infraVercelProjects').textContent = v.totalProjects != null ? v.totalProjects : '–';
 
       const gv = document.getElementById('infraGridVercel');
-      if (gv) gv.textContent = vp;
+      if (gv) gv.textContent = String(vp);
       const gd = document.getElementById('infraGridDeplWeek');
-      if (gd) gd.textContent = d.vercel.deploymentsWeek + ' (' + d.vercel.successRate + '% OK)';
+      if (gd) gd.textContent = (v.deploymentsWeek != null ? v.deploymentsWeek : '0') + ' (' + sr + '% OK)';
 
-      if (d.vercel.latestDeploy) {
-        const ld = d.vercel.latestDeploy;
-        const msg = ld.message.length > 40 ? ld.message.slice(0, 37) + '…' : ld.message;
-        document.getElementById('infraLastDeploy').innerHTML =
+      if (v.latestDeploy && lastDeplEl) {
+        const ld = v.latestDeploy;
+        const msg = (ld.message && ld.message.length > 40) ? ld.message.slice(0, 37) + '…' : (ld.message || '');
+        lastDeplEl.innerHTML =
           `<code>${ld.project}</code> ${msg} — <em>${timeAgo(ld.time)}</em>`;
       }
 
       const projEl = document.getElementById('infraActiveProjects');
-      projEl.innerHTML = '';
-      (d.vercel.activeProjects || []).slice(0, 4).forEach(p => {
-        const chip = document.createElement('span');
-        chip.className = 'live-repo-chip';
-        chip.innerHTML = `${p.name}<span class="lr-count">${p.week}</span>`;
-        projEl.appendChild(chip);
-      });
-    }
-
-    if (d.supabase && !d.supabase.error) {
-      document.getElementById('infraSupaHealth').textContent =
-        `${d.supabase.healthy}/${d.supabase.totalProjects}`;
-      document.getElementById('infraSupaLatency').textContent =
-        d.supabase.avgLatency + 'ms';
-
-      const gs = document.getElementById('infraGridSupabase');
-      if (gs) gs.textContent = d.supabase.totalProjects + ' (' + d.supabase.healthy + ' healthy)';
-      const gsd = document.getElementById('infraGridSupaDetail');
-      if (gsd) gsd.textContent = 'Ø ' + d.supabase.avgLatency + 'ms Latenz';
-
-      const detailEl = document.getElementById('infraSupaDetail');
-      if (detailEl && d.supabase.projects) {
-        detailEl.innerHTML = d.supabase.projects.map(p => {
-          const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
-          const meta = [
-            p.region || null,
-            p.latency ? p.latency + 'ms' : null,
-            p.dbVersion ? 'PG ' + p.dbVersion.split('.').slice(0, 2).join('.') : null,
-          ].filter(Boolean).join(' · ');
-          const planCls = p.plan === 'pro' ? 'plan-pro' : 'plan-free';
-          return `<span class="supa-proj-pill${cls}">
-            <span class="supa-dot"></span>
-            ${p.name}
-            ${p.plan ? `<span class="plan-badge ${planCls}">${p.plan}</span>` : ''}
-            ${meta ? `<span class="supa-proj-meta">${meta}</span>` : ''}
-          </span>`;
-        }).join('');
+      if (projEl) {
+        projEl.innerHTML = '';
+        (v.activeProjects || []).slice(0, 4).forEach(p => {
+          const chip = document.createElement('span');
+          chip.className = 'live-repo-chip';
+          chip.innerHTML = `${p.name}<span class="lr-count">${p.week}</span>`;
+          projEl.appendChild(chip);
+        });
       }
     }
-  } catch {}
+
+    if (!s.error) {
+      const supH = document.getElementById('infraSupaHealth');
+      const supL = document.getElementById('infraSupaLatency');
+      if (supH) supH.textContent = `${s.healthy != null ? s.healthy : 0}/${s.totalProjects != null ? s.totalProjects : 0}`;
+      const avgLat = s.avgLatency != null ? s.avgLatency : 0;
+      if (supL) supL.textContent = avgLat + 'ms';
+
+      const gs = document.getElementById('infraGridSupabase');
+      if (gs) gs.textContent = (s.totalProjects || 0) + ' (' + (s.healthy || 0) + ' healthy)';
+      const gsd = document.getElementById('infraGridSupaDetail');
+      if (gsd) gsd.textContent = 'Ø ' + avgLat + 'ms Latenz';
+
+      const detailEl = document.getElementById('infraSupaDetail');
+      if (detailEl) {
+        if (s.hint && (!s.projects || !s.projects.length)) {
+          detailEl.innerHTML = '<span style="color:var(--text-muted);font-size:0.72rem">' + s.hint + '</span>';
+        } else if (s.projects && s.projects.length) {
+          detailEl.innerHTML = s.projects.map(p => {
+            const cls = p.ok ? '' : (p.status === 'unreachable' ? ' unreachable' : ' degraded');
+            const meta = [
+              p.region || null,
+              p.latency ? p.latency + 'ms' : null,
+              p.dbVersion ? 'PG ' + p.dbVersion.split('.').slice(0, 2).join('.') : null,
+            ].filter(Boolean).join(' · ');
+            const planCls = p.plan === 'pro' ? 'plan-pro' : 'plan-free';
+            return `<span class="supa-proj-pill${cls}">
+              <span class="supa-dot"></span>
+              ${p.name}
+              ${p.plan ? `<span class="plan-badge ${planCls}">${p.plan}</span>` : ''}
+              ${meta ? `<span class="supa-proj-meta">${meta}</span>` : ''}
+            </span>`;
+          }).join('');
+        }
+      }
+    } else {
+      const supD = document.getElementById('infraSupaDetail');
+      if (supD) supD.innerHTML = '<span class="live-error">Supabase: ' + String(s.error).slice(0, 160) + '</span>';
+    }
+  } catch (e) {
+    console.warn('fetchInfraStats:', e);
+  }
 }
 
 fetchInfraStats();
@@ -4888,10 +4929,17 @@ async function loadLanguages() {
   try {
     const res = await fetch('/api/language-stats');
     const d = await res.json();
-    if (d.error) return;
     const langs = d.languages || {};
     const total = Object.values(langs).reduce((s, v) => s + v, 0);
-    if (total === 0) return;
+    if (total === 0) {
+      const legend = document.getElementById('langLegend');
+      const bar = document.getElementById('langBar');
+      if (legend && d.error) {
+        legend.innerHTML = '<span style="font-size:0.75rem;color:var(--text-muted)">' + d.error + '</span>';
+      }
+      if (bar) bar.innerHTML = '';
+      return;
+    }
     const techEl = document.getElementById('statTech');
     if (techEl) techEl.textContent = Object.keys(langs).length + '+';
     const sorted = Object.entries(langs).sort((a, b) => b[1] - a[1]);

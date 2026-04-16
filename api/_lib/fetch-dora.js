@@ -46,6 +46,50 @@ function median(arr) {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
+/** Volle Metrik-Struktur für fehlende Vercel-Konfiguration oder Fehlerfälle (UI bleibt konsistent). */
+function buildEmptyDoraPayload(days) {
+  const d = Math.max(1, days || 30);
+  const now = new Date();
+  const sinceTs = now.getTime() - d * 86400000;
+  const dailyCounts = Array.from({ length: Math.min(d, 30) }, () => 0);
+  return {
+    timestamp: now.toISOString(),
+    period: { days: d, since: new Date(sinceTs).toISOString(), until: now.toISOString() },
+    metrics: {
+      deployFrequency: {
+        value: 0,
+        unit: '/day',
+        tier: 'unknown',
+        trend: 0,
+        total: 0,
+        sparkline: dailyCounts,
+      },
+      leadTime: {
+        value: 0,
+        unit: 'min',
+        tier: 'unknown',
+        trend: 0,
+        samples: 0,
+      },
+      changeFailureRate: {
+        value: 0,
+        unit: '%',
+        tier: 'unknown',
+        trend: 0,
+        errors: 0,
+        total: 0,
+      },
+      mttr: {
+        value: 0,
+        unit: 'min',
+        tier: 'unknown',
+        incidents: 0,
+      },
+    },
+    tiers: TIERS,
+  };
+}
+
 async function fetchTeamDeploys(teamId, token, sinceTs) {
   const teamParam = `&teamId=${teamId}`;
   const { projects } = await vercelFetch(
@@ -76,17 +120,18 @@ async function fetchTeamDeploys(teamId, token, sinceTs) {
   return allDeploys;
 }
 
-module.exports = async function fetchDora(opts = {}) {
+async function fetchDora(opts = {}) {
   const token = process.env.VERCEL_API_KEY;
+  const days = opts.days || 30;
   if (!token || VERCEL_TEAMS.length === 0) {
     return {
+      ...buildEmptyDoraPayload(days),
       error: 'VERCEL_API_KEY or VERCEL_TEAM_IDS not configured',
-      timestamp: new Date().toISOString(),
+      configMissing: true,
     };
   }
 
   const now = new Date();
-  const days = opts.days || 30;
   const sinceTs = now.getTime() - days * 86400000;
 
   const teamDeploys = await Promise.all(
@@ -184,14 +229,14 @@ module.exports = async function fetchDora(opts = {}) {
         value: leadTimeMedian,
         unit: 'min',
         tier: classifyTier('leadTime', leadTimeMedian),
-        trend: trend(prevLeadTimeMedian, leadTimeMedian),
+        trend: trend(leadTimeMedian, prevLeadTimeMedian),
         samples: leadTimes.length,
       },
       changeFailureRate: {
         value: cfr,
         unit: '%',
         tier: classifyTier('cfr', cfr),
-        trend: trend(prevCfr, cfr),
+        trend: trend(cfr, prevCfr),
         errors: errorDeploys.length,
         total,
       },
@@ -204,4 +249,7 @@ module.exports = async function fetchDora(opts = {}) {
     },
     tiers: TIERS,
   };
-};
+}
+
+fetchDora.buildEmptyDoraPayload = buildEmptyDoraPayload;
+module.exports = fetchDora;

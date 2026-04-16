@@ -1,8 +1,5 @@
 import path from 'path';
-import { pathToFileURL } from 'url';
 import type { NextRequest } from 'next/server';
-
-type LegacyHandler = (req: LegacyRequest, res: LegacyResponse) => unknown | Promise<unknown>;
 
 export type LegacyRequest = {
   method?: string;
@@ -16,6 +13,21 @@ type LegacyResponse = {
   json(body: unknown): LegacyResponse;
   end(): LegacyResponse;
 };
+
+type LegacyHandler = (req: LegacyRequest, res: LegacyResponse) => unknown | Promise<unknown>;
+
+/**
+ * Legacy-API-Dateien unter ./api sind CommonJS. Webpack stubbt dynamische `import(url)` und
+ * parst `createRequire(...)` nicht zuverlässig — Laufzeit-Import von node:module mit Ignore-Flag.
+ */
+async function loadLegacyModule(relPath: string) {
+  const { createRequire } = await import(
+    /* webpackIgnore: true */ 'node:module'
+  );
+  const rootRequire = createRequire(path.join(process.cwd(), 'package.json'));
+  const abs = path.join(process.cwd(), 'api', relPath);
+  return rootRequire(abs) as { default?: LegacyHandler };
+}
 
 function buildMockReq(request: NextRequest): LegacyRequest {
   const url = new URL(request.url);
@@ -68,10 +80,7 @@ function buildMockRes(): {
 }
 
 export async function runLegacyApi(relPath: string, request: NextRequest) {
-  const abs = path.join(process.cwd(), 'api', relPath);
-  const mod = (await import(pathToFileURL(abs).href)) as {
-    default?: LegacyHandler;
-  };
+  const mod = await loadLegacyModule(relPath);
   const handler = (mod.default ?? mod) as LegacyHandler;
   const mockReq = buildMockReq(request);
   const { res: mockRes, finalize } = buildMockRes();
