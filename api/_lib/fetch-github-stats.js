@@ -146,7 +146,8 @@ module.exports = async function fetchGithubStats() {
     const d = e.created_at?.split('T')[0];
     if (d && d >= monday) {
       const repo = e.repo.name;
-      weekRepos[repo] = (weekRepos[repo] || 0) + (e.payload.size || 0);
+      const count = e.payload.size || e.payload.distinct_size || (e.payload.commits ? e.payload.commits.length : 0) || 1;
+      weekRepos[repo] = (weekRepos[repo] || 0) + count;
     }
   });
 
