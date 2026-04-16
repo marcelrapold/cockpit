@@ -4,6 +4,7 @@ const fetchGithubStats = require('../_lib/fetch-github-stats');
 const fetchInfraStats = require('../_lib/fetch-infra-stats');
 const fetchLanguageStats = require('../_lib/fetch-language-stats');
 const fetchHealthCheck = require('../_lib/fetch-health-check');
+const fetchDora = require('../_lib/fetch-dora');
 
 module.exports = async function handler(req, res) {
   const secret = (process.env.CRON_SECRET || '').trim();
@@ -19,9 +20,10 @@ module.exports = async function handler(req, res) {
     fetchInfraStats().then(d => set(KEYS.infraStats, d)),
     fetchLanguageStats().then(d => set(KEYS.languageStats, d)),
     fetchHealthCheck().then(d => set(KEYS.healthCheck, d)),
+    fetchDora().then(d => set(KEYS.dora, d)),
   ]);
 
-  const keyNames = Object.keys(KEYS);
+  const keyNames = ['portfolio', 'githubStats', 'infraStats', 'languageStats', 'healthCheck', 'dora'];
   const summary = results.map((r, i) => ({
     key: keyNames[i],
     status: r.status,

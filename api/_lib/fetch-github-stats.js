@@ -74,7 +74,27 @@ function startOfWeek(d) {
   return new Date(d.getFullYear(), d.getMonth(), diff);
 }
 
-module.exports = async function fetchGithubStats() {
+function rangeToDays(range) {
+  if (!range) return null;
+  const m = range.match(/^(\d+)([dwmy])$/i);
+  if (m) {
+    const n = parseInt(m[1], 10);
+    switch (m[2].toLowerCase()) {
+      case 'd': return n;
+      case 'w': return n * 7;
+      case 'm': return n * 30;
+      case 'y': return n * 365;
+    }
+  }
+  if (range === 'ytd') {
+    const now = new Date();
+    const jan1 = new Date(now.getFullYear(), 0, 1);
+    return Math.ceil((now - jan1) / 86400000);
+  }
+  return null;
+}
+
+module.exports = async function fetchGithubStats(opts = {}) {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     return {
@@ -89,6 +109,11 @@ module.exports = async function fetchGithubStats() {
   const monday = startOfWeek(now).toISOString().split('T')[0];
   const monthStart = `${today.slice(0, 7)}-01`;
 
+  const rangeDays = rangeToDays(opts.range);
+  const rangeSince = rangeDays
+    ? new Date(now.getTime() - rangeDays * 86400000).toISOString().split('T')[0]
+    : null;
+
   const authorQ = `author:${USER}`;
 
   const prevMonday = new Date(startOfWeek(now));
@@ -102,7 +127,7 @@ module.exports = async function fetchGithubStats() {
     ? ORGS.map(o => `org:${o}`).join(' ')
     : `author:${USER}`;
 
-  const [todayData, weekData, monthData, prevWeekData, recentData, events, openIssues, openPRs] = await Promise.all([
+  const queries = [
     searchCommitsMultiScope(SCOPES, authorQ, `committer-date:${today}`, token),
     searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monday}`, token),
     searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monthStart}`, token),
@@ -111,7 +136,17 @@ module.exports = async function fetchGithubStats() {
     ghFetch(`https://api.github.com/users/${USER}/events?per_page=100`, token),
     searchIssues(`${issueScopes} is:issue is:open assignee:${USER}`, token).catch(() => ({ total_count: 0 })),
     searchIssues(`${issueScopes} is:pr is:open author:${USER}`, token).catch(() => ({ total_count: 0 })),
-  ]);
+  ];
+
+  if (rangeSince) {
+    queries.push(
+      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${rangeSince}`, token)
+    );
+  }
+
+  const results = await Promise.all(queries);
+  const [todayData, weekData, monthData, prevWeekData, recentData, events, openIssues, openPRs] = results;
+  const rangeData = rangeSince ? results[8] : null;
 
   const allEvents = Array.isArray(events) ? events : [];
   const pushEvents = allEvents.filter(e => e.type === 'PushEvent');
@@ -176,7 +211,22 @@ module.exports = async function fetchGithubStats() {
   const dayOfMonth = now.getDate();
   const avgPerDay = dayOfMonth > 0 ? +(monthCount / dayOfMonth).toFixed(1) : 0;
 
-  return {
+  // Daily commit counts for sparkline (last N days based on range or default 30)
+  const sparkDays = Math.min(rangeDays || 30, 90);
+  const dailyCommits = [];
+  for (let i = sparkDays - 1; i >= 0; i--) {
+    const d = new Date(now.getTime() - i * 86400000).toISOString().split('T')[0];
+    dailyCommits.push({ date: d, count: 0 });
+  }
+  pushEvents.forEach(e => {
+    const d = e.created_at?.split('T')[0];
+    const entry = dailyCommits.find(dc => dc.date === d);
+    if (entry) {
+      entry.count += e.payload.size || e.payload.distinct_size || (e.payload.commits ? e.payload.commits.length : 0) || 1;
+    }
+  });
+
+  const result = {
     today: todayData.total_count || 0,
     week: weekCount,
     month: monthCount,
@@ -193,6 +243,17 @@ module.exports = async function fetchGithubStats() {
       .map(([name, commits]) => ({ name, commits })),
     streak,
     orgs: ORGS,
+    sparkline: dailyCommits.map(dc => dc.count),
     timestamp: now.toISOString(),
   };
+
+  if (rangeData) {
+    result.rangeTotal = rangeData.total_count || 0;
+    result.rangeDays = rangeDays;
+    result.rangeAvgPerDay = rangeDays > 0
+      ? +(result.rangeTotal / rangeDays).toFixed(1)
+      : 0;
+  }
+
+  return result;
 };

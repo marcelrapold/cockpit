@@ -134,6 +134,85 @@
     .stat .stat-value { font-size: 1.5rem; font-weight: 600; color: var(--text); margin-top: 0.1rem; }
     .stat .stat-detail { font-size: 0.72rem; color: var(--text-sec); }
 
+    /* === DORA Hero KPI Bar === */
+    .hero-kpi-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.6rem;
+      margin: -1rem 0 0.75rem;
+      position: relative;
+      z-index: 3;
+    }
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem 0.7rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .hero-card .hc-label {
+      font-size: 0.62rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.15rem;
+    }
+    .hero-card .hc-row { display: flex; align-items: baseline; gap: 0.5rem; }
+    .hero-card .hc-value {
+      font-size: 1.6rem; font-weight: 700; color: var(--text);
+      font-family: var(--mono); line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .hero-card .hc-unit {
+      font-size: 0.68rem; color: var(--text-sec); font-weight: 500;
+    }
+    .hero-card .hc-trend {
+      font-size: 0.7rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 0.15rem;
+      margin-left: auto;
+    }
+    .hc-trend.up { color: var(--accent-green); }
+    .hc-trend.down { color: var(--accent-red); }
+    .hc-trend.flat { color: var(--text-muted); }
+    .hero-card .hc-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 0.35rem; gap: 0.4rem;
+    }
+    .hc-tier {
+      font-size: 0.58rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 0.12rem 0.45rem;
+      border-radius: 3px; white-space: nowrap;
+    }
+    .hc-tier.elite { background: rgba(16,185,129,0.15); color: #10b981; }
+    .hc-tier.high  { background: rgba(59,130,246,0.15); color: #3b82f6; }
+    .hc-tier.medium { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .hc-tier.low   { background: rgba(239,68,68,0.15);  color: #ef4444; }
+    .hc-tier.unknown { background: rgba(100,116,139,0.15); color: #64748b; }
+    .hc-sparkline {
+      flex-shrink: 0; height: 22px; width: 64px;
+    }
+    .hc-sparkline polyline {
+      fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Time-Range Picker */
+    .range-picker {
+      display: flex; gap: 0.25rem; align-items: center;
+      margin-left: auto;
+    }
+    .range-pill {
+      font-size: 0.62rem; font-weight: 600; font-family: var(--mono);
+      padding: 0.22rem 0.55rem; border-radius: 4px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .range-pill:hover { border-color: var(--blue); color: var(--blue); }
+    .range-pill.active {
+      background: var(--blue); color: #fff;
+      border-color: var(--blue);
+    }
+
     section { margin-bottom: 2rem; }
     .card {
       background: var(--surface);
@@ -917,6 +996,12 @@
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
     @media (max-width: 768px) {
+      .hero-kpi-bar { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
+      .hero-card .hc-value { font-size: 1.25rem; }
+      .hero-card .hc-label { font-size: 0.56rem; }
+      .hc-sparkline { width: 48px; height: 18px; }
+      .range-picker { gap: 0.15rem; }
+      .range-pill { padding: 0.18rem 0.4rem; font-size: 0.56rem; }
       .live-bar { gap: 0.5rem; padding: 0.5rem 0.75rem; }
       .live-repos, .live-last { display: none; }
       .feed-repo-t { display: none; }
@@ -1452,6 +1537,12 @@
       .header svg[viewBox="0 0 314 145"] { height: 1.2rem !important; }
 
       .container { padding: 0 0.75rem; }
+      .hero-kpi-bar { grid-template-columns: repeat(2, 1fr); gap: 0.35rem; margin: -0.5rem 0 0.5rem; }
+      .hero-card { padding: 0.6rem 0.7rem 0.5rem; }
+      .hero-card .hc-value { font-size: 1.1rem; }
+      .hero-card .hc-label { font-size: 0.52rem; }
+      .hc-tier { font-size: 0.5rem; }
+      .hc-sparkline { width: 40px; height: 16px; }
       .stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin: -0.6rem 0 1.25rem; }
       .stat { padding: 0.75rem 0.85rem; }
       .stat .stat-value { font-size: 1.25rem; }
@@ -1667,6 +1758,93 @@
 </header>
 
 <div class="container">
+
+  <!-- Time-Range Picker + DORA Hero KPI Bar -->
+  <div style="display:flex;align-items:center;margin:-0.5rem 0 0.5rem;gap:0.5rem;">
+    <span style="font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">DORA Metrics</span>
+    <div class="range-picker" id="rangePicker">
+      <button class="range-pill" data-range="7d">7D</button>
+      <button class="range-pill active" data-range="30d">30D</button>
+      <button class="range-pill" data-range="90d">90D</button>
+      <button class="range-pill" data-range="ytd">YTD</button>
+      <button class="range-pill" data-range="12m">12M</button>
+    </div>
+  </div>
+
+  <div class="hero-kpi-bar" id="heroKpiBar">
+    <div class="hero-card" id="doraDf">
+      <div class="hc-label">Deploy Frequency</div>
+      <div class="hc-row">
+        <span class="hc-value" id="doraDfVal">–</span>
+        <span class="hc-unit">/Tag</span>
+        <span class="hc-trend flat" id="doraDfTrend"></span>
+      </div>
+      <div class="hc-bottom">
+        <span class="hc-tier unknown" id="doraDfTier">–</span>
+        <svg class="hc-sparkline" id="doraDfSpark" viewBox="0 0 64 22"></svg>
+      </div>
+    </div>
+    <div class="hero-card" id="doraLt">
+      <div class="hc-label">Lead Time</div>
+      <div class="hc-row">
+        <span class="hc-value" id="doraLtVal">–</span>
+        <span class="hc-unit">min</span>
+        <span class="hc-trend flat" id="doraLtTrend"></span>
+      </div>
+      <div class="hc-bottom">
+        <span class="hc-tier unknown" id="doraLtTier">–</span>
+        <svg class="hc-sparkline" id="doraLtSpark" viewBox="0 0 64 22"></svg>
+      </div>
+    </div>
+    <div class="hero-card" id="doraCfr">
+      <div class="hc-label">Change Failure Rate</div>
+      <div class="hc-row">
+        <span class="hc-value" id="doraCfrVal">–</span>
+        <span class="hc-unit">%</span>
+        <span class="hc-trend flat" id="doraCfrTrend"></span>
+      </div>
+      <div class="hc-bottom">
+        <span class="hc-tier unknown" id="doraCfrTier">–</span>
+        <svg class="hc-sparkline" id="doraCfrSpark" viewBox="0 0 64 22"></svg>
+      </div>
+    </div>
+    <div class="hero-card" id="doraMttr">
+      <div class="hc-label">MTTR</div>
+      <div class="hc-row">
+        <span class="hc-value" id="doraMttrVal">–</span>
+        <span class="hc-unit">min</span>
+        <span class="hc-trend flat" id="doraMttrTrend"></span>
+      </div>
+      <div class="hc-bottom">
+        <span class="hc-tier unknown" id="doraMttrTier">–</span>
+        <svg class="hc-sparkline" id="doraMttrSpark" viewBox="0 0 64 22"></svg>
+      </div>
+    </div>
+    <div class="hero-card" id="heroCommits">
+      <div class="hc-label">Commits / Woche</div>
+      <div class="hc-row">
+        <span class="hc-value" id="heroCommitsVal">–</span>
+        <span class="hc-unit"></span>
+        <span class="hc-trend flat" id="heroCommitsTrend"></span>
+      </div>
+      <div class="hc-bottom">
+        <span class="hc-tier unknown" id="heroCommitsTier">–</span>
+        <svg class="hc-sparkline" id="heroCommitsSpark" viewBox="0 0 64 22"></svg>
+      </div>
+    </div>
+    <div class="hero-card" id="heroStreak">
+      <div class="hc-label">Streak</div>
+      <div class="hc-row">
+        <span class="hc-value" id="heroStreakVal">–</span>
+        <span class="hc-unit">Tage</span>
+        <span class="hc-trend flat" id="heroStreakTrend"></span>
+      </div>
+      <div class="hc-bottom">
+        <span class="hc-tier unknown" id="heroStreakTier">–</span>
+        <svg class="hc-sparkline" id="heroStreakSpark" viewBox="0 0 64 22"></svg>
+      </div>
+    </div>
+  </div>
 
   <!-- Stats -->
   <div class="stats-row" id="statsRow">
@@ -2885,8 +3063,10 @@ function timeAgo(iso) {
 
 async function fetchLiveKPIs() {
   try {
-    const res = await fetch('/api/github-stats');
+    const res = await fetch(`/api/github-stats?range=${window.RANGE || '30d'}`);
     const d = await res.json();
+
+    if (typeof updateHeroGitHub === 'function') updateHeroGitHub(d);
 
     if (d.error && d.today === 0 && !d.lastCommit) {
       document.getElementById('liveLast').innerHTML =
@@ -2983,12 +3163,151 @@ function renderFeed(commits) {
   ).join('') + '<div class="feed-line"><span class="feed-prompt">❯</span><span class="feed-cursor"></span></div>';
 }
 
+// === DORA + HERO KPI BAR + BENCHMARKS + TIME-RANGE ===
+window.RANGE = '30d';
+
+const BENCHMARKS = {
+  dora: {
+    deployFreq: { elite: 7, high: 1, medium: 1/7, low: 1/30 },
+    leadTime:   { elite: 60, high: 1440, medium: 10080, low: 43200 },
+    cfr:        { elite: 5, high: 10, medium: 15, low: 100 },
+    mttr:       { elite: 60, high: 1440, medium: 10080, low: 43200 },
+  },
+  github: {
+    commitsWeek: { top5: 40, top10: 25, top25: 15, median: 8 },
+    streak:      { top5: 30, top10: 14, top25: 7, median: 3 },
+  }
+};
+
+function classifyGitHub(metric, value) {
+  const b = BENCHMARKS.github[metric];
+  if (!b) return { tier: 'unknown', label: '–' };
+  if (value >= b.top5)  return { tier: 'elite', label: 'Top 5%' };
+  if (value >= b.top10) return { tier: 'high',  label: 'Top 10%' };
+  if (value >= b.top25) return { tier: 'medium', label: 'Top 25%' };
+  if (value >= b.median) return { tier: 'low',   label: '> Median' };
+  return { tier: 'unknown', label: '< Median' };
+}
+
+function animateCounter(el, target, suffix, duration) {
+  if (target === null || target === undefined || isNaN(target)) { el.textContent = '–'; return; }
+  const dur = duration || 800;
+  const start = performance.now();
+  const isFloat = target !== Math.floor(target);
+  function step(now) {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = ease * target;
+    el.textContent = isFloat ? val.toFixed(1) : Math.round(val);
+    if (suffix) el.textContent += suffix;
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderSparkline(svgEl, data, color) {
+  if (!data || !data.length) return;
+  svgEl.innerHTML = '';
+  const max = Math.max(...data, 1);
+  const w = 64, h = 22, pad = 2;
+  const pts = data.map((v, i) => {
+    const x = pad + (i / (data.length - 1 || 1)) * (w - 2 * pad);
+    const y = h - pad - (v / max) * (h - 2 * pad);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  poly.setAttribute('points', pts.join(' '));
+  poly.setAttribute('stroke', color || 'var(--blue)');
+  svgEl.appendChild(poly);
+}
+
+function setTrend(el, pct) {
+  if (pct === undefined || pct === null) { el.textContent = ''; return; }
+  const sign = pct > 0 ? '+' : '';
+  const arrow = pct > 0 ? '\u2191' : pct < 0 ? '\u2193' : '\u2192';
+  el.textContent = `${arrow} ${sign}${pct}%`;
+  el.className = 'hc-trend ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
+}
+
+function setTier(el, tier) {
+  const labels = { elite: 'Elite', high: 'High', medium: 'Medium', low: 'Low', unknown: '–' };
+  el.textContent = labels[tier] || tier;
+  el.className = 'hc-tier ' + (tier || 'unknown');
+}
+
+const tierColors = { elite: '#10b981', high: '#3b82f6', medium: '#f59e0b', low: '#ef4444', unknown: '#64748b' };
+
+async function fetchDORA() {
+  try {
+    const res = await fetch(`/api/dora?range=${window.RANGE}`);
+    const d = await res.json();
+    if (d.error && !d.metrics) return;
+
+    const m = d.metrics;
+
+    animateCounter(document.getElementById('doraDfVal'), m.deployFrequency.value);
+    setTrend(document.getElementById('doraDfTrend'), m.deployFrequency.trend);
+    setTier(document.getElementById('doraDfTier'), m.deployFrequency.tier);
+    renderSparkline(document.getElementById('doraDfSpark'), m.deployFrequency.sparkline, tierColors[m.deployFrequency.tier]);
+
+    const ltDisplay = m.leadTime.value > 120 ? Math.round(m.leadTime.value / 60 * 10) / 10 : m.leadTime.value;
+    const ltUnit = m.leadTime.value > 120 ? 'h' : 'min';
+    animateCounter(document.getElementById('doraLtVal'), ltDisplay);
+    document.getElementById('doraLt').querySelector('.hc-unit').textContent = ltUnit;
+    setTrend(document.getElementById('doraLtTrend'), m.leadTime.trend);
+    setTier(document.getElementById('doraLtTier'), m.leadTime.tier);
+
+    animateCounter(document.getElementById('doraCfrVal'), m.changeFailureRate.value);
+    setTrend(document.getElementById('doraCfrTrend'), m.changeFailureRate.trend);
+    setTier(document.getElementById('doraCfrTier'), m.changeFailureRate.tier);
+
+    const mttrDisplay = m.mttr.value > 120 ? Math.round(m.mttr.value / 60 * 10) / 10 : m.mttr.value;
+    const mttrUnit = m.mttr.value > 120 ? 'h' : 'min';
+    animateCounter(document.getElementById('doraMttrVal'), mttrDisplay);
+    document.getElementById('doraMttr').querySelector('.hc-unit').textContent = mttrUnit;
+    setTier(document.getElementById('doraMttrTier'), m.mttr.tier);
+
+  } catch {}
+}
+
+function updateHeroGitHub(d) {
+  if (!d) return;
+  const weekCommits = d.week || 0;
+  animateCounter(document.getElementById('heroCommitsVal'), weekCommits);
+  setTrend(document.getElementById('heroCommitsTrend'), d.velocity);
+  const ghBench = classifyGitHub('commitsWeek', weekCommits);
+  setTier(document.getElementById('heroCommitsTier'), ghBench.tier);
+  document.getElementById('heroCommitsTier').textContent = ghBench.label;
+  if (d.sparkline) {
+    renderSparkline(document.getElementById('heroCommitsSpark'), d.sparkline, tierColors[ghBench.tier]);
+  }
+
+  animateCounter(document.getElementById('heroStreakVal'), d.streak || 0);
+  const streakBench = classifyGitHub('streak', d.streak || 0);
+  setTier(document.getElementById('heroStreakTier'), streakBench.tier);
+  document.getElementById('heroStreakTier').textContent = streakBench.label;
+}
+
+document.getElementById('rangePicker').addEventListener('click', e => {
+  const pill = e.target.closest('.range-pill');
+  if (!pill) return;
+  document.querySelectorAll('.range-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  window.RANGE = pill.dataset.range;
+  fetchDORA();
+  fetchLiveKPIs();
+  fetchInfraStats();
+});
+
+fetchDORA();
+setInterval(fetchDORA, 5 * 60 * 1000);
+
 fetchLiveKPIs();
 setInterval(fetchLiveKPIs, 5 * 60 * 1000);
 
 async function fetchInfraStats() {
   try {
-    const res = await fetch('/api/infra-stats');
+    const res = await fetch(`/api/infra-stats?range=${window.RANGE || '30d'}`);
     const d = await res.json();
     const bar = document.getElementById('infraBar');
 

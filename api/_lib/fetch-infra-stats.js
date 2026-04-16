@@ -143,7 +143,7 @@ async function fetchTeamStats(teamId, vercelToken, mondayTs, todayTs) {
   };
 }
 
-module.exports = async function fetchInfraStats() {
+module.exports = async function fetchInfraStats(opts = {}) {
   const vercelToken = process.env.VERCEL_API_KEY;
 
   const result = {
@@ -156,8 +156,13 @@ module.exports = async function fetchInfraStats() {
     try {
       const now = new Date();
       const today = now.toISOString().split('T')[0];
-      const mondayTs = startOfWeek(now).getTime();
+      const defaultMondayTs = startOfWeek(now).getTime();
       const todayTs = new Date(today).getTime();
+
+      const rangeDays = opts.days || null;
+      const mondayTs = rangeDays
+        ? now.getTime() - rangeDays * 86400000
+        : defaultMondayTs;
 
       const teamResults = await Promise.all(
         VERCEL_TEAMS.map(tid => fetchTeamStats(tid, vercelToken, mondayTs, todayTs))

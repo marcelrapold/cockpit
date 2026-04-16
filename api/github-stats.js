@@ -1,12 +1,15 @@
-const { get, KEYS } = require('./_lib/cache');
+const { get, KEYS, rangeKey, parseRange } = require('./_lib/cache');
 const fetchGithubStats = require('./_lib/fetch-github-stats');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
 
+  const range = parseRange(req.query?.range);
+  const cacheKey = rangeKey(KEYS.githubStats, range);
+
   try {
-    const cached = await get(KEYS.githubStats);
+    const cached = await get(cacheKey);
     if (cached) {
       const data = typeof cached === 'string' ? JSON.parse(cached) : cached;
       return res.status(200).json(data);
@@ -14,7 +17,7 @@ module.exports = async function handler(req, res) {
   } catch {}
 
   try {
-    const data = await fetchGithubStats();
+    const data = await fetchGithubStats(range ? { range } : {});
     return res.status(200).json(data);
   } catch (err) {
     return res.status(200).json({
