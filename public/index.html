@@ -2275,123 +2275,7 @@ function isRecentRelease(dateStr) {
   return (now - releaseDate) < RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
 }
 
-const DATA = [
-  // ── Change ────────────────────────────────────────────────────────────
-  { name:'ZVV Kundenkonto', purpose:'Kundenkonto-Relaunch, Self-Service-Portal', work:'Fullstack, Auth, API, UX', mode:'build', modeLabel:'Build', lc:'prod', lcLabel:'Production', pt:'40–50', ptMid:45, cat:'change',
-    lcNote:'v0 Mockup + Vendor-Briefing, aktive Entwicklung', forecast:'Ja — Continuous Delivery',
-    commits:{},
-    prod:'https://kundenkonto.zvv.dev', vercel:'https://vercel.com/zvv/zvv-kundenkonto', github:'https://github.com/zvvch/zvv-kundenkonto' },
-  { name:'AEM CMS Ausschreibung', purpose:'Öffentliche Ausschreibung AEMaaCS zvv.ch', work:'Requirements, Docs, CI', mode:'govern', modeLabel:'Govern / Build', lc:'spec', lcLabel:'One-off', pt:'20–25', ptMid:22, cat:'change',
-    lcNote:'Offenes Verfahren (SubmV ZH)', forecast:'Nein — schliesst nach Zuschlag',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-aemcs-oeffentliche-ausschreibung-2026' },
-  { name:'ZVV Kontoradar', purpose:'Objektkredit-Dashboard (Abacus/MayBacus)', work:'Fullstack, Charts, Supabase', mode:'build', modeLabel:'Build', lc:'pilot', lcLabel:'Prototype', pt:'8–12', ptMid:10, cat:'change',
-    lcNote:'Budget-Insights aus Buchungsdaten', forecast:'Entscheid offen',
-    commits:{},
-    prod:'https://kontoradar.zvv.dev', vercel:'https://vercel.com/zvv/zvv-kontoradar', github:'https://github.com/zvvch/zvv-kontoradar' },
-  { name:'NOVA Kundenspiegel', purpose:'Spiegelung NOVA-Kundendaten (Golden Record)', work:'Architecture, API, Data Model', mode:'govern', modeLabel:'Spec', lc:'spec', lcLabel:'Specification', pt:'10–15', ptMid:12, cat:'change',
-    lcNote:'Read-API für CRM, Marketing, Analytics', forecast:'Follow-on möglich',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-novakundenspiegel' },
-  { name:'Fahrzeugdatenbank Spec', purpose:'ZVV Fahrzeugdatenbank 2.0 (Next.js, Supabase)', work:'Technische Spezifikation', mode:'govern', modeLabel:'Spec', lc:'spec', lcLabel:'Specification', pt:'5–8', ptMid:6, cat:'change',
-    lcNote:'Make-or-Buy-Grundlage', forecast:'Entscheid 2026',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-fzdb-spec' },
-  { name:'Tarifmassnahmen (TAMA)', purpose:'Vernehmlassung ZVV-Tarifmassnahmen 2026', work:'Auswertung, Datenanalyse', mode:'build', modeLabel:'Build', lc:'spec', lcLabel:'One-off', pt:'5–8', ptMid:6, cat:'change',
-    lcNote:'Einmalige Auswertung', forecast:'Nein — abgeschlossen',
-    commits:{},
-    prod:'https://tama.zvv.ch', vercel:'https://vercel.com/zvv/zvv-tama', github:'https://github.com/zvvch/zvv-tama' },
-  { name:'RadioX', purpose:'AI Radio Platform (10 Microservices)', work:'FastAPI, Supabase, ElevenLabs, GPT-4', mode:'build', modeLabel:'Build', lc:'pilot', lcLabel:'Experiment', pt:'10–15', ptMid:12, cat:'change',
-    lcNote:'AI-generierte Shows, Audio-Mixing', forecast:'Open — Side Project',
-    commits:{},
-    prod:'https://radiox.cloud', vercel:'https://vercel.com/muraschal/radiox', github:'https://github.com/marcelrapold/radiox' },
-  { name:'MyCVBuilder', purpose:'AI-native Resume Platform', work:'Next.js, AI SDK, Fullstack', mode:'build', modeLabel:'Build', lc:'pilot', lcLabel:'Prototype', pt:'5–8', ptMid:6, cat:'change',
-    lcNote:'Side Project', forecast:'Open',
-    commits:{},
-    prod:'https://mycvbuilder.app', vercel:'https://vercel.com/muraschal/mycvbuilder.app', github:'https://github.com/marcelrapold/mycvbuilder.app' },
-
-  // ── Run ───────────────────────────────────────────────────────────────
-  { name:'ZVV Entdeckungsreise', purpose:'Ticketcode-Validierung & Schul-Anmeldungen', work:'Maintenance, Support', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'5–8', ptMid:6, cat:'run',
-    lcNote:'Saisonale Peaks (Schulstart)', forecast:'Ja — nächste Saison',
-    commits:{},
-    prod:'https://entdeckungsreise.zvv.ch', vercel:'https://vercel.com/zvv/zvv-entdeckungsreise', github:'https://github.com/zvvch/zvv-entdeckungsreise' },
-  { name:'ZVV Kontrollapp', purpose:'PWA für Billettkontrolle im Feld', work:'Maintenance, Security', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'5–8', ptMid:6, cat:'run',
-    lcNote:'Offline-fähig, Echtzeit-Sync', forecast:'Ja — Langzeit-Ops',
-    commits:{},
-    prod:'https://kontrollapp.zvv.dev', vercel:'https://vercel.com/zvv/zvv-kontrollapp', github:'https://github.com/zvvch/zvv-kontrollapp' },
-  { name:'ZVV App Modal', purpose:'Feature-Showcase Micro-Frontend (zvv.ch)', work:'CMS-Integration, Security', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'3–5', ptMid:4, cat:'run',
-    lcNote:'iFrame-Embed auf zvv.ch', forecast:'Ja — solange live',
-    commits:{},
-    prod:'https://appmodal.zvv.ch', vercel:'https://vercel.com/zvv/app-modal', github:'https://github.com/zvvch/zvv-app-modal' },
-  { name:'ZVV App Banner', purpose:'Mobile-Promo Micro-Frontend (zvv.ch)', work:'Store-Links, Tracking', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'2–3', ptMid:2, cat:'run',
-    lcNote:'IIFE, rückstandsfrei entfernbar', forecast:'Ja — Marketing-Kanal',
-    commits:{},
-    prod:'https://appbanner.zvv.ch', vercel:'https://vercel.com/zvv/zvv-app-banner', github:'https://github.com/zvvch/zvv-app-banner' },
-  { name:'ZVV Medienspiegel', purpose:'AI-Medienmonitoring (PDF → Newsletter)', work:'LLM-Pipelines, Workflows', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'10–15', ptMid:12, cat:'run',
-    lcNote:'Tägliche Pipeline, mehrere externe Services', forecast:'Ja — Dauerbetrieb',
-    commits:{},
-    vercel:'https://vercel.com/muraschal/zvv-medienspiegel', github:'https://github.com/zvvch/zvv-medienspiegel' },
-  { name:'ZVV Mailer', purpose:'E-Mail-Kampagnen an Empfängerlisten', work:'Maintenance, Templates', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'5–8', ptMid:6, cat:'run',
-    lcNote:'Interne Web-App', forecast:'Ja — Dauerbetrieb',
-    commits:{},
-    prod:'https://mailer.zvv.ch', vercel:'https://vercel.com/zvv/zvv-mailer', github:'https://github.com/zvvch/zvv-mailer' },
-  { name:'ZVV FundPilot', purpose:'Fundbüro-Infosystem (offline-fähig)', work:'Daten-Updates', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'1–2', ptMid:1, cat:'run',
-    lcNote:'PWA, offline-capable', forecast:'Minimal',
-    commits:{},
-    prod:'https://fund-pilot.vercel.app', vercel:'https://vercel.com/zvv/zvv-fund-pilot', github:'https://github.com/zvvch/zvv-fund-pilot' },
-  { name:'PDF2Text API', purpose:'Self-hosted PDF-Textextraktion (FastAPI)', work:'Hosting, API-Stabilität', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'2–3', ptMid:2, cat:'run',
-    lcNote:'Infrastruktur-Service für Downstream-Apps', forecast:'Ja — solange Downstream läuft',
-    commits:{},
-    github:'https://github.com/muraschal/pdf2text' },
-
-  // ── Tools & Plattform ─────────────────────────────────────────────────
-  { name:'Cockpit', purpose:'Cross-Platform Engineering Dashboard', work:'GitHub, Vercel, Supabase APIs', mode:'build', modeLabel:'Build', lc:'prod', lcLabel:'Production', pt:'3–5', ptMid:4, cat:'steward',
-    lcNote:'Dieses Dashboard', forecast:'Ja — Dauerbetrieb',
-    commits:{},
-    prod:'https://cockpit.rapold.io', vercel:'https://vercel.com/muraschal/cockpit', github:'https://github.com/marcelrapold/cockpit' },
-  { name:'ZVV Statuspage', purpose:'Öffentliche Statusseite für ZVV-Dienste', work:'Konfiguration', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'2–3', ptMid:2, cat:'steward',
-    lcNote:'Monitoring-Oberfläche', forecast:'Ja',
-    commits:{},
-    vercel:'https://vercel.com/zvv/zvv-statuspage', github:'https://github.com/zvvch/zvv-statuspage' },
-  { name:'iCal Confluence Embed', purpose:'Pikett-Kalender-Embed für Confluence', work:'ICS-Feed, Maintenance', mode:'run', modeLabel:'Run', lc:'tool', lcLabel:'Tooling', pt:'1–2', ptMid:1, cat:'steward',
-    lcNote:'Wiki-Integration', forecast:'Ja',
-    commits:{},
-    vercel:'https://vercel.com/zvv/ical-renderer-for-confluence', github:'https://github.com/zvvch/ical-renderer-for-confluence' },
-  { name:'ZVV Lottie', purpose:'Header-Animationen für zvv.ch', work:'Asset-Pflege', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'2–3', ptMid:2, cat:'steward',
-    lcNote:'34 Lottie-Animationen', forecast:'Minimal',
-    commits:{},
-    prod:'https://lottie.zvv.dev', vercel:'https://vercel.com/zvv/zvv-lottie', github:'https://github.com/zvvch/zvv-lottie' },
-  { name:'ZVV n8n Flows', purpose:'Interne Automations-Workflows', work:'Workflow-Maintenance', mode:'run', modeLabel:'Run', lc:'tool', lcLabel:'Tooling', pt:'5–8', ptMid:6, cat:'steward',
-    lcNote:'Operational Automation', forecast:'Ja',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-n8n-flows' },
-  { name:'MCP GTFS Server', purpose:'MCP-Server für Schweizer ÖV-Fahrplandaten', work:'Data-Updates, API', mode:'build', modeLabel:'Build', lc:'pilot', lcLabel:'Prototype', pt:'3–5', ptMid:4, cat:'steward',
-    lcNote:'Prototype / Experiment', forecast:'Open',
-    commits:{},
-    github:'https://github.com/zvvch/mcp-gtfs' },
-  { name:'ZVV VS Code Theme', purpose:'Gebrandetes Theme für Cursor/VS Code', work:'Theme-Pflege', mode:'run', modeLabel:'Run', lc:'tool', lcLabel:'Tooling', pt:'1–2', ptMid:1, cat:'steward',
-    lcNote:'Developer Experience', forecast:'Minimal',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-vscode-theme' },
-  { name:'ZVV AI Crawl', purpose:'Generative Engine Optimization für zvv.ch', work:'llm.txt, JSON, Crawler-Support', mode:'run', modeLabel:'Run', lc:'prod', lcLabel:'Production', pt:'2–3', ptMid:2, cat:'steward',
-    lcNote:'AI-Crawler-Support', forecast:'Ja',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-ai-crawl' },
-
-  // ── Governance ────────────────────────────────────────────────────────
-  { name:'Jahreshochrechnung', purpose:'Jährliche Datenlieferung (R-Scripts)', work:'Datenaufbereitung, SQL', mode:'govern', modeLabel:'Govern', lc:'jw', lcLabel:'Recurring', pt:'5–8', ptMid:6, cat:'govern',
-    lcNote:'Jährlich wiederkehrend', forecast:'Ja — nächster Zyklus',
-    commits:{},
-    github:'https://github.com/zvvch/zvv-jahreshochrechnung-2025' },
-  { name:'Workload Portfolio', purpose:'Management-Workload-Modell ZVV', work:'Portfolio-Pflege, Forecasting', mode:'govern', modeLabel:'Govern', lc:'prod', lcLabel:'Production', pt:'3–5', ptMid:4, cat:'govern',
-    lcNote:'Workload-Steuerung', forecast:'Ja — permanent',
-    commits:{},
-    prod:'https://workload.zvv.dev', vercel:'https://vercel.com/zvv/zvv-workload-portfolio', github:'https://github.com/zvvch/zvv-workload-portfolio' },
-  { name:'Security / CVE Management', purpose:'Dependency-Updates über alle Repos', work:'Monitoring, Patching', mode:'govern', modeLabel:'Govern', lc:'jw', lcLabel:'Ongoing', pt:'10–15', ptMid:12, cat:'govern',
-    lcNote:'Querschnittsverantwortung', forecast:'Ja — permanent', commits:{} },
-  { name:'Stakeholder Coordination', purpose:'Abstimmung Teams, Vendor, Management', work:'Meetings, Konzepte', mode:'govern', modeLabel:'Govern', lc:'jw', lcLabel:'Ongoing', pt:'15–20', ptMid:17, cat:'govern',
-    lcNote:'Nicht immer im Git sichtbar', forecast:'Ja — permanent', commits:{} },
-];
+let DATA = [];
 
 const MONTHS = ['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'];
 const MONTH_LABELS = MONTHS.map(m => { const [y,mo] = m.split('-'); return mo === '01' ? y : ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+mo]; });
@@ -2403,19 +2287,23 @@ const NOW_IDX = (() => {
 
 const CAT_COLORS = { change:'#3b82f6', run:'#10b981', govern:'#8b5cf6', steward:'#f59e0b' };
 
-const _COMPUTED = {
-  total: DATA.length,
-  prod: DATA.filter(d => d.lc === 'prod').length,
-  totalPt: DATA.reduce((s, d) => s + d.ptMid, 0),
-  changeCnt: DATA.filter(d => d.cat === 'change').length,
-  runCnt: DATA.filter(d => d.cat === 'run').length,
-  stewardCnt: DATA.filter(d => d.cat === 'steward').length,
-  governCnt: DATA.filter(d => d.cat === 'govern').length,
-};
+let _COMPUTED = {};
+function recomputeStats() {
+  _COMPUTED = {
+    total: DATA.length,
+    prod: DATA.filter(d => d.lc === 'prod').length,
+    totalPt: DATA.reduce((s, d) => s + (d.ptMid || 0), 0),
+    changeCnt: DATA.filter(d => d.cat === 'change').length,
+    runCnt: DATA.filter(d => d.cat === 'run').length,
+    stewardCnt: DATA.filter(d => d.cat === 'steward').length,
+    governCnt: DATA.filter(d => d.cat === 'govern').length,
+  };
+}
 
 function modeTag(m) {
-  const map = {build:'tag-build', run:'tag-run', improve:'tag-improve', govern:'tag-govern'};
-  return `<span class="tag ${map[m] || 'tag-build'}">${DATA.find(d=>d.mode===m)?.modeLabel || m}</span>`;
+  const cssMap = {build:'tag-build', run:'tag-run', improve:'tag-improve', govern:'tag-govern'};
+  const labelMap = {build:'Build', run:'Run', improve:'Improve', govern:'Govern'};
+  return `<span class="tag ${cssMap[m] || 'tag-build'}">${labelMap[m] || m}</span>`;
 }
 
 function lcTag(lc, label) {
@@ -2447,7 +2335,7 @@ function sparkSvg(name) {
 }
 
 function buildRow(d) {
-  const repoKey = d.github ? d.github.split('/').pop() : '';
+  const repoKey = d.repo || (d.github ? d.github.replace('https://github.com/', '') : '');
   return `<tr>
     <td><strong>${d.name}</strong>${linkPills(d)}</td>
     <td>${d.purpose}</td>
@@ -2467,8 +2355,6 @@ function renderTables() {
     document.querySelector(`#${id} tbody`).innerHTML = DATA.filter(d => d.cat === cat).map(buildRow).join('');
   });
 }
-renderTables();
-
 // Tabs
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -2483,7 +2369,7 @@ document.querySelectorAll('.tab').forEach(btn => {
 // Timeline
 const LC_BADGE = { prod:['Prod','#d1fae5','#065f46'], jw:['JW','#dbeafe','#1e40af'], pilot:['Proto','#fef3c7','#92400e'], spec:['Spec','#ede9fe','#5b21b6'], tool:['Tool','#f0fdf4','#166534'] };
 const MONTH_NAMES_FULL = ['','Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-let globalMax = Math.max(...DATA.flatMap(d => Object.values(d.commits)), 1);
+let globalMax = Math.max(...DATA.flatMap(d => Object.values(d.commits || {})), 1);
 
 function hexToRgb(hex) {
   const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
@@ -2491,7 +2377,7 @@ function hexToRgb(hex) {
 }
 
 function buildTimeline() {
-  const tlData = DATA.filter(d => Object.keys(d.commits).length > 0);
+  const tlData = DATA.filter(d => Object.keys(d.commits || {}).length > 0);
   tlData.sort((a,b) => {
     const aFirst = Math.min(...Object.keys(a.commits).map(k => MONTHS.indexOf(k)));
     const bFirst = Math.min(...Object.keys(b.commits).map(k => MONTHS.indexOf(k)));
@@ -2507,7 +2393,7 @@ function buildTimeline() {
   </div>`;
 
   tlData.forEach((d, rowIdx) => {
-    const maxC = Math.max(...Object.values(d.commits), 1);
+    const maxC = Math.max(...Object.values(d.commits || {}), 1);
     const isJW = d.lc === 'jw';
     const color = CAT_COLORS[d.cat] || '#94a3b8';
     const rgb = hexToRgb(color);
@@ -2521,7 +2407,7 @@ function buildTimeline() {
       </div>`;
 
     MONTHS.forEach((m, i) => {
-      const c = d.commits[m] || 0;
+      const c = (d.commits || {})[m] || 0;
       const isFuture = i > NOW_IDX;
 
       if (c > 0 && !isFuture) {
@@ -2530,7 +2416,7 @@ function buildTimeline() {
         html += `<div class="tl-cell"><div class="tl-heat" style="background:rgba(${rgb},${intensity.toFixed(2)})" data-name="${d.name}" data-count="${c}" data-month="${MONTH_NAMES_FULL[+mo]} ${y}" data-pct="${Math.round(c/globalMax*100)}" data-color="${color}"></div></div>`;
       } else if (isFuture && isJW) {
         const futureMonthNum = +m.split('-')[1];
-        const hasActivityInMonth = Object.keys(d.commits).some(k => +k.split('-')[1] === futureMonthNum);
+        const hasActivityInMonth = Object.keys(d.commits || {}).some(k => +k.split('-')[1] === futureMonthNum);
         if (hasActivityInMonth) {
           html += `<div class="tl-cell"><div class="tl-heat future" style="border-color:${color}"></div></div>`;
         } else {
@@ -3171,14 +3057,15 @@ async function loadDashboardData() {
 
     if (data.repoMonthly) {
       DATA.forEach(d => {
-        if (!d.github) return;
-        const repoPath = d.github.replace('https://github.com/', '');
+        const repoPath = d.repo || (d.github ? d.github.replace('https://github.com/', '') : '');
+        if (!repoPath) return;
         const monthly = data.repoMonthly[repoPath];
         if (monthly && Object.keys(monthly).length > 0) {
           d.commits = monthly;
         }
       });
-      globalMax = Math.max(...DATA.flatMap(d => Object.values(d.commits)), 1);
+      globalMax = Math.max(...DATA.flatMap(d => Object.values(d.commits || {})), 1);
+      recomputeStats();
       buildTimeline();
       renderVelocity(data);
       DATA.forEach(d => { d.healthScore = computeHealthScore(d); });
@@ -3474,9 +3361,7 @@ async function loadUptime() {
   }
 }
 
-loadDashboardData().then(() => { renderTables(); });
-
-(function initDynamicStats() {
+function updateDynamicStats() {
   const c = _COMPUTED;
   const el = id => document.getElementById(id);
 
@@ -3518,7 +3403,30 @@ loadDashboardData().then(() => { renderTables(); });
     el('gaugeDesc').textContent = `Basierend auf einer Vollzeitstelle (220 PT/Jahr). ` +
       `Der geschätzte Aufwand von ~${c.totalPt} PT entspricht einer Auslastung von ~${pct}%.`;
   }
-})();
+}
+
+async function initPortfolio() {
+  try {
+    const res = await fetch('/api/portfolio');
+    if (!res.ok) throw new Error(`Portfolio API ${res.status}`);
+    const json = await res.json();
+    if (json.projects && json.projects.length > 0) {
+      DATA = json.projects;
+      console.log(`Portfolio loaded: ${DATA.length} projects from API`);
+    }
+  } catch (e) {
+    console.warn('Portfolio API not available, dashboard data only:', e.message);
+  }
+
+  recomputeStats();
+  globalMax = Math.max(...DATA.flatMap(d => Object.values(d.commits || {})), 1);
+  renderTables();
+  updateDynamicStats();
+
+  await loadDashboardData();
+  renderTables();
+}
+initPortfolio();
 
 // === TECH STACK VISUALIZATION ===
 async function loadTechStack() {
@@ -4585,8 +4493,9 @@ loadWeeklyTrend();
 // === FEATURE 1: HEALTH SCORE ===
 function computeHealthScore(d) {
   let score = 50;
-  const totalCommits = Object.values(d.commits).reduce((s, v) => s + v, 0);
-  const monthsActive = Object.keys(d.commits).length;
+  const commits = d.commits || {};
+  const totalCommits = Object.values(commits).reduce((s, v) => s + v, 0);
+  const monthsActive = Object.keys(commits).length;
   if (totalCommits > 100) score += 15;
   else if (totalCommits > 30) score += 10;
   else if (totalCommits > 5) score += 5;
@@ -4594,8 +4503,9 @@ function computeHealthScore(d) {
   else if (monthsActive >= 2) score += 5;
   if (d.lc === 'prod') score += 10;
   if (d.prod) score += 10;
-  const recentMonths = ['2026-01','2026-02','2026-03'];
-  const recentCommits = recentMonths.reduce((s, m) => s + (d.commits[m] || 0), 0);
+  const now = new Date();
+  const recentMonths = [0,1,2].map(i => { const d2 = new Date(now.getFullYear(), now.getMonth()-i, 1); return d2.toISOString().slice(0,7); });
+  const recentCommits = recentMonths.reduce((s, m) => s + (commits[m] || 0), 0);
   if (recentCommits > 0) score += 5;
   return Math.min(100, Math.max(0, score));
 }

@@ -1,0 +1,263 @@
+{
+  "overrides": {
+    "zvvch/zvv-kundenkonto": {
+      "name": "ZVV Kundenkonto",
+      "work": "Fullstack, Auth, API, UX",
+      "mode": "build", "lc": "prod", "pt": "40–50", "ptMid": 45, "cat": "change",
+      "lcNote": "v0 Mockup + Vendor-Briefing, aktive Entwicklung", "forecast": "Ja — Continuous Delivery",
+      "vercel": "https://vercel.com/zvv/zvv-kundenkonto"
+    },
+    "zvvch/zvv-aemcs-oeffentliche-ausschreibung-2026": {
+      "name": "AEM CMS Ausschreibung",
+      "work": "Requirements, Docs, CI",
+      "mode": "govern", "lc": "spec", "pt": "20–25", "ptMid": 22, "cat": "change",
+      "lcNote": "Offenes Verfahren (SubmV ZH)", "forecast": "Nein — schliesst nach Zuschlag"
+    },
+    "zvvch/zvv-kontoradar": {
+      "name": "ZVV Kontoradar",
+      "work": "Fullstack, Charts, Supabase",
+      "mode": "build", "lc": "pilot", "pt": "8–12", "ptMid": 10, "cat": "change",
+      "lcNote": "Budget-Insights aus Buchungsdaten", "forecast": "Entscheid offen",
+      "vercel": "https://vercel.com/zvv/zvv-kontoradar"
+    },
+    "zvvch/zvv-novakundenspiegel": {
+      "name": "NOVA Kundenspiegel",
+      "work": "Architecture, API, Data Model",
+      "mode": "govern", "lc": "spec", "pt": "10–15", "ptMid": 12, "cat": "change",
+      "lcNote": "Read-API für CRM, Marketing, Analytics", "forecast": "Follow-on möglich"
+    },
+    "zvvch/zvv-fzdb-spec": {
+      "name": "Fahrzeugdatenbank Spec",
+      "work": "Technische Spezifikation",
+      "mode": "govern", "lc": "spec", "pt": "5–8", "ptMid": 6, "cat": "change",
+      "lcNote": "Make-or-Buy-Grundlage", "forecast": "Entscheid 2026"
+    },
+    "zvvch/zvv-tama": {
+      "name": "Tarifmassnahmen (TAMA)",
+      "work": "Auswertung, Datenanalyse",
+      "mode": "build", "lc": "spec", "pt": "5–8", "ptMid": 6, "cat": "change",
+      "lcNote": "Einmalige Auswertung", "forecast": "Nein — abgeschlossen",
+      "vercel": "https://vercel.com/zvv/zvv-tama"
+    },
+    "marcelrapold/radiox": {
+      "name": "RadioX",
+      "work": "FastAPI, Supabase, ElevenLabs, GPT-4",
+      "mode": "build", "lc": "pilot", "pt": "10–15", "ptMid": 12, "cat": "change",
+      "lcNote": "AI-generierte Shows, Audio-Mixing", "forecast": "Open — Side Project",
+      "vercel": "https://vercel.com/muraschal/radiox"
+    },
+    "marcelrapold/mycvbuilder.app": {
+      "name": "MyCVBuilder",
+      "work": "Next.js, AI SDK, Fullstack",
+      "mode": "build", "lc": "pilot", "pt": "5–8", "ptMid": 6, "cat": "change",
+      "lcNote": "Side Project", "forecast": "Open",
+      "vercel": "https://vercel.com/muraschal/mycvbuilder.app"
+    },
+    "zvvch/zvv-entdeckungsreise": {
+      "name": "ZVV Entdeckungsreise",
+      "work": "Maintenance, Support",
+      "mode": "run", "lc": "prod", "pt": "5–8", "ptMid": 6, "cat": "run",
+      "lcNote": "Saisonale Peaks (Schulstart)", "forecast": "Ja — nächste Saison",
+      "vercel": "https://vercel.com/zvv/zvv-entdeckungsreise"
+    },
+    "zvvch/zvv-kontrollapp": {
+      "name": "ZVV Kontrollapp",
+      "work": "Maintenance, Security",
+      "mode": "run", "lc": "prod", "pt": "5–8", "ptMid": 6, "cat": "run",
+      "lcNote": "Offline-fähig, Echtzeit-Sync", "forecast": "Ja — Langzeit-Ops",
+      "vercel": "https://vercel.com/zvv/zvv-kontrollapp"
+    },
+    "zvvch/zvv-app-modal": {
+      "name": "ZVV App Modal",
+      "work": "CMS-Integration, Security",
+      "mode": "run", "lc": "prod", "pt": "3–5", "ptMid": 4, "cat": "run",
+      "lcNote": "iFrame-Embed auf zvv.ch", "forecast": "Ja — solange live",
+      "vercel": "https://vercel.com/zvv/app-modal"
+    },
+    "zvvch/zvv-app-banner": {
+      "name": "ZVV App Banner",
+      "work": "Store-Links, Tracking",
+      "mode": "run", "lc": "prod", "pt": "2–3", "ptMid": 2, "cat": "run",
+      "lcNote": "IIFE, rückstandsfrei entfernbar", "forecast": "Ja — Marketing-Kanal",
+      "vercel": "https://vercel.com/zvv/zvv-app-banner"
+    },
+    "zvvch/zvv-medienspiegel": {
+      "name": "ZVV Medienspiegel",
+      "work": "LLM-Pipelines, Workflows",
+      "mode": "run", "lc": "prod", "pt": "10–15", "ptMid": 12, "cat": "run",
+      "lcNote": "Tägliche Pipeline, mehrere externe Services", "forecast": "Ja — Dauerbetrieb",
+      "vercel": "https://vercel.com/muraschal/zvv-medienspiegel"
+    },
+    "zvvch/zvv-mailer": {
+      "name": "ZVV Mailer",
+      "work": "Maintenance, Templates",
+      "mode": "run", "lc": "prod", "pt": "5–8", "ptMid": 6, "cat": "run",
+      "lcNote": "Interne Web-App", "forecast": "Ja — Dauerbetrieb",
+      "vercel": "https://vercel.com/zvv/zvv-mailer"
+    },
+    "zvvch/zvv-fund-pilot": {
+      "name": "ZVV FundPilot",
+      "work": "Daten-Updates",
+      "mode": "run", "lc": "prod", "pt": "1–2", "ptMid": 1, "cat": "run",
+      "lcNote": "PWA, offline-capable", "forecast": "Minimal",
+      "vercel": "https://vercel.com/zvv/zvv-fund-pilot"
+    },
+    "muraschal/pdf2text": {
+      "name": "PDF2Text API",
+      "work": "Hosting, API-Stabilität",
+      "mode": "run", "lc": "prod", "pt": "2–3", "ptMid": 2, "cat": "run",
+      "lcNote": "Infrastruktur-Service für Downstream-Apps", "forecast": "Ja — solange Downstream läuft"
+    },
+    "marcelrapold/cockpit": {
+      "name": "Cockpit",
+      "work": "GitHub, Vercel, Supabase APIs",
+      "mode": "build", "lc": "prod", "pt": "3–5", "ptMid": 4, "cat": "steward",
+      "lcNote": "Dieses Dashboard", "forecast": "Ja — Dauerbetrieb",
+      "vercel": "https://vercel.com/muraschal/cockpit"
+    },
+    "zvvch/zvv-statuspage": {
+      "name": "ZVV Statuspage",
+      "work": "Konfiguration",
+      "mode": "run", "lc": "prod", "pt": "2–3", "ptMid": 2, "cat": "steward",
+      "vercel": "https://vercel.com/zvv/zvv-statuspage"
+    },
+    "zvvch/ical-renderer-for-confluence": {
+      "name": "iCal Confluence Embed",
+      "work": "ICS-Feed, Maintenance",
+      "mode": "run", "lc": "tool", "pt": "1–2", "ptMid": 1, "cat": "steward",
+      "vercel": "https://vercel.com/zvv/ical-renderer-for-confluence"
+    },
+    "zvvch/zvv-lottie": {
+      "name": "ZVV Lottie",
+      "work": "Asset-Pflege",
+      "mode": "run", "lc": "prod", "pt": "2–3", "ptMid": 2, "cat": "steward",
+      "vercel": "https://vercel.com/zvv/zvv-lottie"
+    },
+    "zvvch/zvv-n8n-flows": {
+      "name": "ZVV n8n Flows",
+      "work": "Workflow-Maintenance",
+      "mode": "run", "lc": "tool", "pt": "5–8", "ptMid": 6, "cat": "steward"
+    },
+    "zvvch/mcp-gtfs": {
+      "name": "MCP GTFS Server",
+      "work": "Data-Updates, API",
+      "mode": "build", "lc": "pilot", "pt": "3–5", "ptMid": 4, "cat": "steward"
+    },
+    "zvvch/zvv-vscode-theme": {
+      "name": "ZVV VS Code Theme",
+      "work": "Theme-Pflege",
+      "mode": "run", "lc": "tool", "pt": "1–2", "ptMid": 1, "cat": "steward"
+    },
+    "zvvch/zvv-ai-crawl": {
+      "name": "ZVV AI Crawl",
+      "work": "llm.txt, JSON, Crawler-Support",
+      "mode": "run", "lc": "prod", "pt": "2–3", "ptMid": 2, "cat": "steward"
+    },
+    "zvvch/zvv-jahreshochrechnung-2025": {
+      "name": "Jahreshochrechnung",
+      "work": "Datenaufbereitung, SQL",
+      "mode": "govern", "lc": "jw", "pt": "5–8", "ptMid": 6, "cat": "govern",
+      "lcNote": "Jährlich wiederkehrend", "forecast": "Ja — nächster Zyklus"
+    },
+    "zvvch/zvv-workload-portfolio": {
+      "name": "Workload Portfolio",
+      "work": "Portfolio-Pflege, Forecasting",
+      "mode": "govern", "lc": "prod", "pt": "3–5", "ptMid": 4, "cat": "govern",
+      "vercel": "https://vercel.com/zvv/zvv-workload-portfolio"
+    },
+    "zvvch/zvv-kundenradar": {
+      "name": "ZVV Kundenradar",
+      "work": "Fullstack, Charts, API",
+      "mode": "build", "lc": "prod", "pt": "8–12", "ptMid": 10, "cat": "change",
+      "lcNote": "Analytics Dashboard", "forecast": "Ja — Dauerbetrieb"
+    },
+    "zvvch/zvv-aemcs-ausschreibung-2026": {
+      "name": "AEM CMS Intern",
+      "work": "Requirements, Intern",
+      "mode": "govern", "lc": "spec", "pt": "10–15", "ptMid": 12, "cat": "change",
+      "lcNote": "Internes Ausschreibungsdokument"
+    },
+    "zvvch/zvv-customer-radar": {
+      "name": "ZVV Customer Radar",
+      "work": "Data Pipeline",
+      "mode": "govern", "lc": "spec", "pt": "3–5", "ptMid": 4, "cat": "change"
+    },
+    "zvvch/zvv-info": {
+      "name": "ZVV Info",
+      "work": "Content, CMS",
+      "mode": "build", "lc": "prod", "pt": "5–8", "ptMid": 6, "cat": "run"
+    },
+    "zvvch/zvv-testimonials": {
+      "name": "ZVV Testimonials",
+      "work": "Content-Widget",
+      "mode": "run", "lc": "prod", "pt": "1–2", "ptMid": 1, "cat": "run"
+    },
+    "muraschal/paris": {
+      "name": "Paris",
+      "work": "Fullstack, Experiment",
+      "mode": "build", "lc": "pilot", "pt": "3–5", "ptMid": 4, "cat": "change",
+      "lcNote": "Side Project"
+    },
+    "muraschal/lnhunt": {
+      "name": "LN Hunt",
+      "work": "Lightning Network, BTC",
+      "mode": "build", "lc": "pilot", "pt": "3–5", "ptMid": 4, "cat": "change",
+      "lcNote": "Bitcoin / Lightning Project"
+    },
+    "muraschal/memory": {
+      "name": "Memory",
+      "work": "Frontend, Game",
+      "mode": "build", "lc": "pilot", "pt": "1–2", "ptMid": 1, "cat": "change"
+    },
+    "ALPA-one/velozweb_demo": {
+      "name": "Veloz Web Demo",
+      "work": "Demo, Frontend",
+      "mode": "build", "lc": "pilot", "pt": "1–2", "ptMid": 1, "cat": "change"
+    },
+    "marcelrapold/cv-marcelrapold": {
+      "name": "CV Marcel Rapold",
+      "work": "Portfolio, CV",
+      "mode": "build", "lc": "prod", "pt": "1–2", "ptMid": 1, "cat": "steward"
+    },
+    "marcelrapold/cv-muriellebielawski": {
+      "name": "CV Murielle Bielawski",
+      "work": "Portfolio, CV",
+      "mode": "build", "lc": "prod", "pt": "1–2", "ptMid": 1, "cat": "steward"
+    },
+    "marcelrapold/news.rapold.io": {
+      "name": "News Rapold",
+      "work": "Content, Blog",
+      "mode": "build", "lc": "pilot", "pt": "1–2", "ptMid": 1, "cat": "steward"
+    },
+    "marcelrapold/romy-bayer": {
+      "name": "Romy Bayer",
+      "work": "Portfolio Website",
+      "mode": "build", "lc": "prod", "pt": "1–2", "ptMid": 1, "cat": "change"
+    },
+    "marcelrapold/SnapMacros": {
+      "name": "SnapMacros",
+      "work": "macOS App, Swift",
+      "mode": "build", "lc": "pilot", "pt": "3–5", "ptMid": 4, "cat": "change"
+    }
+  },
+  "virtual": [
+    {
+      "name": "Security / CVE Management",
+      "purpose": "Dependency-Updates über alle Repos",
+      "work": "Monitoring, Patching",
+      "mode": "govern", "lc": "jw", "pt": "10–15", "ptMid": 12, "cat": "govern",
+      "lcNote": "Querschnittsverantwortung", "forecast": "Ja — permanent"
+    },
+    {
+      "name": "Stakeholder Coordination",
+      "purpose": "Abstimmung Teams, Vendor, Management",
+      "work": "Meetings, Konzepte",
+      "mode": "govern", "lc": "jw", "pt": "15–20", "ptMid": 17, "cat": "govern",
+      "lcNote": "Nicht immer im Git sichtbar", "forecast": "Ja — permanent"
+    }
+  ],
+  "exclude": [
+    "muraschal/muraschal",
+    "zvvch/.github"
+  ]
+}
