@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cockpit-v2';
+const CACHE_NAME = 'cockpit-v3-next';
 const PRECACHE_URLS = [
   '/',
   '/data.json',

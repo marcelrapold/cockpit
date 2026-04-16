@@ -1,16 +1,31 @@
 {
   "name": "cockpit",
-  "version": "1.0.0",
-  "private": false,
+  "version": "2.0.0",
+  "private": true,
   "description": "Engineering-Dashboard: Live-Commits, Deployments, Uptime, Sprachen-Verteilung — GitHub, Vercel, Supabase.",
   "license": "MIT",
   "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "generate": "node scripts/generate-assets.mjs"
   },
   "dependencies": {
-    "ioredis": "^5.10.1"
+    "ioredis": "^5.10.1",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "sharp": "^0.34.5"
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9.16.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.4.49",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
   }
 }
