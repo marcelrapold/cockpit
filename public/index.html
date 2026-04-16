@@ -5,35 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary Meta -->
-  <title>Cockpit — Engineering Dashboard</title>
-  <meta name="description" content="Cross-platform engineering dashboard tracking GitHub, Vercel and Supabase activity. Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack.">
+  <title>Cockpit | Marcel Rapold</title>
+  <meta name="description" content="Engineering-Dashboard f\u00fcr 70+ Projekte: Live-Commits, Deployments, Uptime, Sprachen-Verteilung. GitHub, Vercel, Supabase — alles auf einen Blick.">
   <meta name="author" content="Marcel Rapold">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://cockpit.rapold.io/">
 
   <!-- Favicon & Icons -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#005093">
+  <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Cockpit">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_CH">
+  <meta property="og:site_name" content="Cockpit">
   <meta property="og:url" content="https://cockpit.rapold.io/">
-  <meta property="og:title" content="Cockpit — Engineering Dashboard">
-  <meta property="og:description" content="Cross-platform engineering dashboard: Live KPIs, Commit Calendar, Heatmap, Uptime Monitor, Tech Stack.">
-  <meta property="og:image" content="https://cockpit.rapold.io/og-image.svg">
+  <meta property="og:title" content="Cockpit | Marcel Rapold">
+  <meta property="og:description" content="Engineering-Dashboard f\u00fcr 70+ Projekte: Live-Commits, Deployments, Uptime, Sprachen-Verteilung.">
+  <meta property="og:image" content="https://cockpit.rapold.io/og-image.png">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Cockpit Dashboard — Commit-Heatmap, KPIs, Deployment-Stats">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Cockpit — Engineering Dashboard">
-  <meta name="twitter:description" content="Live KPIs, Commit Calendar, Uptime Monitor — cross-platform engineering dashboard.">
-  <meta name="twitter:image" content="https://cockpit.rapold.io/og-image.svg">
+  <meta name="twitter:title" content="Cockpit | Marcel Rapold">
+  <meta name="twitter:description" content="Engineering-Dashboard f\u00fcr 70+ Projekte: Live-Commits, Deployments, Uptime, Sprachen-Verteilung.">
+  <meta name="twitter:image" content="https://cockpit.rapold.io/og-image.png">
+  <meta name="twitter:image:alt" content="Cockpit Dashboard — Commit-Heatmap, KPIs, Deployment-Stats">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -42,11 +50,12 @@
     "@type": "WebApplication",
     "name": "Cockpit",
     "url": "https://cockpit.rapold.io",
-    "description": "Cross-platform engineering dashboard tracking GitHub, Vercel and Supabase activity with live KPIs, commit calendar, uptime monitoring and tech stack analysis.",
-    "applicationCategory": "BusinessApplication",
+    "description": "Engineering-Dashboard f\u00fcr 70+ Projekte: Live-Commits, Deployments, Uptime, Sprachen-Verteilung. GitHub, Vercel, Supabase — alles auf einen Blick.",
+    "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Web",
-    "author": { "@type": "Person", "name": "Marcel Rapold", "url": "https://rapold.io" },
-    "isAccessibleForFree": true
+    "author": { "@type": "Person", "name": "Marcel Rapold", "url": "https://marcelrapold.com" },
+    "isAccessibleForFree": true,
+    "screenshot": "https://cockpit.rapold.io/og-image.png"
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1615,10 +1624,10 @@
     <div>
       <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.2rem;">
         <svg viewBox="0 0 32 32" fill="white" style="height:1.6rem;width:auto;opacity:0.9;"><rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.15)"/><text x="16" y="22" font-family="IBM Plex Sans, sans-serif" font-size="16" font-weight="700" fill="#fff" text-anchor="middle">C</text></svg>
-        <div class="org">Cockpit — Engineering Dashboard</div>
+        <div class="org">Cockpit</div>
       </div>
       <h1>Cockpit</h1>
-      <div class="sub">Marcel Rapold — Cross-Platform Engineering Dashboard</div>
+      <div class="sub">Marcel Rapold — Live Engineering Metrics aus GitHub, Vercel und Supabase</div>
       <div class="meta">
         <span id="headerTimestamp">Datenstand: wird geladen …</span>
         <span>Quellen: GitHub (zvvch, marcelrapold, muraschal) · Vercel · Supabase</span>
@@ -2485,7 +2494,7 @@ const PROJECT_BRIEFINGS = {
   'ZVV VS Code Theme': { impact: 'Developer Experience', desc: 'Gebrandetes Editor-Theme — Team-Identität in der Toolchain.' },
   'ZVV AI Crawl': { impact: 'SEO & AI', desc: 'Generative Engine Optimization — llm.txt, JSON-Daten, AI-Crawler-Support.' },
   'Jahreshochrechnung': { impact: 'Compliance', desc: 'R/SQL-Pipelines für wiederkehrende regulatorische Datenlieferungen.' },
-  'Workload Portfolio': { impact: 'Management', desc: 'Management-Workload-Modell — Portfolio-Steuerung und Forecasting.' },
+  'Workload Portfolio': { impact: 'Management', desc: 'Portfolio-Steuerung, Kapazitätsplanung und Forecasting.' },
   'Security / CVE Management': { impact: 'Security', desc: 'Cross-Repo Dependency-Monitoring und Patching — reduziert Angriffsfläche.' },
   'Stakeholder Coordination': { impact: 'Governance', desc: 'Abstimmung Business, Vendors, Management — Portfolio-Kohärenz.' },
 };
@@ -4248,7 +4257,7 @@ function fsStartTypewriter() {
 
   const { gh } = fsData;
   const lines = [];
-  lines.push(`Kalenderwoche ${getWeekNumber(new Date())} — Workload Report`);
+  lines.push(`Kalenderwoche ${getWeekNumber(new Date())} — Cockpit Report`);
   lines.push('');
   if (gh) {
     lines.push(`Diese Woche: ${gh.week} Commits über die gesamte Organisation.`);
@@ -4540,7 +4549,7 @@ document.getElementById('screenshotBtn').addEventListener('click', async () => {
     if (typeof html2canvas !== 'function') throw new Error('html2canvas not loaded');
     const canvas = await html2canvas(document.body, { scale: 1, useCORS: true, logging: false, windowWidth: 1280 });
     const link = document.createElement('a');
-    link.download = `workload-portfolio-${new Date().toISOString().split('T')[0]}.png`;
+    link.download = `cockpit-export-${new Date().toISOString().split('T')[0]}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
     toast.textContent = 'Screenshot gespeichert!';

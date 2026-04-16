@@ -1,10 +1,16 @@
 {
-  "name": "workload-portfolio",
+  "name": "cockpit",
   "version": "1.0.0",
   "private": false,
-  "description": "Management-grade workload and delivery portfolio dashboard — forkable, configurable via environment variables",
+  "description": "Engineering-Dashboard: Live-Commits, Deployments, Uptime, Sprachen-Verteilung — GitHub, Vercel, Supabase.",
   "license": "MIT",
+  "scripts": {
+    "generate": "node scripts/generate-assets.mjs"
+  },
   "dependencies": {
     "ioredis": "^5.10.1"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
   }
 }
