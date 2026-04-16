@@ -258,6 +258,25 @@
   ],
   "exclude": [
     "muraschal/muraschal",
-    "zvvch/.github"
+    "zvvch/.github",
+    "muraschal/zvv-statuspage",
+    "muraschal/zvv-styleguide",
+    "muraschal/zvv-landingpage",
+    "muraschal/zvv-kundenkonto",
+    "muraschal/zvv-email-templates",
+    "muraschal/zvv-pm",
+    "muraschal/Kebab",
+    "muraschal/v0-zvv-navi-demo",
+    "muraschal/finCheck",
+    "muraschal/BeerMap",
+    "muraschal/austin-tech-beer-map",
+    "muraschal/hwz-case-studies",
+    "muraschal/hwz-hangman",
+    "muraschal/hwz-cas-bitcoin-lightning",
+    "muraschal/darden",
+    "muraschal/bitcoin-association-switzerland",
+    "muraschal/maptoposter",
+    "muraschal/streamrip",
+    "muraschal/chain-duel"
   ]
 }
