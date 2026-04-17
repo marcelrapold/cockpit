@@ -11,7 +11,7 @@ const fetchDora = require('./_lib/fetch-dora');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
+  res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
 
   const range = parseRange(req.query?.range);
   const cacheKey = rangeKey(KEYS.dora, range);

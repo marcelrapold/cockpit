@@ -6,7 +6,11 @@ function createV1Handler(cacheBaseKey, fetcher, fallbackData) {
   return async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
+    // DORA must not be cached at shared CDNs (stale portfolio-shaped responses were served as HIT).
+    const cacheCtl = String(cacheBaseKey).startsWith('cache:dora')
+      ? 'private, no-cache, max-age=0, must-revalidate'
+      : 's-maxage=60, stale-while-revalidate=30';
+    res.setHeader('Cache-Control', cacheCtl);
 
     if (req.method === 'OPTIONS') return res.status(200).end();
     if (!authenticate(req, res)) return;
