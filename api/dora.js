@@ -1,4 +1,12 @@
-const { get, KEYS, rangeKey, parseRange, rangeToDays } = require('./_lib/cache');
+const {
+  get,
+  KEYS,
+  rangeKey,
+  parseRange,
+  rangeToDays,
+  isPoisonedDoraCache,
+  isDoraRedisKey,
+} = require('./_lib/cache');
 const fetchDora = require('./_lib/fetch-dora');
 
 module.exports = async function handler(req, res) {
@@ -10,7 +18,12 @@ module.exports = async function handler(req, res) {
 
   try {
     const cached = await get(cacheKey);
-    if (cached) return res.json(cached);
+    if (
+      cached &&
+      !(isDoraRedisKey(cacheKey) && isPoisonedDoraCache(cached))
+    ) {
+      return res.json(cached);
+    }
   } catch {}
 
   try {

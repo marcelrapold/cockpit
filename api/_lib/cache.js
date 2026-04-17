@@ -65,4 +65,27 @@ async function set(key, data) {
   return getClient().set(key, JSON.stringify(data), 'EX', TTL);
 }
 
-module.exports = { getClient, KEYS, TTL, VALID_RANGES, get, set, rangeKey, parseRange, rangeToDays };
+/** Redis entry written under KEYS.dora while the wrong handler was bundled (portfolio JSON). */
+function isPoisonedDoraCache(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (data.metrics && typeof data.metrics === 'object') return false;
+  return Array.isArray(data.projects);
+}
+
+function isDoraRedisKey(key) {
+  return typeof key === 'string' && key.startsWith('cache:dora');
+}
+
+module.exports = {
+  getClient,
+  KEYS,
+  TTL,
+  VALID_RANGES,
+  get,
+  set,
+  rangeKey,
+  parseRange,
+  rangeToDays,
+  isPoisonedDoraCache,
+  isDoraRedisKey,
+};

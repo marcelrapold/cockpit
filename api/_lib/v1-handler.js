@@ -1,6 +1,6 @@
 const { authenticate } = require('./auth');
 const { rateLimit } = require('./rate-limit');
-const { get, rangeKey, parseRange, rangeToDays } = require('./cache');
+const { get, rangeKey, parseRange, rangeToDays, isPoisonedDoraCache, isDoraRedisKey } = require('./cache');
 
 function createV1Handler(cacheBaseKey, fetcher, fallbackData) {
   return async function handler(req, res) {
@@ -17,7 +17,12 @@ function createV1Handler(cacheBaseKey, fetcher, fallbackData) {
 
     try {
       const cached = await get(cacheKey);
-      if (cached) return res.json(cached);
+      if (
+        cached &&
+        !(isDoraRedisKey(cacheKey) && isPoisonedDoraCache(cached))
+      ) {
+        return res.json(cached);
+      }
     } catch {}
 
     try {
