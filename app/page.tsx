@@ -4,11 +4,11 @@
  */
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0b1120]">
+    <main className="flex h-[100svh] min-h-[100dvh] w-full flex-col bg-[#0b1120]">
       <iframe
         src="/index.html"
         title="Cockpit Dashboard"
-        className="h-[100dvh] w-full border-0"
+        className="min-h-0 w-full flex-1 border-0"
       />
     </main>
   );

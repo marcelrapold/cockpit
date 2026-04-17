@@ -97,7 +97,11 @@
       --text-muted: #64748b;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    html {
+      scroll-behavior: smooth; -webkit-text-size-adjust: 100%;
+      scroll-padding-top: 52px;
+      scroll-padding-bottom: max(72px, calc(56px + env(safe-area-inset-bottom, 0px)));
+    }
     body { font-family: var(--font); color: var(--text); background: var(--surface-alt); line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; transition: background 0.3s, color 0.3s; }
     button, a { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
@@ -112,7 +116,10 @@
     .header .sub { font-size: 0.9rem; font-weight: 300; opacity: 0.85; margin-top: 0.15rem; }
     .header .meta { margin-top: 0.75rem; font-size: 0.75rem; opacity: 0.55; display: flex; gap: 1.25rem; flex-wrap: wrap; }
     .header-flex { display: flex; align-items: flex-start; justify-content: space-between; }
-    .header-actions { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
+    .header-actions {
+      display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0;
+      flex-wrap: wrap; justify-content: flex-end; row-gap: 0.35rem; max-width: min(100%, 560px);
+    }
 
     .container { max-width: 1240px; margin: 0 auto; padding: 0 1.5rem; }
 
@@ -120,7 +127,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 0.75rem;
-      margin: -1rem 0 2rem;
+      margin: -0.65rem 0 1.75rem;
       position: relative;
       z-index: 2;
     }
@@ -139,7 +146,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 0.6rem;
-      margin: -1rem 0 0.75rem;
+      margin: -0.65rem 0 0.75rem;
       position: relative;
       z-index: 3;
     }
@@ -559,7 +566,9 @@
       padding: 0.25rem 0.6rem; border-radius: 20px; cursor: pointer;
       font-family: var(--mono); font-size: 0.62rem; font-weight: 500;
       background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.75); transition: all 0.2s; white-space: nowrap;
+      color: rgba(255,255,255,0.75); transition: all 0.2s;
+      white-space: normal; text-align: left; line-height: 1.25;
+      max-width: min(100%, 20rem);
       position: relative;
     }
     .build-badge:hover { background: rgba(255,255,255,0.25); color: white; }
@@ -1508,9 +1517,11 @@
     .btt svg { width: 18px; height: 18px; }
 
     .footer {
-      text-align: center; padding: 1.5rem; font-size: 0.72rem; color: var(--text-muted);
+      text-align: center; padding: 1.5rem; padding-bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+      font-size: 0.72rem; color: var(--text-muted);
       border-top: 1px solid var(--border); margin-top: 1rem;
     }
+    section[id].reveal { scroll-margin-top: 56px; }
 
     /* === MOBILE RESPONSIVE (Google Material Design Guidelines) === */
     @media (max-width: 900px) {
@@ -1529,6 +1540,8 @@
       body { line-height: 1.5; }
 
       .header { padding: 1.25rem 1rem 1rem; }
+      .header-flex { flex-direction: column; align-items: stretch !important; gap: 0.75rem; }
+      .header-actions { max-width: none !important; justify-content: flex-start; }
       .header h1 { font-size: 1.25rem; letter-spacing: -0.02em; }
       .header .sub { font-size: 0.82rem; }
       .header .org { font-size: 0.65rem; }
@@ -1728,7 +1741,7 @@
       <div style="position:relative;">
         <button class="build-badge" id="buildBadge" title="Build & Changelog">
           <span class="new-dot" id="buildNewDot"></span>
-          <span id="buildBadgeText">v4.0.0 | 16.04.26 | main</span>
+          <span id="buildBadgeText">v2.0.0 · lädt …</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:0.7rem;height:0.7rem;opacity:0.5;"><path d="M6 9l6 6 6-6"/></svg>
         </button>
         <div class="changelog-panel-backdrop" id="clBackdrop" onclick="closeBuildPanel()"></div>
@@ -2389,20 +2402,20 @@
 <footer class="footer">
   Automatisiert generiert auf Basis einer Repository-Analyse (30.03.2026) · GitHub-Organisation konfigurierbar
   <span style="margin-left:0.5rem;opacity:0.4;">PWA · Offline-fähig</span>
-  <div class="cl-footer-version" id="footerVersion">v4.0.0 · main</div>
+  <div class="cl-footer-version" id="footerVersion">v2.0.0 · …</div>
 </footer>
 
 <script>
-const APP_VERSION = '4.0.0';
-const APP_BUILD_DATE = '2026-04-16T11:00:00+02:00';
-const APP_GIT_BRANCH = 'main';
-const APP_GIT_COMMIT = 'bcecdf9';
+let APP_VERSION = '2.0.0';
+let APP_BUILD_DATE = new Date().toISOString();
+let APP_GIT_BRANCH = 'local';
+let APP_GIT_COMMIT = 'local';
 const APP_GITHUB_REPO = 'marcelrapold/cockpit';
 
 const CHANGELOG = [
   {
-    version: '4.0.0',
-    date: '2026-04-16',
+    version: '2.0.0',
+    date: '2026-04-17',
     title: 'Real Data — Multi-Org Cross-Platform Tracking',
     summary: 'Komplett echte Daten: 28 reale Projekte aus zvvch, marcelrapold, muraschal. Alle Platzhalter entfernt.',
     details: [
@@ -2851,6 +2864,30 @@ function formatDateFull(d) {
   return dt.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+async function loadBuildMeta() {
+  try {
+    const res = await fetch('/api/build-info', { cache: 'no-store', credentials: 'same-origin' });
+    if (!res.ok) return;
+    const j = await res.json();
+    if (j.version) APP_VERSION = j.version;
+    if (j.commit) APP_GIT_COMMIT = j.commit;
+    if (j.branch) APP_GIT_BRANCH = j.branch;
+    APP_BUILD_DATE = new Date().toISOString();
+  } catch (_) {}
+}
+
+function applyBuildMetaToUI() {
+  const badge = document.getElementById('buildBadgeText');
+  if (badge) {
+    const d = formatDateShort(APP_BUILD_DATE);
+    badge.textContent = `v${APP_VERSION} | ${d} | ${APP_GIT_BRANCH} · ${APP_GIT_COMMIT}`;
+  }
+  const fv = document.getElementById('footerVersion');
+  if (fv) fv.textContent = `v${APP_VERSION} · ${APP_GIT_BRANCH} · ${APP_GIT_COMMIT}`;
+  const panel = document.getElementById('clPanel');
+  if (panel && panel.classList.contains('open')) renderChangelogPanel();
+}
+
 function renderChangelogPanel() {
   const panel = document.getElementById('clPanel');
   if (!panel) return;
@@ -2890,7 +2927,7 @@ function renderChangelogPanel() {
         <span class="cl-grid-val">v${APP_VERSION}</span>
       </div>
       <div class="cl-grid-row">
-        <span class="cl-grid-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Build</span>
+        <span class="cl-grid-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Stand</span>
         <span class="cl-grid-val">${formatDateFull(APP_BUILD_DATE)}</span>
       </div>
       <div class="cl-grid-row">
@@ -2932,12 +2969,16 @@ document.getElementById('buildBadge').addEventListener('click', function(e) {
   else openBuildPanel();
 });
 
-(function initBuildBadge() {
+function initBuildBadge() {
   const showNew = CHANGELOG[0] && isRecentRelease(CHANGELOG[0].date);
   const dot = document.getElementById('buildNewDot');
   if (dot) dot.style.display = showNew ? 'inline-block' : 'none';
-  const fv = document.getElementById('footerVersion');
-  if (fv) fv.textContent = `v${APP_VERSION} · ${APP_GIT_BRANCH} · ${APP_GIT_COMMIT}`;
+  applyBuildMetaToUI();
+}
+
+(async function bootBuildMeta() {
+  await loadBuildMeta();
+  initBuildBadge();
 })();
 
 // === FEATURE: Back to Top ===
