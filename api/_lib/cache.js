@@ -20,7 +20,8 @@ const KEYS = {
   infraStats: 'cache:infra-stats',
   languageStats: 'cache:language-stats',
   healthCheck: 'cache:health-check',
-  dora: 'cache:dora',
+  // v2: invalidate poisoned entries from pre-fix legacy loader (wrong JSON shape in cache:dora)
+  dora: 'cache:dora:v2',
 };
 
 const VALID_RANGES = ['7d', '30d', '90d', 'ytd', '12m'];
