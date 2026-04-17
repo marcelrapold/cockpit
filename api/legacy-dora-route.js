@@ -20,9 +20,8 @@ module.exports = async function handler(req, res) {
     const cached = await get(cacheKey);
     if (cached) {
       if (isDoraRedisKey(cacheKey) && isPoisonedDoraCache(cached)) {
-        res.setHeader('X-Dora-Cache', 'reject-poisoned');
+        // Skip portfolio JSON mistakenly stored under KEYS.dora (legacy loader bug).
       } else {
-        res.setHeader('X-Dora-Cache', 'hit');
         return res.json(cached);
       }
     }
@@ -30,7 +29,6 @@ module.exports = async function handler(req, res) {
 
   try {
     const data = await fetchDora({ days: rangeToDays(range) });
-    if (!res.getHeader('X-Dora-Cache')) res.setHeader('X-Dora-Cache', 'fetch-live');
     return res.json(data);
   } catch (err) {
     const days = rangeToDays(range);
