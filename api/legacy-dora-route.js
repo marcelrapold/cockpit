@@ -1,12 +1,4 @@
-const {
-  get,
-  KEYS,
-  rangeKey,
-  parseRange,
-  rangeToDays,
-  isValidDoraCachePayload,
-  isDoraRedisKey,
-} = require('./_lib/cache');
+const { parseRange, rangeToDays } = require('./_lib/cache');
 const fetchDora = require('./_lib/fetch-dora');
 
 module.exports = async function handler(req, res) {
@@ -14,18 +6,9 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
 
   const range = parseRange(req.query?.range);
-  const cacheKey = rangeKey(KEYS.dora, range);
 
-  try {
-    const cached = await get(cacheKey);
-    if (cached) {
-      if (isDoraRedisKey(cacheKey) && !isValidDoraCachePayload(cached)) {
-        // Ignore non-DORA payloads (e.g. portfolio) under KEYS.dora.
-      } else {
-        return res.json(cached);
-      }
-    }
-  } catch {}
+  // Do not read Redis here — poisoned or CDN-stale portfolio-shaped blobs were still served.
+  // Cron continues to populate KEYS.dora for /api/v1/dora and summary; this route always live-fetches.
 
   try {
     const data = await fetchDora({ days: rangeToDays(range) });
