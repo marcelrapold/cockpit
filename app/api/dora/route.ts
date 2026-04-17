@@ -1,10 +1,12 @@
-import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/legacy-dora-route.js';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
-  return adaptLegacy(handler as never, request);
+/** Temporary: prove whether this route is hit on production (remove after verification). */
+export async function GET() {
+  return NextResponse.json({
+    _cockpitRouteProbe: true,
+    commit: 'probe-dora-route',
+  });
 }
