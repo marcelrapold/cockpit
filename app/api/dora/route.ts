@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-/** Isolate serverless bundle (Vercel Fluid grouped routes incorrectly without this). */
+/** Isolate serverless bundle (Vercel Fluid merges routes that share identical segment config). */
 export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
