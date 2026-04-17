@@ -18,16 +18,19 @@ module.exports = async function handler(req, res) {
 
   try {
     const cached = await get(cacheKey);
-    if (
-      cached &&
-      !(isDoraRedisKey(cacheKey) && isPoisonedDoraCache(cached))
-    ) {
-      return res.json(cached);
+    if (cached) {
+      if (isDoraRedisKey(cacheKey) && isPoisonedDoraCache(cached)) {
+        res.setHeader('X-Dora-Cache', 'reject-poisoned');
+      } else {
+        res.setHeader('X-Dora-Cache', 'hit');
+        return res.json(cached);
+      }
     }
   } catch {}
 
   try {
     const data = await fetchDora({ days: rangeToDays(range) });
+    if (!res.getHeader('X-Dora-Cache')) res.setHeader('X-Dora-Cache', 'fetch-live');
     return res.json(data);
   } catch (err) {
     const days = rangeToDays(range);
