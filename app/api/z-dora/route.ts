@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+/** Isolate from Fluid bundle; cron/refresh uses maxDuration and behaved correctly. */
+export const maxDuration = 60;
 
 /** Diagnostic: if this returns JSON with zDoraProbe but /api/dora does not, something targets /api/dora only. */
 export async function GET() {
