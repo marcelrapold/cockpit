@@ -12,6 +12,11 @@ module.exports = async function handler(req, res) {
 
   try {
     const data = await fetchDora({ days: rangeToDays(range) });
+    if (data && typeof data === 'object' && Array.isArray(data.projects) && !data.metrics) {
+      const err = new Error('fetch-dora returned portfolio-shaped JSON (module resolution bug)');
+      console.error('[legacy-dora-route]', err.message);
+      throw err;
+    }
     return res.json(data);
   } catch (err) {
     const days = rangeToDays(range);
