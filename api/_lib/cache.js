@@ -20,8 +20,8 @@ const KEYS = {
   infraStats: 'cache:infra-stats',
   languageStats: 'cache:language-stats',
   healthCheck: 'cache:health-check',
-  // v2: invalidate poisoned entries from pre-fix legacy loader (wrong JSON shape in cache:dora)
-  dora: 'cache:dora:v2',
+  // v3: prior keys could hold portfolio JSON or metrics:{} + projects[] poisoned merges
+  dora: 'cache:dora:v3',
 };
 
 const VALID_RANGES = ['7d', '30d', '90d', 'ytd', '12m'];
@@ -68,8 +68,11 @@ async function set(key, data) {
 /** Only accept DORA-shaped JSON (Four Keys); reject portfolio or any stray payload in Redis. */
 function isValidDoraCachePayload(data) {
   if (data == null || typeof data !== 'object' || Array.isArray(data)) return false;
+  // Portfolio cache poisoning sometimes added an empty metrics object alongside projects.
+  if (Array.isArray(data.projects)) return false;
   const m = data.metrics;
-  return m != null && typeof m === 'object' && !Array.isArray(m);
+  if (m == null || typeof m !== 'object' || Array.isArray(m)) return false;
+  return typeof m.deployFrequency === 'object' && m.deployFrequency != null;
 }
 
 function isDoraRedisKey(key) {
