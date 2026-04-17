@@ -65,11 +65,11 @@ async function set(key, data) {
   return getClient().set(key, JSON.stringify(data), 'EX', TTL);
 }
 
-/** Redis entry written under KEYS.dora while the wrong handler was bundled (portfolio JSON). */
-function isPoisonedDoraCache(data) {
-  if (!data || typeof data !== 'object') return false;
-  if (data.metrics && typeof data.metrics === 'object') return false;
-  return Array.isArray(data.projects);
+/** Only accept DORA-shaped JSON (Four Keys); reject portfolio or any stray payload in Redis. */
+function isValidDoraCachePayload(data) {
+  if (data == null || typeof data !== 'object' || Array.isArray(data)) return false;
+  const m = data.metrics;
+  return m != null && typeof m === 'object' && !Array.isArray(m);
 }
 
 function isDoraRedisKey(key) {
@@ -86,6 +86,6 @@ module.exports = {
   rangeKey,
   parseRange,
   rangeToDays,
-  isPoisonedDoraCache,
+  isValidDoraCachePayload,
   isDoraRedisKey,
 };

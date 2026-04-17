@@ -4,7 +4,7 @@ const {
   rangeKey,
   parseRange,
   rangeToDays,
-  isPoisonedDoraCache,
+  isValidDoraCachePayload,
   isDoraRedisKey,
 } = require('./_lib/cache');
 const fetchDora = require('./_lib/fetch-dora');
@@ -19,8 +19,8 @@ module.exports = async function handler(req, res) {
   try {
     const cached = await get(cacheKey);
     if (cached) {
-      if (isDoraRedisKey(cacheKey) && isPoisonedDoraCache(cached)) {
-        // Skip portfolio JSON mistakenly stored under KEYS.dora (legacy loader bug).
+      if (isDoraRedisKey(cacheKey) && !isValidDoraCachePayload(cached)) {
+        // Ignore non-DORA payloads (e.g. portfolio) under KEYS.dora.
       } else {
         return res.json(cached);
       }
