@@ -146,9 +146,9 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 0.6rem;
-      margin: -0.65rem 0 0.75rem;
+      margin: 0 0 0.75rem;
       position: relative;
-      z-index: 3;
+      z-index: 2;
     }
     .hero-card {
       background: var(--surface);
@@ -203,14 +203,26 @@
     }
 
     /* Time-Range Picker */
+    .range-row {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin: 0.75rem 0 0.5rem;
+      position: relative; z-index: 5;
+      flex-wrap: wrap;
+    }
+    .range-row .range-label {
+      font-size: 0.62rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
     .range-picker {
       display: flex; gap: 0.25rem; align-items: center;
       margin-left: auto;
+      flex-wrap: wrap;
     }
     .range-pill {
       font-size: 0.62rem; font-weight: 600; font-family: var(--mono);
       padding: 0.22rem 0.55rem; border-radius: 4px;
-      background: transparent; border: 1px solid var(--border);
+      background: var(--surface); border: 1px solid var(--border);
       color: var(--text-muted); cursor: pointer;
       transition: all 0.15s;
     }
@@ -1773,8 +1785,8 @@
 <div class="container">
 
   <!-- Time-Range Picker + DORA Hero KPI Bar -->
-  <div style="display:flex;align-items:center;margin:-0.5rem 0 0.5rem;gap:0.5rem;">
-    <span style="font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">DORA Metrics</span>
+  <div class="range-row">
+    <span class="range-label">DORA Metrics</span>
     <div class="range-picker" id="rangePicker">
       <button class="range-pill" data-range="7d">7D</button>
       <button class="range-pill active" data-range="30d">30D</button>
