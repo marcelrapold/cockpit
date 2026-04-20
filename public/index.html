@@ -1767,14 +1767,14 @@
     <span class="sticky-nav-title">Cockpit</span>
     <div class="sticky-nav-links">
       <a href="#summary">Zusammenfassung</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#charts">Aufwand</a>
       <a href="#timeline">Timeline</a>
       <a href="#activity">Aktivität</a>
       <a href="#insights">Insights</a>
       <a href="#techstack">Tech</a>
       <a href="#languages">Sprachen</a>
       <a href="#aiInsights">AI</a>
-      <a href="#portfolio">Portfolio</a>
-      <a href="#charts">Aufwand</a>
       <a href="#" onclick="toggleFullscreen();return false;" style="color:var(--blue);font-weight:600;">Kiosk</a>
     </div>
   </div>
@@ -1828,6 +1828,19 @@
 </header>
 
 <div class="container">
+
+  <!-- Summary -->
+  <section id="summary" class="reveal">
+    <div class="card">
+      <h2 class="card-title">Zusammenfassung</h2>
+      <div class="card-sub">
+        <p id="execSummaryText">Wird geladen …</p>
+      </div>
+      <div class="note">
+        <strong>Methodik:</strong> Alle Angaben basieren auf Live-API-Daten (GitHub, Vercel, Supabase) und der kuratierten Portfolio-Tabelle. Aufwandschätzungen (PT) sind konservative Inferenzen — keine Zeiterfassungsdaten vorhanden.
+      </div>
+    </div>
+  </section>
 
   <!-- Time-Range Picker + DORA Hero KPI Bar -->
   <div class="range-row">
@@ -2062,210 +2075,6 @@
     </div>
   </section>
 
-  <!-- Summary -->
-  <section id="summary" class="reveal">
-    <div class="card">
-      <h2 class="card-title">Zusammenfassung</h2>
-      <div class="card-sub">
-        <p id="execSummaryText">Wird geladen …</p>
-      </div>
-      <div class="note">
-        <strong>Methodik:</strong> Alle Angaben basieren auf Live-API-Daten (GitHub, Vercel, Supabase) und der kuratierten Portfolio-Tabelle. Aufwandschätzungen (PT) sind konservative Inferenzen — keine Zeiterfassungsdaten vorhanden.
-      </div>
-    </div>
-  </section>
-
-  <!-- Timeline -->
-  <section id="timeline" class="reveal">
-    <div class="card" style="padding-bottom:1rem;">
-      <h2 class="card-title">Projekt-Timeline</h2>
-      <p class="card-sub" style="margin-bottom:1.25rem;">Commit-Intensität pro Monat — je dunkler die Zelle, desto höher die Aktivität. Die vertikale Markierung zeigt den aktuellen Monat.</p>
-      <div class="timeline-container" id="timelineContainer"></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-swatch" style="background:#3b82f6"></div> Change / Build</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:#10b981"></div> Run / Produktiv</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:#8b5cf6"></div> Govern / Spec</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:#f59e0b"></div> Tool / Sonstiges</div>
-        <div class="legend-item">
-          <div class="legend-swatch-heat"><span style="background:rgba(0,102,179,0.12)"></span><span style="background:rgba(0,102,179,0.3)"></span><span style="background:rgba(0,102,179,0.6)"></span><span style="background:rgba(0,102,179,1)"></span></div>
-          Intensität
-        </div>
-        <div class="legend-item"><div class="legend-swatch" style="border:2px dashed #94a3b8;background:transparent"></div> Prognostiziert (JW)</div>
-      </div>
-    </div>
-  </section>
-  <div class="tl-tooltip" id="tlTooltip">
-    <div class="tt-name"></div>
-    <div><span class="tt-count"></span> Commits</div>
-    <div class="tt-month" style="font-size:0.65rem;opacity:0.7;"></div>
-    <div class="tt-bar"><div class="tt-bar-fill"></div></div>
-  </div>
-
-  <!-- Contribution Calendar + Working Hours -->
-  <section id="activity" class="reveal">
-    <div class="viz-2col">
-      <div class="card">
-        <h2 class="card-title">Commit-Kalender</h2>
-        <div class="cal-total" id="calTotal">Lade Daten…</div>
-        <div class="cal-wrap">
-          <div style="display:flex">
-            <div class="cal-day-labels" id="calDayLabels"></div>
-            <div>
-              <div class="cal-months" id="calMonths"></div>
-              <div class="cal-grid" id="calGrid"></div>
-            </div>
-          </div>
-        </div>
-        <div class="cal-legend">
-          Weniger
-          <div class="cal-legend-squares">
-            <div class="cal-day"></div>
-            <div class="cal-day" data-level="1"></div>
-            <div class="cal-day" data-level="2"></div>
-            <div class="cal-day" data-level="3"></div>
-            <div class="cal-day" data-level="4"></div>
-          </div>
-          Mehr
-        </div>
-      </div>
-      <div class="card">
-        <h2 class="card-title">Arbeitszeiten-Heatmap</h2>
-        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.75rem;">Commit-Verteilung nach Wochentag und Uhrzeit (CET/CEST)</p>
-        <div class="hm-wrap"><div class="hm-grid" id="hmGrid"></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dependency Map + Uptime Monitor -->
-  <section id="insights" class="reveal">
-    <div class="viz-2col">
-      <div class="card">
-        <h2 class="card-title">Projekt-Abhängigkeiten</h2>
-        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Architekturübersicht: welche Applikation hängt von welchem Service ab.</p>
-        <div class="dep-wrap">
-          <svg class="dep-svg" id="depMap" viewBox="0 0 680 380"></svg>
-        </div>
-        <div class="dep-legend" id="depLegend"></div>
-      </div>
-      <div class="card" id="uptime">
-        <h2 class="card-title">Uptime-Monitor</h2>
-        <div class="uptime-summary" id="uptimeSummary">
-          <span>Prüfe Dienste…</span>
-        </div>
-        <div class="uptime-grid" id="uptimeGrid"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Tech Stack -->
-  <section id="techstack" class="reveal">
-    <div class="card">
-      <h2 class="card-title">Technologie-Landkarte</h2>
-      <p style="font-size:0.75rem;color:var(--text-sec);margin-bottom:1rem;">Externe Libraries und Frameworks über alle konfigurierten Repositories. Gescannt aus package.json und requirements.txt.</p>
-      <div class="tech-summary" id="techSummary"></div>
-      <h3 style="font-size:0.82rem;font-weight:600;margin-bottom:0.5rem;">Framework-Verteilung</h3>
-      <div class="tech-fw-bar" id="techFwBar"></div>
-      <div class="tech-fw-legend" id="techFwLegend"></div>
-    </div>
-    <div class="tech-grid" style="margin-top:1.5rem;">
-      <div class="card">
-        <h3 style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem;">Top Packages (nach Verbreitung)</h3>
-        <div class="tech-bubbles" id="techBubbles"></div>
-      </div>
-      <div class="card">
-        <h3 style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem;">Meistgenutzte Libraries</h3>
-        <div style="max-height:400px;overflow-y:auto;">
-          <table class="tech-pkg-table" id="techTable">
-            <thead><tr><th>Package</th><th>Repos</th><th>Kategorie</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Languages Breakdown -->
-  <section id="languages" class="reveal">
-    <div class="viz-2col">
-      <div class="card">
-        <h2 class="card-title">Sprachen-Verteilung</h2>
-        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.75rem;">Codebase-Analyse über alle Repositories der konfigurierten Organisation (nach Bytes)</p>
-        <div class="lang-bar-wrap">
-          <div class="lang-bar" id="langBar"></div>
-          <div class="lang-legend" id="langLegend"></div>
-        </div>
-      </div>
-      <div class="card">
-        <h2 class="card-title">Deployment Globe</h2>
-        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Edge-Regions der Vercel-Deployments</p>
-        <div class="globe-container" id="globeContainer">
-          <div class="globe-label">Origin → Edge network · multi-region</div>
-          <div class="globe-stats">
-            <div class="globe-stat"><strong>SFO</strong> San Francisco</div>
-            <div class="globe-stat"><strong>IAD</strong> Washington DC</div>
-            <div class="globe-stat"><strong>LHR</strong> London</div>
-            <div class="globe-stat"><strong>FRA</strong> Frankfurt</div>
-            <div class="globe-stat"><strong>SIN</strong> Singapore</div>
-            <div class="globe-stat"><strong>NRT</strong> Tokyo</div>
-            <div class="globe-stat"><strong>SYD</strong> Sydney</div>
-            <div class="globe-stat"><strong>GRU</strong> São Paulo</div>
-            <div class="globe-stat"><strong>BOM</strong> Mumbai</div>
-            <div class="globe-stat"><strong>JNB</strong> Johannesburg</div>
-            <div class="globe-stat"><strong>DXB</strong> Dubai</div>
-            <div class="globe-stat"><strong>HKG</strong> Hong Kong</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- AI Insights & Wochenbericht -->
-  <section id="aiInsights" class="reveal">
-    <div class="card">
-      <h2 class="card-title">AI-generierte Insights</h2>
-      <div id="aiInsightsContent">
-        <div class="ai-insight-card">
-          <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2a9 9 0 0 0-9 9c0 3.9 2.5 7.1 6 8.3V21h6v-1.7c3.5-1.2 6-4.4 6-8.3a9 9 0 0 0-9-9z"/><line x1="12" y1="6" x2="12" y2="12"/></svg> Wochenbericht</div>
-          <div class="ai-weekly" id="aiWeekly">Wird generiert…</div>
-        </div>
-        <div class="ai-insight-card" style="margin-top:0.5rem;">
-          <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Strategische Beobachtungen</div>
-          <div class="ai-insight-body" id="aiStrategic">Wird analysiert…</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Velocity & Prognose -->
-  <section id="velocitySection" class="reveal">
-    <div class="card">
-      <h2 class="card-title">Velocity & Jahresprognose</h2>
-      <div class="charts-2col">
-        <div class="chart-card">
-          <h3>Commit-Velocity (letzte 12 Monate)</h3>
-          <canvas id="chartVelocity" height="180"></canvas>
-        </div>
-        <div class="chart-card velocity-card">
-          <h3>Jahresprognose 2026</h3>
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem;">
-            <div class="velocity-line"><span class="v-num" id="velTotal">–</span><span class="v-label">Commits bisher (2026)</span></div>
-            <div class="velocity-line"><span class="v-num" id="velProjected">–</span><span class="v-label">Prognose Jahresende</span></div>
-          </div>
-          <div class="velocity-proj" id="velProj" style="font-size:0.72rem;color:var(--text-sec);line-height:1.65;">Basierend auf aktuellem Tempo</div>
-          <div style="margin-top:0.75rem;"><canvas id="chartMonthly" height="130"></canvas></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Gamification -->
-  <section id="gamification" class="reveal" style="display:none;">
-    <div class="card">
-      <h2 class="card-title">Achievements</h2>
-      <div class="badges-row" id="badgesRow"></div>
-    </div>
-  </section>
-
   <!-- Portfolio Table -->
   <section id="portfolio" class="reveal">
     <div class="card">
@@ -2371,6 +2180,197 @@
     </div>
   </section>
 
+  <!-- Timeline -->
+  <section id="timeline" class="reveal">
+    <div class="card" style="padding-bottom:1rem;">
+      <h2 class="card-title">Projekt-Timeline</h2>
+      <p class="card-sub" style="margin-bottom:1.25rem;">Commit-Intensität pro Monat — je dunkler die Zelle, desto höher die Aktivität. Die vertikale Markierung zeigt den aktuellen Monat.</p>
+      <div class="timeline-container" id="timelineContainer"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch" style="background:#3b82f6"></div> Change / Build</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#10b981"></div> Run / Produktiv</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#8b5cf6"></div> Govern / Spec</div>
+        <div class="legend-item"><div class="legend-swatch" style="background:#f59e0b"></div> Tool / Sonstiges</div>
+        <div class="legend-item">
+          <div class="legend-swatch-heat"><span style="background:rgba(0,102,179,0.12)"></span><span style="background:rgba(0,102,179,0.3)"></span><span style="background:rgba(0,102,179,0.6)"></span><span style="background:rgba(0,102,179,1)"></span></div>
+          Intensität
+        </div>
+        <div class="legend-item"><div class="legend-swatch" style="border:2px dashed #94a3b8;background:transparent"></div> Prognostiziert (JW)</div>
+      </div>
+    </div>
+  </section>
+  <div class="tl-tooltip" id="tlTooltip">
+    <div class="tt-name"></div>
+    <div><span class="tt-count"></span> Commits</div>
+    <div class="tt-month" style="font-size:0.65rem;opacity:0.7;"></div>
+    <div class="tt-bar"><div class="tt-bar-fill"></div></div>
+  </div>
+
+  <!-- Contribution Calendar + Working Hours -->
+  <section id="activity" class="reveal">
+    <div class="viz-2col">
+      <div class="card">
+        <h2 class="card-title">Commit-Kalender</h2>
+        <div class="cal-total" id="calTotal">Lade Daten…</div>
+        <div class="cal-wrap">
+          <div style="display:flex">
+            <div class="cal-day-labels" id="calDayLabels"></div>
+            <div>
+              <div class="cal-months" id="calMonths"></div>
+              <div class="cal-grid" id="calGrid"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cal-legend">
+          Weniger
+          <div class="cal-legend-squares">
+            <div class="cal-day"></div>
+            <div class="cal-day" data-level="1"></div>
+            <div class="cal-day" data-level="2"></div>
+            <div class="cal-day" data-level="3"></div>
+            <div class="cal-day" data-level="4"></div>
+          </div>
+          Mehr
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">Arbeitszeiten-Heatmap</h2>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.75rem;">Commit-Verteilung nach Wochentag und Uhrzeit (CET/CEST)</p>
+        <div class="hm-wrap"><div class="hm-grid" id="hmGrid"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Velocity & Prognose -->
+  <section id="velocitySection" class="reveal">
+    <div class="card">
+      <h2 class="card-title">Velocity & Jahresprognose</h2>
+      <div class="charts-2col">
+        <div class="chart-card">
+          <h3>Commit-Velocity (letzte 12 Monate)</h3>
+          <canvas id="chartVelocity" height="180"></canvas>
+        </div>
+        <div class="chart-card velocity-card">
+          <h3>Jahresprognose 2026</h3>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+            <div class="velocity-line"><span class="v-num" id="velTotal">–</span><span class="v-label">Commits bisher (2026)</span></div>
+            <div class="velocity-line"><span class="v-num" id="velProjected">–</span><span class="v-label">Prognose Jahresende</span></div>
+          </div>
+          <div class="velocity-proj" id="velProj" style="font-size:0.72rem;color:var(--text-sec);line-height:1.65;">Basierend auf aktuellem Tempo</div>
+          <div style="margin-top:0.75rem;"><canvas id="chartMonthly" height="130"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dependency Map + Uptime Monitor -->
+  <section id="insights" class="reveal">
+    <div class="viz-2col">
+      <div class="card">
+        <h2 class="card-title">Projekt-Abhängigkeiten</h2>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Architekturübersicht: welche Applikation hängt von welchem Service ab.</p>
+        <div class="dep-wrap">
+          <svg class="dep-svg" id="depMap" viewBox="0 0 680 380"></svg>
+        </div>
+        <div class="dep-legend" id="depLegend"></div>
+      </div>
+      <div class="card" id="uptime">
+        <h2 class="card-title">Uptime-Monitor</h2>
+        <div class="uptime-summary" id="uptimeSummary">
+          <span>Prüfe Dienste…</span>
+        </div>
+        <div class="uptime-grid" id="uptimeGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section id="techstack" class="reveal">
+    <div class="card">
+      <h2 class="card-title">Technologie-Landkarte</h2>
+      <p style="font-size:0.75rem;color:var(--text-sec);margin-bottom:1rem;">Externe Libraries und Frameworks über alle konfigurierten Repositories. Gescannt aus package.json und requirements.txt.</p>
+      <div class="tech-summary" id="techSummary"></div>
+      <h3 style="font-size:0.82rem;font-weight:600;margin-bottom:0.5rem;">Framework-Verteilung</h3>
+      <div class="tech-fw-bar" id="techFwBar"></div>
+      <div class="tech-fw-legend" id="techFwLegend"></div>
+    </div>
+    <div class="tech-grid" style="margin-top:1.5rem;">
+      <div class="card">
+        <h3 style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem;">Top Packages (nach Verbreitung)</h3>
+        <div class="tech-bubbles" id="techBubbles"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:0.85rem;font-weight:600;margin-bottom:0.75rem;">Meistgenutzte Libraries</h3>
+        <div style="max-height:400px;overflow-y:auto;">
+          <table class="tech-pkg-table" id="techTable">
+            <thead><tr><th>Package</th><th>Repos</th><th>Kategorie</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Languages Breakdown -->
+  <section id="languages" class="reveal">
+    <div class="viz-2col">
+      <div class="card">
+        <h2 class="card-title">Sprachen-Verteilung</h2>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.75rem;">Codebase-Analyse über alle Repositories der konfigurierten Organisation (nach Bytes)</p>
+        <div class="lang-bar-wrap">
+          <div class="lang-bar" id="langBar"></div>
+          <div class="lang-legend" id="langLegend"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">Deployment Globe</h2>
+        <p style="font-size:0.72rem;color:var(--text-sec);margin-bottom:0.5rem;">Edge-Regions der Vercel-Deployments</p>
+        <div class="globe-container" id="globeContainer">
+          <div class="globe-label">Origin → Edge network · multi-region</div>
+          <div class="globe-stats">
+            <div class="globe-stat"><strong>SFO</strong> San Francisco</div>
+            <div class="globe-stat"><strong>IAD</strong> Washington DC</div>
+            <div class="globe-stat"><strong>LHR</strong> London</div>
+            <div class="globe-stat"><strong>FRA</strong> Frankfurt</div>
+            <div class="globe-stat"><strong>SIN</strong> Singapore</div>
+            <div class="globe-stat"><strong>NRT</strong> Tokyo</div>
+            <div class="globe-stat"><strong>SYD</strong> Sydney</div>
+            <div class="globe-stat"><strong>GRU</strong> São Paulo</div>
+            <div class="globe-stat"><strong>BOM</strong> Mumbai</div>
+            <div class="globe-stat"><strong>JNB</strong> Johannesburg</div>
+            <div class="globe-stat"><strong>DXB</strong> Dubai</div>
+            <div class="globe-stat"><strong>HKG</strong> Hong Kong</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Insights & Wochenbericht -->
+  <section id="aiInsights" class="reveal">
+    <div class="card">
+      <h2 class="card-title">AI-generierte Insights</h2>
+      <div id="aiInsightsContent">
+        <div class="ai-insight-card">
+          <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2a9 9 0 0 0-9 9c0 3.9 2.5 7.1 6 8.3V21h6v-1.7c3.5-1.2 6-4.4 6-8.3a9 9 0 0 0-9-9z"/><line x1="12" y1="6" x2="12" y2="12"/></svg> Wochenbericht</div>
+          <div class="ai-weekly" id="aiWeekly">Wird generiert…</div>
+        </div>
+        <div class="ai-insight-card" style="margin-top:0.5rem;">
+          <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Strategische Beobachtungen</div>
+          <div class="ai-insight-body" id="aiStrategic">Wird analysiert…</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gamification -->
+  <section id="gamification" class="reveal" style="display:none;">
+    <div class="card">
+      <h2 class="card-title">Achievements</h2>
+      <div class="badges-row" id="badgesRow"></div>
+    </div>
+  </section>
+
   <!-- Infrastructure -->
   <section id="infra" class="reveal">
     <div class="card">
@@ -2437,17 +2437,17 @@
 <!-- Mobile Bottom Nav -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
   <div class="mobile-bottom-nav-grid">
-    <a href="#timeline" class="mobile-bottom-nav-item" data-section="timeline">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Timeline
-    </a>
-    <a href="#activity" class="mobile-bottom-nav-item" data-section="activity">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      KPIs
+    <a href="#summary" class="mobile-bottom-nav-item" data-section="summary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+      Zusammenfassung
     </a>
     <a href="#portfolio" class="mobile-bottom-nav-item" data-section="portfolio">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       Portfolio
+    </a>
+    <a href="#activity" class="mobile-bottom-nav-item" data-section="activity">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      KPIs
     </a>
     <a href="#" class="mobile-bottom-nav-item" onclick="toggleFullscreen();return false;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
