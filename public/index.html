@@ -273,6 +273,20 @@
     .card-sub { font-size: 0.82rem; color: var(--text-sec); line-height: 1.65; max-width: 85ch; }
     .card-sub strong { color: var(--text); font-weight: 500; }
 
+    .summary-teaser p { font-size: 0.92rem; line-height: 1.7; color: var(--text); margin: 0; }
+    .summary-extended { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease; max-width: 85ch; }
+    .summary-extended[data-open="true"] { max-height: 4000px; opacity: 1; margin-top: 1rem; }
+    .summary-extended p { font-size: 0.86rem; line-height: 1.7; color: var(--text-sec); margin: 0 0 0.85rem; }
+    .summary-extended p:last-child { margin-bottom: 0; }
+    .summary-toggle { margin-top: 0.9rem; display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; border: 1px solid var(--border); color: var(--text-sec); padding: 0.4rem 0.85rem; border-radius: 6px; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+    .summary-toggle:hover { background: var(--surface); color: var(--text); border-color: var(--text-sec); }
+    .summary-toggle svg { width: 0.9rem; height: 0.9rem; transition: transform 0.2s; }
+    .summary-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .ai-weekly[data-source="narrative"] p,
+    .ai-insight-body[data-source="narrative"] p { margin: 0 0 0.75rem; line-height: 1.7; font-size: 0.85rem; color: var(--text-sec); }
+    .ai-weekly[data-source="narrative"] p:last-child,
+    .ai-insight-body[data-source="narrative"] p:last-child { margin-bottom: 0; }
+
     .note {
       margin-top: 1rem;
       padding: 0.85rem 1rem;
@@ -1833,11 +1847,16 @@
   <section id="summary" class="reveal">
     <div class="card">
       <h2 class="card-title">Zusammenfassung</h2>
-      <div class="card-sub">
+      <div class="card-sub summary-teaser">
         <p id="execSummaryText">Wird geladen …</p>
       </div>
+      <div class="summary-extended" id="summaryExtended" data-open="false" hidden></div>
+      <button class="summary-toggle" id="summaryToggle" type="button" aria-expanded="false" aria-controls="summaryExtended" hidden>
+        <span class="st-label">Mehr anzeigen</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
       <div class="note">
-        <strong>Methodik:</strong> Alle Angaben basieren auf Live-API-Daten (GitHub, Vercel, Supabase) und der kuratierten Portfolio-Tabelle. Aufwandschätzungen (PT) sind konservative Inferenzen — keine Zeiterfassungsdaten vorhanden.
+        <strong>Methodik:</strong> Live-API-Daten (GitHub, Vercel, Supabase) + kuratierte Portfolio-Tabelle. Langfassung täglich um 06:00 UTC durch Claude Sonnet via Vercel AI Gateway neu generiert; Aufwandschätzungen (PT) sind konservative Inferenzen.
       </div>
     </div>
   </section>
@@ -3871,7 +3890,7 @@ function updateDynamicStats() {
   if (el('fsKpiPT')) el('fsKpiPT').textContent = '~' + c.totalPt;
   if (el('fsKpiOrgs')) el('fsKpiOrgs').textContent = '3';
 
-  if (el('execSummaryText')) {
+  if (el('execSummaryText') && el('execSummaryText').dataset.source !== 'narrative') {
     el('execSummaryText').innerHTML =
       `Dieses Dashboard dokumentiert die Engineering-Aktivität von Marcel Rapold. Es umfasst <strong>${c.total} Initiativen</strong> ` +
       `(${c.changeCnt} Change, ${c.runCnt} Run, ${c.stewardCnt} Tools, ${c.governCnt} Governance) — ` +
@@ -5078,6 +5097,57 @@ function escapeHtml(str) {
   }[c]));
 }
 
+// === AI-generierte Management-Narrative (täglich aktualisiert) ===
+async function loadNarrative() {
+  try {
+    const res = await fetch('/data-narrative.json', { cache: 'no-store' });
+    if (!res.ok) return null;
+    const n = await res.json();
+    if (!n?.generatedAt) return null;
+    const ageMs = Date.now() - new Date(n.generatedAt).getTime();
+    if (ageMs > 48 * 3600 * 1000) return null;
+    return n;
+  } catch { return null; }
+}
+
+function applyNarrative(n) {
+  if (!n) return;
+  const teaser = document.getElementById('execSummaryText');
+  if (teaser && n.teaser) {
+    teaser.textContent = n.teaser;
+    teaser.dataset.source = 'narrative';
+  }
+  const ext = document.getElementById('summaryExtended');
+  const btn = document.getElementById('summaryToggle');
+  if (ext && Array.isArray(n.extended) && n.extended.length) {
+    ext.innerHTML = n.extended.map(p => `<p>${escapeHtml(p)}</p>`).join('');
+    ext.hidden = false;
+    if (btn) {
+      btn.hidden = false;
+      btn.addEventListener('click', () => {
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        const next = !open;
+        btn.setAttribute('aria-expanded', String(next));
+        ext.setAttribute('data-open', String(next));
+        const lbl = btn.querySelector('.st-label');
+        if (lbl) lbl.textContent = next ? 'Weniger anzeigen' : 'Mehr anzeigen';
+      });
+    }
+  }
+  const weekly = document.getElementById('aiWeekly');
+  if (weekly && n.weekly) {
+    weekly.innerHTML = `<p>${escapeHtml(n.weekly)}</p>`;
+    weekly.dataset.source = 'narrative';
+  }
+  const strategic = document.getElementById('aiStrategic');
+  if (strategic && n.strategic) {
+    strategic.innerHTML = `<p>${escapeHtml(n.strategic)}</p>`;
+    strategic.dataset.source = 'narrative';
+  }
+}
+
+loadNarrative().then(applyNarrative);
+
 function renderTicker(events) {
   if (!events || !events.length) return;
   const section = document.getElementById('ticker');
@@ -5643,6 +5713,7 @@ cmdResults.addEventListener('click', e => {
 function generateAIInsights(ghData) {
   const weekly = document.getElementById('aiWeekly');
   const strategic = document.getElementById('aiStrategic');
+  if (weekly?.dataset.source === 'narrative' && strategic?.dataset.source === 'narrative') return;
   const today = ghData?.today || 0;
   const week = ghData?.week || 0;
   const month = ghData?.month || 0;
