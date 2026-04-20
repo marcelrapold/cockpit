@@ -232,6 +232,35 @@
       border-color: var(--blue);
     }
 
+    /* === Tooltip System === */
+    [data-tip] { cursor: help; }
+    #cpTooltip {
+      position: fixed; z-index: 10000;
+      background: rgba(15, 23, 42, 0.96);
+      color: #f1f5f9;
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.72rem; font-weight: 400;
+      line-height: 1.45; letter-spacing: 0;
+      text-transform: none; font-family: var(--font);
+      max-width: 280px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    #cpTooltip.cpTip-visible { opacity: 1; transform: translateY(0); }
+    #cpTooltip strong { color: #fff; font-weight: 600; }
+    [data-theme="light"] #cpTooltip {
+      background: rgba(15, 23, 42, 0.95);
+      color: #f1f5f9;
+    }
+    @media (hover: none) {
+      #cpTooltip { display: none !important; }
+      [data-tip] { cursor: default; }
+    }
+
     section { margin-bottom: 2rem; }
     .card {
       background: var(--surface);
@@ -1436,10 +1465,26 @@
     .tt-issue { background:#fef3c7; color:#92400e; }
     .tt-pr { background:#ede9fe; color:#5b21b6; }
     .tt-other { background:#f1f5f9; color:#64748b; }
-    .ticker-repo { font-weight:600; color:var(--blue); font-size:0.68rem; flex-shrink:0; }
-    .ticker-msg { color:var(--text-sec); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ticker-repo { font-weight:600; color:var(--blue); font-size:0.68rem; flex-shrink:0; text-decoration:none; }
+    .ticker-repo:hover { text-decoration:underline; }
+    .ticker-branch { font-family:var(--mono); font-size:0.58rem; color:var(--text-muted); background:var(--surface-alt); border:1px solid var(--border); padding:0.05rem 0.35rem; border-radius:3px; flex-shrink:0; }
+    .ticker-msg { color:var(--text-sec); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+    .ticker-msg a { color:var(--text); text-decoration:none; }
+    .ticker-msg a:hover { color:var(--blue); text-decoration:underline; }
+    .ticker-count { font-family:var(--mono); font-size:0.6rem; color:var(--text-muted); flex-shrink:0; }
+    .ticker-diff { font-family:var(--mono); font-size:0.58rem; flex-shrink:0; display:inline-flex; gap:0.3rem; }
+    .ticker-diff .add { color:#10b981; }
+    .ticker-diff .del { color:#ef4444; }
+    .ticker-diff .files { color:var(--text-muted); }
     .ticker-time { font-size:0.58rem; color:var(--text-muted); flex-shrink:0; }
     .ticker-actor { font-size:0.58rem; color:var(--text-muted); flex-shrink:0; }
+    .ticker-actor a { color:inherit; text-decoration:none; }
+    .ticker-actor a:hover { color:var(--blue); }
+    @media (max-width: 768px) {
+      .ticker-item { flex-wrap:wrap; font-size:0.66rem; gap:0.4rem; }
+      .ticker-msg { flex-basis:100%; order:99; }
+      .ticker-diff, .ticker-branch { font-size:0.52rem; }
+    }
 
     /* === VELOCITY & PROGNOSE === */
     .velocity-card { margin-top:0.75rem; }
@@ -1786,18 +1831,18 @@
 
   <!-- Time-Range Picker + DORA Hero KPI Bar -->
   <div class="range-row">
-    <span class="range-label">DORA Metrics</span>
+    <span class="range-label" data-tip="<strong>DORA Metrics</strong><br>DevOps Research & Assessment — vier Kernmetriken, die die Leistungsfähigkeit von Engineering-Teams messen: Deploy Frequency, Lead Time, Change Failure Rate und MTTR. Basis: mehrjährige Google-DORA-Forschung.">DORA Metrics</span>
     <div class="range-picker" id="rangePicker">
-      <button class="range-pill" data-range="7d">7D</button>
-      <button class="range-pill active" data-range="30d">30D</button>
-      <button class="range-pill" data-range="90d">90D</button>
-      <button class="range-pill" data-range="ytd">YTD</button>
-      <button class="range-pill" data-range="12m">12M</button>
+      <button class="range-pill" data-range="7d" data-tip="Zeitraum: letzte 7 Tage">7D</button>
+      <button class="range-pill active" data-range="30d" data-tip="Zeitraum: letzte 30 Tage">30D</button>
+      <button class="range-pill" data-range="90d" data-tip="Zeitraum: letzte 90 Tage (ein Quartal)">90D</button>
+      <button class="range-pill" data-range="ytd" data-tip="Year-to-Date — seit Jahresbeginn">YTD</button>
+      <button class="range-pill" data-range="12m" data-tip="Letzte 12 Monate (rollierend)">12M</button>
     </div>
   </div>
 
   <div class="hero-kpi-bar" id="heroKpiBar">
-    <div class="hero-card" id="doraDf">
+    <div class="hero-card" id="doraDf" data-tip="<strong>Deploy Frequency</strong><br>Wie oft Code in Produktion ausgerollt wird. Häufiges Deployen bedeutet schnellere Feedback-Schleifen, kleinere Änderungen und weniger Risiko pro Release. Elite-Teams deployen mehrfach pro Tag.">
       <div class="hc-label">Deploy Frequency</div>
       <div class="hc-row">
         <span class="hc-value" id="doraDfVal">–</span>
@@ -1809,7 +1854,7 @@
         <svg class="hc-sparkline" id="doraDfSpark" viewBox="0 0 64 22"></svg>
       </div>
     </div>
-    <div class="hero-card" id="doraLt">
+    <div class="hero-card" id="doraLt" data-tip="<strong>Lead Time for Changes</strong><br>Zeit vom ersten Code-Commit bis zum Live-Deploy in Produktion. Kurze Lead-Time heißt: neue Features und Bugfixes erreichen Nutzer schnell. Elite: weniger als 1 Stunde.">
       <div class="hc-label">Lead Time</div>
       <div class="hc-row">
         <span class="hc-value" id="doraLtVal">–</span>
@@ -1821,7 +1866,7 @@
         <svg class="hc-sparkline" id="doraLtSpark" viewBox="0 0 64 22"></svg>
       </div>
     </div>
-    <div class="hero-card" id="doraCfr">
+    <div class="hero-card" id="doraCfr" data-tip="<strong>Change Failure Rate</strong><br>Anteil der Deploys, die zu Problemen in Produktion führen (Rollback, Hotfix, Incident). Niedriger ist besser — unter 15 % gilt als Elite-Niveau. Misst Qualität der Releases.">
       <div class="hc-label">Change Failure Rate</div>
       <div class="hc-row">
         <span class="hc-value" id="doraCfrVal">–</span>
@@ -1833,7 +1878,7 @@
         <svg class="hc-sparkline" id="doraCfrSpark" viewBox="0 0 64 22"></svg>
       </div>
     </div>
-    <div class="hero-card" id="doraMttr">
+    <div class="hero-card" id="doraMttr" data-tip="<strong>MTTR — Mean Time to Recovery</strong><br>Durchschnittliche Zeit, um ein Produktionsproblem zu beheben. Schnelle Recovery = weniger Kundenimpact und Ausfallzeit. Elite: unter 1 Stunde.">
       <div class="hc-label">MTTR</div>
       <div class="hc-row">
         <span class="hc-value" id="doraMttrVal">–</span>
@@ -1845,7 +1890,7 @@
         <svg class="hc-sparkline" id="doraMttrSpark" viewBox="0 0 64 22"></svg>
       </div>
     </div>
-    <div class="hero-card" id="heroCommits">
+    <div class="hero-card" id="heroCommits" data-tip="<strong>Commits pro Woche</strong><br>Entwicklungsaktivität: Anzahl der Code-Änderungen pro Woche im gewählten Zeitraum. Zeigt das tatsächliche Entwicklungstempo über alle Projekte hinweg.">
       <div class="hc-label">Commits / Woche</div>
       <div class="hc-row">
         <span class="hc-value" id="heroCommitsVal">–</span>
@@ -1857,7 +1902,7 @@
         <svg class="hc-sparkline" id="heroCommitsSpark" viewBox="0 0 64 22"></svg>
       </div>
     </div>
-    <div class="hero-card" id="heroStreak">
+    <div class="hero-card" id="heroStreak" data-tip="<strong>Commit-Streak</strong><br>Anzahl aufeinanderfolgender Tage mit mindestens einem Commit. Indikator für kontinuierliche Aktivität und Arbeitsrhythmus.">
       <div class="hc-label">Streak</div>
       <div class="hc-row">
         <span class="hc-value" id="heroStreakVal">–</span>
@@ -1873,37 +1918,37 @@
 
   <!-- Stats -->
   <div class="stats-row" id="statsRow">
-    <div class="stat">
+    <div class="stat" data-tip="<strong>Initiativen gesamt</strong><br>Alle aktiv getrackten Projekte, Services und Tools im Portfolio — unabhängig vom Betriebsstatus.">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       <div class="stat-label">Initiativen gesamt</div>
       <div class="stat-value" id="statInitiatives">–</div>
       <div class="stat-detail">Projekte, Services, Tools</div>
     </div>
-    <div class="stat">
+    <div class="stat" data-tip="<strong>Davon produktiv</strong><br>Initiativen, die tatsächlich im Live-Betrieb sind: eigene Domain, aktives Deployment, aktive Nutzer. Unterschied zu „gesamt“ sind Experimente, Archiv oder Prototypen.">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <div class="stat-label">Davon produktiv</div>
       <div class="stat-value" id="statProd">–</div>
       <div class="stat-detail">mit eigener Domain / aktivem Betrieb</div>
     </div>
-    <div class="stat">
+    <div class="stat" data-tip="<strong>Commits (gesamt)</strong><br>Summe aller Code-Änderungen über alle beobachteten GitHub-Repositories. Gesamtmaß für kumulierte Entwicklungsaktivität.">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <div class="stat-label">Commits (gesamt)</div>
       <div class="stat-value" id="statCommits">–</div>
       <div class="stat-detail">über alle Repos</div>
     </div>
-    <div class="stat">
+    <div class="stat" data-tip="<strong>Geschätzter Aufwand</strong><br>Geschätzte Personentage pro Jahr für Entwicklung und Wartung — berechnet aus Commit-Volumen, Code-Komplexität und Projektanzahl. Dient als grobe Richtgröße für Kapazitätsplanung.">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       <div class="stat-label">Geschätzter Aufwand</div>
       <div class="stat-value" id="statPT">–</div>
       <div class="stat-detail">Personentage / Jahr (Schätzung)</div>
     </div>
-    <div class="stat">
+    <div class="stat" data-tip="<strong>Technologien</strong><br>Anzahl eingesetzter Programmiersprachen und Frameworks im Portfolio (via GitHub Language API). Indikator für Technologie-Breite und Komplexität.">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       <div class="stat-label">Technologien</div>
       <div class="stat-value" id="statTech">–</div>
       <div class="stat-detail">aus API (Language Stats)</div>
     </div>
-    <div class="stat">
+    <div class="stat" data-tip="<strong>Hosting</strong><br>Summe produktiver Infrastruktur: Vercel-Projekte (Frontend/API-Hosting) und Supabase-Datenbanken. Zeigt die Größe des laufenden Betriebs.">
       <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20M5 20V10l7-7 7 7v10"/><rect x="9" y="14" width="6" height="6"/></svg>
       <div class="stat-label">Hosting</div>
       <div class="stat-value" id="statHosting">–</div>
@@ -1913,39 +1958,39 @@
 
   <!-- Live KPIs -->
   <div class="live-bar" id="liveBar">
-    <div class="live-indicator">
+    <div class="live-indicator" data-tip="<strong>Live-Daten</strong><br>Echtzeit-Snapshot aus GitHub: Commits, Issues und Pull Requests über alle beobachteten Repositories.">
       <span class="live-dot"></span>
       <span>Live</span>
     </div>
     <div class="live-sep"></div>
     <div class="live-stats">
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Commits heute</strong><br>Anzahl Code-Änderungen, die heute (seit 00:00 Uhr) über alle beobachteten Repositories eingegangen sind.">
         <span class="live-val" id="liveToday"><div class="live-loading"><span></span><span></span><span></span></div></span>
         <span class="live-label">Heute</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Commits diese Woche</strong><br>Commits der letzten 7 Tage (rollierend). Zeigt das aktuelle Kurzfrist-Tempo.">
         <span class="live-val" id="liveWeek"><div class="live-loading"><span></span><span></span><span></span></div></span>
         <span class="live-label">Woche</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Commits im Zeitraum</strong><br>Gesamte Commits im aktuell gewählten Zeitraum (siehe Range-Picker oben).">
         <span class="live-val" id="liveMonth"><div class="live-loading"><span></span><span></span><span></span></div></span>
         <span class="live-label">Monat</span>
       </div>
       <div class="live-sep"></div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Trend vs. Vorwoche</strong><br>Prozentuale Veränderung der Commit-Aktivität gegenüber der Vorwoche. Zeigt, ob das Tempo steigt oder fällt.">
         <span class="live-val live-trend" id="liveVelocity">–</span>
         <span class="live-label">vs. Vorwoche</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Durchschnitt pro Tag</strong><br>Mittlere Commit-Anzahl pro Tag im gewählten Zeitraum. Gleicht einzelne Spitzentage aus.">
         <span class="live-val" id="liveAvg">–</span>
         <span class="live-label">Ø / Tag</span>
       </div>
       <div class="live-sep"></div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Offene Issues</strong><br>Anzahl der offenen GitHub-Issues über alle beobachteten Repositories — Bugs, Feature-Requests, Aufgaben.">
         <span class="live-val" id="liveIssues">–</span>
         <span class="live-label">Issues</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Offene Pull Requests</strong><br>Code-Änderungen, die auf Review oder Merge warten. Hohe Zahlen können auf Engpässe im Review-Prozess hinweisen.">
         <span class="live-val" id="livePRs">–</span>
         <span class="live-label">PRs</span>
       </div>
@@ -1971,34 +2016,34 @@
 
   <!-- Infra Live Bar -->
   <div class="live-bar infra-bar" id="infraBar" style="display:none">
-    <div class="live-indicator">
+    <div class="live-indicator" data-tip="<strong>Infrastruktur-Status</strong><br>Live-Daten zu Hosting und Datenbanken: Vercel-Deployments und Supabase-Health.">
       <span class="live-dot" style="background:#a855f7"></span>
       <span>Infra</span>
     </div>
     <div class="live-sep"></div>
     <div class="live-stats">
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Deployments heute</strong><br>Vercel-Deployments, die heute durchgeführt wurden (alle Projekte, alle Branches). Zeigt die aktuelle Release-Aktivität.">
         <span class="live-val" id="infraDeplToday">–</span>
         <span class="live-label">Deploys Heute</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Deployments diese Woche</strong><br>Vercel-Deployments der letzten 7 Tage. Korreliert mit der Deploy-Frequency der DORA-Metriken.">
         <span class="live-val" id="infraDeplWeek">–</span>
         <span class="live-label">Deploys Woche</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Erfolgsrate</strong><br>Anteil erfolgreich abgeschlossener Deployments (kein Build-Fehler, kein Rollback). Zeigt Stabilität der Release-Pipeline.">
         <span class="live-val live-trend" id="infraSuccess">–</span>
         <span class="live-label">Erfolgsrate</span>
       </div>
       <div class="live-sep"></div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Vercel-Projekte</strong><br>Anzahl aktiver Projekte auf Vercel (Hosting für Websites, APIs, Frontends).">
         <span class="live-val" id="infraVercelProjects">–</span>
         <span class="live-label">Vercel Proj.</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Supabase-Datenbanken</strong><br>Aktive Postgres-Datenbanken auf Supabase. Format „aktiv/gesamt“ — zeigt gesunde DBs im Verhältnis zu allen konfigurierten.">
         <span class="live-val" id="infraSupaHealth">–</span>
         <span class="live-label">Supabase DBs</span>
       </div>
-      <div class="live-stat">
+      <div class="live-stat" data-tip="<strong>Durchschnittliche DB-Latenz</strong><br>Mittlere Antwortzeit der Supabase-Datenbanken in Millisekunden. Niedriger = bessere Performance der Backend-Dienste.">
         <span class="live-val" id="infraSupaLatency">–</span>
         <span class="live-label">Ø DB Latenz</span>
       </div>
@@ -3275,17 +3320,27 @@ function renderSparkline(svgEl, data, color) {
 }
 
 function setTrend(el, pct) {
-  if (pct === undefined || pct === null) { el.textContent = ''; return; }
+  if (pct === undefined || pct === null) { el.textContent = ''; el.removeAttribute('data-tip'); return; }
   const sign = pct > 0 ? '+' : '';
   const arrow = pct > 0 ? '\u2191' : pct < 0 ? '\u2193' : '\u2192';
   el.textContent = `${arrow} ${sign}${pct}%`;
   el.className = 'hc-trend ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
+  const dir = pct > 0 ? 'steigend' : pct < 0 ? 'fallend' : 'unverändert';
+  el.setAttribute('data-tip', `<strong>Trend: ${dir}</strong><br>Veränderung von ${sign}${pct}% gegenüber dem vorherigen Zeitraum gleicher Länge.`);
 }
 
 function setTier(el, tier) {
   const labels = { elite: 'Elite', high: 'High', medium: 'Medium', low: 'Low', unknown: '–' };
+  const tips = {
+    elite: '<strong>Elite-Niveau</strong><br>Top 10 % Performance laut DORA-Forschung. Beste-in-Klasse-Benchmarks.',
+    high: '<strong>High Performance</strong><br>Überdurchschnittlich — stabile, produktive Engineering-Praxis.',
+    medium: '<strong>Medium Performance</strong><br>Solides Mittelfeld. Potenzial für Automatisierung und Optimierung vorhanden.',
+    low: '<strong>Low Performance</strong><br>Unter Industrie-Benchmark. Fokus auf Automatisierung, Tests und schnellere Releases empfohlen.',
+    unknown: '<strong>Keine Klassifizierung</strong><br>Zu wenig Daten im gewählten Zeitraum für eine Einstufung.'
+  };
   el.textContent = labels[tier] || tier;
   el.className = 'hc-tier ' + (tier || 'unknown');
+  el.setAttribute('data-tip', tips[tier] || tips.unknown);
 }
 
 const tierColors = { elite: '#10b981', high: '#3b82f6', medium: '#f59e0b', low: '#ef4444', unknown: '#64748b' };
@@ -5017,21 +5072,84 @@ const shortcutModal = document.getElementById('shortcutModal');
 shortcutModal.addEventListener('click', e => { if (e.target === shortcutModal) shortcutModal.classList.remove('open'); });
 
 // === FEATURE 6: LIVE TICKER ===
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
 function renderTicker(events) {
   if (!events || !events.length) return;
   const section = document.getElementById('ticker');
   const list = document.getElementById('tickerList');
   section.style.display = '';
-  const typeMap = { PushEvent:['Push','tt-push'], CreateEvent:['Create','tt-create'], IssuesEvent:['Issue','tt-issue'], PullRequestEvent:['PR','tt-pr'] };
+  const typeMap = {
+    PushEvent:['Push','tt-push'],
+    CreateEvent:['Create','tt-create'],
+    IssuesEvent:['Issue','tt-issue'],
+    PullRequestEvent:['PR','tt-pr']
+  };
   list.innerHTML = events.slice(0, 20).map(e => {
     const [label, cls] = typeMap[e.type] || [e.type.replace('Event',''), 'tt-other'];
-    const msg = (e.message || '').slice(0, 60);
+    const repoFull = e.repoFull || e.repo;
+    const repoHref = repoFull ? `https://github.com/${repoFull}` : '#';
+    const repoHtml = `<a class="ticker-repo" href="${escapeHtml(repoHref)}" target="_blank" rel="noopener">${escapeHtml(e.repo || '')}</a>`;
+
+    let branchHtml = '';
+    let msgHtml = '';
+    let countHtml = '';
+    let diffHtml = '';
+
+    if (e.type === 'PushEvent') {
+      if (e.branch) branchHtml = `<span class="ticker-branch" data-tip="Branch">${escapeHtml(e.branch)}</span>`;
+      const msgText = (e.message || 'Push ohne Commit-Details').slice(0, 80);
+      const msgInner = e.commitUrl
+        ? `<a href="${escapeHtml(e.commitUrl)}" target="_blank" rel="noopener" title="${escapeHtml(e.message || '')}">${escapeHtml(msgText)}</a>`
+        : escapeHtml(msgText);
+      msgHtml = `<span class="ticker-msg">${msgInner}</span>`;
+      if (e.commits > 0) {
+        const shaLabel = e.sha ? ` · ${escapeHtml(e.sha)}` : '';
+        countHtml = `<span class="ticker-count" data-tip="Anzahl Commits in diesem Push">${e.commits} ${e.commits === 1 ? 'commit' : 'commits'}${shaLabel}</span>`;
+      }
+      if (typeof e.additions === 'number' || typeof e.deletions === 'number' || typeof e.changedFiles === 'number') {
+        const parts = [];
+        if (typeof e.additions === 'number') parts.push(`<span class="add">+${e.additions}</span>`);
+        if (typeof e.deletions === 'number') parts.push(`<span class="del">−${e.deletions}</span>`);
+        if (typeof e.changedFiles === 'number') parts.push(`<span class="files">${e.changedFiles} ${e.changedFiles === 1 ? 'Datei' : 'Dateien'}</span>`);
+        if (parts.length) diffHtml = `<span class="ticker-diff" data-tip="Geänderte Zeilen und Dateien im Push">${parts.join(' ')}</span>`;
+      }
+    } else if (e.type === 'PullRequestEvent' || e.type === 'IssuesEvent') {
+      const prefix = e.number ? `#${e.number} ` : '';
+      const msgText = `${prefix}${(e.message || '').slice(0, 80)}`;
+      const msgInner = e.url
+        ? `<a href="${escapeHtml(e.url)}" target="_blank" rel="noopener" title="${escapeHtml(e.message || '')}">${escapeHtml(msgText)}</a>`
+        : escapeHtml(msgText);
+      msgHtml = `<span class="ticker-msg">${msgInner}</span>`;
+      if (e.type === 'PullRequestEvent' && (typeof e.additions === 'number' || typeof e.deletions === 'number')) {
+        const parts = [];
+        if (typeof e.additions === 'number') parts.push(`<span class="add">+${e.additions}</span>`);
+        if (typeof e.deletions === 'number') parts.push(`<span class="del">−${e.deletions}</span>`);
+        if (typeof e.changedFiles === 'number') parts.push(`<span class="files">${e.changedFiles} ${e.changedFiles === 1 ? 'Datei' : 'Dateien'}</span>`);
+        if (parts.length) diffHtml = `<span class="ticker-diff">${parts.join(' ')}</span>`;
+      }
+    } else {
+      msgHtml = `<span class="ticker-msg">${escapeHtml(e.message || '')}</span>`;
+    }
+
+    const actorHref = e.actor ? `https://github.com/${e.actor}` : '';
+    const actorHtml = e.actor
+      ? `<span class="ticker-actor">@<a href="${escapeHtml(actorHref)}" target="_blank" rel="noopener">${escapeHtml(e.actor)}</a></span>`
+      : '';
+
     return `<div class="ticker-item">
       <span class="ticker-type ${cls}">${label}</span>
-      <span class="ticker-repo">${e.repo}</span>
-      <span class="ticker-msg">${msg}${e.commits > 1 ? ` (${e.commits} commits)` : ''}</span>
-      <span class="ticker-actor">${e.actor}</span>
-      <span class="ticker-time">${timeAgo(e.time)}</span>
+      ${repoHtml}
+      ${branchHtml}
+      ${msgHtml}
+      ${countHtml}
+      ${diffHtml}
+      ${actorHtml}
+      <span class="ticker-time" data-tip="${escapeHtml(new Date(e.time).toLocaleString('de-CH'))}">${timeAgo(e.time)}</span>
     </div>`;
   }).join('');
 }
@@ -5629,6 +5747,59 @@ document.addEventListener('click', function reqNotif() {
   requestNotifPermission();
   document.removeEventListener('click', reqNotif);
 }, { once: true });
+
+// === FEATURE: Tooltip System (data-tip) ===
+(function initTooltips() {
+  if (document.getElementById('cpTooltip')) return;
+  const tip = document.createElement('div');
+  tip.id = 'cpTooltip';
+  tip.setAttribute('role', 'tooltip');
+  tip.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(tip);
+  let currentEl = null;
+  function position(el) {
+    const r = el.getBoundingClientRect();
+    // measure after setting content
+    const ttr = tip.getBoundingClientRect();
+    const pad = 8;
+    let left = r.left + r.width / 2 - ttr.width / 2;
+    let top = r.top - ttr.height - 10;
+    left = Math.max(pad, Math.min(left, window.innerWidth - ttr.width - pad));
+    if (top < pad) top = r.bottom + 10;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+  function show(el) {
+    const text = el.getAttribute('data-tip');
+    if (!text) return;
+    currentEl = el;
+    tip.innerHTML = text;
+    tip.classList.add('cpTip-visible');
+    tip.setAttribute('aria-hidden', 'false');
+    // force layout before positioning
+    requestAnimationFrame(() => position(el));
+  }
+  function hide() {
+    currentEl = null;
+    tip.classList.remove('cpTip-visible');
+    tip.setAttribute('aria-hidden', 'true');
+  }
+  document.addEventListener('mouseover', e => {
+    const el = e.target.closest && e.target.closest('[data-tip]');
+    if (el && el !== currentEl) show(el);
+  });
+  document.addEventListener('mouseout', e => {
+    const el = e.target.closest && e.target.closest('[data-tip]');
+    if (el && el === currentEl && !el.contains(e.relatedTarget)) hide();
+  });
+  document.addEventListener('focusin', e => {
+    const el = e.target.closest && e.target.closest('[data-tip]');
+    if (el) show(el);
+  });
+  document.addEventListener('focusout', () => hide());
+  window.addEventListener('scroll', hide, true);
+  window.addEventListener('resize', hide);
+})();
 
 </script>
 

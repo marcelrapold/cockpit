@@ -55,11 +55,21 @@ function shortRepoName(fullName) {
   return parts.length > 1 ? parts[1] : fullName;
 }
 
+function branchFromRef(ref) {
+  if (!ref || typeof ref !== 'string') return '';
+  return ref.replace(/^refs\/heads\//, '').replace(/^refs\/tags\//, '');
+}
+
+function shortSha(sha) {
+  return typeof sha === 'string' ? sha.slice(0, 7) : '';
+}
+
 function formatTickerEvent(event) {
-  const repo = shortRepoName(event.repo?.name);
+  const repoFull = event.repo?.name || '';
+  const repo = shortRepoName(repoFull);
   const actor = event.actor?.login || '';
   const time = event.created_at || '';
-  const base = { type: event.type, repo, actor, time };
+  const base = { type: event.type, repo, repoFull, actor, time };
   const payload = event.payload || {};
 
   switch (event.type) {
@@ -69,7 +79,19 @@ function formatTickerEvent(event) {
         typeof payload.size === 'number' ? payload.size : commitsList.length;
       const last = commitsList.length > 0 ? commitsList[commitsList.length - 1] : null;
       const message = (last?.message || '').split('\n')[0] || '';
-      return { ...base, message, commits: commitsCount };
+      const branch = branchFromRef(payload.ref);
+      const head = payload.head || '';
+      const before = payload.before || '';
+      return {
+        ...base,
+        message,
+        commits: commitsCount,
+        branch,
+        head,
+        before,
+        sha: shortSha(head),
+        commitUrl: head && repoFull ? `https://github.com/${repoFull}/commit/${head}` : '',
+      };
     }
     case 'CreateEvent': {
       const refType = payload.ref_type || '';
@@ -85,17 +107,52 @@ function formatTickerEvent(event) {
     case 'IssuesEvent': {
       const action = payload.action || '';
       const title = payload.issue?.title || '';
+      const number = payload.issue?.number;
+      const url = payload.issue?.html_url || '';
       const message = title ? `${action}: ${title}` : action;
-      return { ...base, action, message };
+      return { ...base, action, message, number, url };
     }
     case 'PullRequestEvent': {
       const action = payload.action || '';
-      const title = payload.pull_request?.title || '';
+      const pr = payload.pull_request || {};
+      const title = pr.title || '';
+      const number = pr.number;
+      const url = pr.html_url || '';
+      const additions = pr.additions;
+      const deletions = pr.deletions;
+      const changedFiles = pr.changed_files;
       const message = title ? `${action}: ${title}` : action;
-      return { ...base, action, message };
+      return { ...base, action, message, number, url, additions, deletions, changedFiles };
     }
     default:
       return { ...base, message: event.type.replace(/Event$/, '') };
+  }
+}
+
+async function enrichPushEvent(evt, token) {
+  if (evt.type !== 'PushEvent') return evt;
+  if (evt.message && evt.commits > 0) return evt;
+  if (!evt.repoFull || !evt.before || !evt.head) return evt;
+  try {
+    const compare = await ghFetch(
+      `https://api.github.com/repos/${evt.repoFull}/compare/${evt.before}...${evt.head}`,
+      token
+    );
+    const commits = Array.isArray(compare.commits) ? compare.commits : [];
+    const lastMsg = commits.length > 0
+      ? (commits[commits.length - 1].commit?.message || '').split('\n')[0]
+      : '';
+    return {
+      ...evt,
+      message: lastMsg || evt.message,
+      commits: typeof compare.total_commits === 'number' ? compare.total_commits : commits.length,
+      additions: compare.files?.reduce((a, f) => a + (f.additions || 0), 0),
+      deletions: compare.files?.reduce((a, f) => a + (f.deletions || 0), 0),
+      changedFiles: Array.isArray(compare.files) ? compare.files.length : undefined,
+      authors: Array.from(new Set(commits.map(c => c.author?.login || c.commit?.author?.name).filter(Boolean))),
+    };
+  } catch {
+    return evt;
   }
 }
 
@@ -182,7 +239,8 @@ module.exports = async function fetchLanguageStats() {
       token
     );
     const list = Array.isArray(raw) ? raw : [];
-    events = list.map(formatTickerEvent).slice(0, 30);
+    const formatted = list.map(formatTickerEvent).slice(0, 30);
+    events = await Promise.all(formatted.map(e => enrichPushEvent(e, token)));
   } catch (err) {
     errors.push({ step: 'userEvents', message: err.message });
   }
