@@ -106,21 +106,59 @@ function velocityPct(weeklyTrend) {
   return Math.round(((last - prev) / prev) * 100);
 }
 
+function enrichTopRepos(topRepos, repoSummaries) {
+  if (!repoSummaries) return topRepos;
+  return topRepos.map(r => {
+    const s = repoSummaries[r.repo];
+    if (!s) return r;
+    return {
+      ...r,
+      oneLiner: s.oneLiner,
+      purpose: s.purpose,
+      stack: s.stack,
+      audience: s.audience,
+      status: s.status,
+      tags: s.tags,
+    };
+  });
+}
+
+function enrichInitiatives(initiatives, repoSummaries) {
+  if (!repoSummaries) return initiatives;
+  return initiatives.map(i => {
+    const s = repoSummaries[i.repo];
+    if (!s) return i;
+    return { ...i, oneLiner: s.oneLiner, purpose: s.purpose, audience: s.audience };
+  });
+}
+
 function buildContext() {
   const data = readJson('public/data.json');
   const deps = readJson('public/data-deps.json');
   const history = readJson('public/data-history.json');
   const portfolio = readJson('api/portfolio-config.json');
+  const reposFile = readJson('public/data-repos.json');
 
   if (!data || !deps || !portfolio) {
     throw new Error('Missing input data: data.json / data-deps.json / portfolio-config.json');
   }
 
+  const repoSummaries = reposFile?.repos || null;
   const week = last7DaysCommits(data.calendar);
   const month = last30DaysCommits(data.calendar);
-  const topRepos = topActiveReposLastWeek(data.calendar, data.repoMonthly, data.sparklines);
+  const topRepos = enrichTopRepos(topActiveReposLastWeek(data.calendar, data.repoMonthly, data.sparklines), repoSummaries);
   const folio = portfolioBreakdown(portfolio);
+  folio.topInitiatives = enrichInitiatives(folio.topInitiatives, repoSummaries);
   const velocity = velocityPct(data.weeklyTrend || history);
+
+  const repoIndex = repoSummaries
+    ? Object.values(repoSummaries).map(s => ({
+        full: s.full,
+        oneLiner: s.oneLiner,
+        status: s.status,
+        tags: s.tags,
+      }))
+    : [];
 
   return {
     generated: new Date().toISOString(),
@@ -146,6 +184,8 @@ function buildContext() {
         name: p.name, count: p.count, category: p.category,
       })),
     },
+    repoIndex,
+    hasRepoSummaries: !!repoSummaries,
   };
 }
 
@@ -161,11 +201,12 @@ async function generateWithRetry(context) {
           'Regeln:',
           '- Keine Emojis, keine Marketing-Floskeln, keine Aufzählungen oder Bullet-Points.',
           '- Jede Sektion hat einen eigenen Fokus und darf Formulierungen anderer Sektionen nicht wiederholen.',
-          '- Teaser = Hook mit einer konkreten Zahl oder einem konkreten Projektnamen.',
+          '- Teaser = Hook mit einer konkreten Zahl oder einem konkreten Projektnamen und WAS das Projekt tut.',
           '- Extended = Management-Prosa in Absätzen (investiert-in / verschoben / Fokus / Risiken).',
           '- Weekly = Wochen-Narrativ aus den letzten 7 Tagen.',
           '- Strategic = Forward-Looking (Hebel, Risiko, nächster logischer Schritt).',
-          '- Zahlen nur aus den bereitgestellten Daten zitieren, niemals erfinden.',
+          '- WICHTIG: Wenn ein Projekt genannt wird, nenne IMMER seinen konkreten Zweck — nutze die Purpose/OneLiner-Felder aus topRepos und topInitiatives. "zvv-kundenkonto" ist nicht informativ, "das Self-Service-Portal für ZVV-Abonnenten (zvv-kundenkonto)" schon.',
+          '- Zahlen nur aus den bereitgestellten Daten zitieren, niemals erfinden. Gleiches gilt für Projekt-Zwecke: wenn Purpose fehlt, nicht erraten.',
           '- Ton: sachlich, dicht, lesbar — kein Consulting-Sprech.',
         ].join('\n'),
         prompt: [

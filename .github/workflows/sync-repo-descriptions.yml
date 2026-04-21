@@ -1,0 +1,43 @@
+name: Sync Repo Descriptions
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply changes to GitHub (false = dry-run only)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Sync descriptions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          APPLY: ${{ inputs.apply }}
+        run: node scripts/sync-repo-descriptions.mjs
+
+      - name: Commit diff file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data-descriptions-diff.json
+          if git diff --cached --quiet; then
+            echo "No diff changes"
+          else
+            MODE="${{ inputs.apply == 'true' && 'applied' || 'dry-run' }}"
+            git commit -m "chore: repo descriptions sync ($MODE) $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
