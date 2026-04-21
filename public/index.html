@@ -2754,9 +2754,11 @@ function buildTimeline() {
     html += `</div>`;
   });
 
-  // Now marker line
+  // Now marker line — measurement div parked off-screen so it can't extend document.scrollWidth
+  document.querySelectorAll('div[data-tl-measure="1"]').forEach(n => n.remove());
   const headerEl = document.createElement('div');
-  headerEl.style.cssText = `display:grid;grid-template-columns:${colTemplate};visibility:hidden;position:absolute;`;
+  headerEl.dataset.tlMeasure = '1';
+  headerEl.style.cssText = `display:grid;grid-template-columns:${colTemplate};visibility:hidden;position:absolute;left:-99999px;top:0;pointer-events:none;`;
   headerEl.innerHTML = `<span></span>${MONTHS.map(() => '<span>X</span>').join('')}`;
   document.body.appendChild(headerEl);
 
