@@ -10,6 +10,8 @@ const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filte
 const MODEL_ID = 'anthropic/claude-sonnet-4-6';
 const README_MAX = 1800;
 const CONCURRENCY = 6;
+const BATCH_SIZE = 10;
+const LLM_CONCURRENCY = 3;
 
 if (!TOKEN) { console.error('GITHUB_TOKEN required'); process.exit(1); }
 if (!process.env.AI_GATEWAY_API_KEY) { console.error('AI_GATEWAY_API_KEY required'); process.exit(1); }
@@ -110,7 +112,7 @@ async function mapLimit(items, limit, fn) {
     while (true) {
       const idx = i++;
       if (idx >= items.length) return;
-      try { out[idx] = await fn(items[idx]); }
+      try { out[idx] = await fn(items[idx], idx); }
       catch (err) { out[idx] = { error: err.message, repo: items[idx]?.full_name }; }
     }
   }
@@ -175,10 +177,28 @@ async function main() {
   if (facts.length !== clean.length) {
     console.warn(`[repo-summaries] ${facts.length - clean.length} facts failed to fetch`);
   }
-  console.log(`[repo-summaries] calling LLM for ${clean.length} repos`);
+  const batches = [];
+  for (let i = 0; i < clean.length; i += BATCH_SIZE) {
+    batches.push(clean.slice(i, i + BATCH_SIZE));
+  }
+  console.log(`[repo-summaries] calling LLM for ${clean.length} repos in ${batches.length} batches (size ${BATCH_SIZE}, concurrency ${LLM_CONCURRENCY})`);
 
-  const summaries = await summarizeBatch(clean);
-  console.log(`[repo-summaries] received ${summaries.length} summaries`);
+  const batchResults = await mapLimit(batches, LLM_CONCURRENCY, async (batch, batchIdx) => {
+    try {
+      const out = await summarizeBatch(batch);
+      console.log(`[repo-summaries] batch ${batchIdx + 1}/${batches.length} ok — ${out.length} summaries`);
+      return out;
+    } catch (err) {
+      console.error(`[repo-summaries] batch ${batchIdx + 1}/${batches.length} failed: ${err.message}`);
+      return [];
+    }
+  });
+
+  const summaries = batchResults.flat();
+  console.log(`[repo-summaries] received ${summaries.length} summaries total`);
+  if (summaries.length === 0) {
+    throw new Error('All LLM batches failed — refusing to overwrite existing file with empty output');
+  }
 
   const byRepo = {};
   for (const s of summaries) byRepo[s.full] = s;
