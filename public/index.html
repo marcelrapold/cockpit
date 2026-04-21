@@ -273,6 +273,10 @@
     .card-sub { font-size: 0.82rem; color: var(--text-sec); line-height: 1.65; max-width: 85ch; }
     .card-sub strong { color: var(--text); font-weight: 500; }
 
+    .summary-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .summary-heading .card-title { margin-bottom: 0; }
+    .summary-freshness { font-size: 0.7rem; color: var(--text-muted); font-family: var(--mono); letter-spacing: 0.01em; white-space: nowrap; }
+    .summary-freshness::before { content: '●'; color: var(--accent-green); margin-right: 0.35rem; font-size: 0.55rem; vertical-align: middle; }
     .summary-teaser p { font-size: 0.92rem; line-height: 1.7; color: var(--text); margin: 0; }
     .summary-extended { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease; max-width: 85ch; }
     .summary-extended[data-open="true"] { max-height: 4000px; opacity: 1; margin-top: 1rem; }
@@ -637,7 +641,7 @@
     .changelog-panel {
       position: absolute; top: 100%; right: 0; margin-top: 0.5rem;
       width: 340px; max-height: 80vh; overflow-y: auto;
-      background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
       z-index: 100; display: none; font-family: var(--font);
       animation: clPanelIn 0.2s ease-out;
@@ -667,7 +671,7 @@
     .cl-news-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; font-size: 0.75rem; font-weight: 600; color: var(--text); }
     .cl-news-header svg { width: 0.9rem; height: 0.9rem; color: var(--blue); }
 
-    .cl-entry { padding: 0.6rem 0.7rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
+    .cl-entry { padding: 0.6rem 0.7rem; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
     .cl-entry-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 0.35rem; }
     .cl-entry-version {
       font-size: 0.55rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 10px;
@@ -1846,7 +1850,10 @@
   <!-- Summary -->
   <section id="summary" class="reveal">
     <div class="card">
-      <h2 class="card-title">Zusammenfassung</h2>
+      <div class="summary-heading">
+        <h2 class="card-title">Zusammenfassung</h2>
+        <span class="summary-freshness" id="summaryFreshness" hidden></span>
+      </div>
       <div class="card-sub summary-teaser">
         <p id="execSummaryText">Wird geladen …</p>
       </div>
@@ -5116,6 +5123,13 @@ function applyNarrative(n) {
   if (teaser && n.teaser) {
     teaser.textContent = n.teaser;
     teaser.dataset.source = 'narrative';
+  }
+  const fresh = document.getElementById('summaryFreshness');
+  if (fresh && n.generatedAt) {
+    const d = new Date(n.generatedAt);
+    const when = d.toLocaleString('de-CH', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Zurich' });
+    fresh.textContent = `Zuletzt aktualisiert · ${when}`;
+    fresh.hidden = false;
   }
   const ext = document.getElementById('summaryExtended');
   const btn = document.getElementById('summaryToggle');
