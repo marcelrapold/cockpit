@@ -291,6 +291,33 @@
     .ai-weekly[data-source="narrative"] p:last-child,
     .ai-insight-body[data-source="narrative"] p:last-child { margin-bottom: 0; }
 
+    .pi-controls { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .pi-search { flex: 1; min-width: 240px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.8rem; color: var(--text); font-size: 0.82rem; font-family: inherit; outline: none; transition: border-color 0.15s; }
+    .pi-search:focus { border-color: var(--blue); }
+    .pi-search::placeholder { color: var(--text-muted); }
+    .pi-count { font-size: 0.72rem; color: var(--text-muted); font-family: var(--mono); white-space: nowrap; }
+    .pi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; max-height: 640px; overflow-y: auto; padding-right: 0.25rem; }
+    .pi-card { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; transition: border-color 0.15s, transform 0.15s; display: flex; flex-direction: column; gap: 0.5rem; }
+    .pi-card:hover { border-color: var(--blue-muted); transform: translateY(-1px); }
+    .pi-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+    .pi-card-name { font-size: 0.82rem; font-weight: 600; color: var(--text); line-height: 1.3; word-break: break-word; font-family: var(--mono); }
+    .pi-card-name a { color: inherit; text-decoration: none; }
+    .pi-card-name a:hover { color: var(--blue); }
+    .pi-status { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.45rem; border-radius: 4px; white-space: nowrap; font-weight: 600; border: 1px solid transparent; }
+    .pi-status-active { background: rgba(45,134,89,0.12); color: var(--accent-green); border-color: rgba(45,134,89,0.3); }
+    .pi-status-stable { background: rgba(4,121,204,0.12); color: var(--blue); border-color: rgba(4,121,204,0.3); }
+    .pi-status-pilot { background: rgba(106,90,205,0.12); color: var(--accent-purple); border-color: rgba(106,90,205,0.3); }
+    .pi-status-spec { background: rgba(184,134,11,0.12); color: var(--accent-amber); border-color: rgba(184,134,11,0.3); }
+    .pi-status-experimental { background: rgba(106,90,205,0.12); color: var(--accent-purple); border-color: rgba(106,90,205,0.3); }
+    .pi-status-archived { background: rgba(132,150,167,0.12); color: var(--text-muted); border-color: rgba(132,150,167,0.3); }
+    .pi-status-dormant { background: rgba(132,150,167,0.12); color: var(--text-muted); border-color: rgba(132,150,167,0.3); }
+    .pi-card-oneliner { font-size: 0.74rem; line-height: 1.55; color: var(--text-sec); }
+    .pi-card-meta { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .pi-tag { font-size: 0.62rem; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0.12rem 0.4rem; color: var(--text-sec); font-family: var(--mono); letter-spacing: 0.01em; }
+    .pi-card-footer { font-size: 0.66rem; color: var(--text-muted); line-height: 1.4; font-family: var(--mono); }
+    .pi-card-footer strong { color: var(--text-sec); font-weight: 500; }
+    .pi-empty { grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 1.5rem; font-size: 0.78rem; }
+
     .note {
       margin-top: 1rem;
       padding: 0.85rem 1rem;
@@ -2385,6 +2412,21 @@
           <div class="ai-insight-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Strategische Beobachtungen</div>
           <div class="ai-insight-body" id="aiStrategic">Wird analysiert…</div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projekt-Index -->
+  <section id="projectIndex" class="reveal">
+    <div class="card">
+      <h2 class="card-title">Projekt-Index</h2>
+      <p class="card-sub" style="margin-bottom:1rem;">Durchsuchbare Übersicht aller Repositories mit AI-generierten Beschreibungen. Wöchentlich aktualisiert via Claude Sonnet 4.6 aus README · package.json · Dependencies.</p>
+      <div class="pi-controls">
+        <input type="search" id="projectIndexSearch" class="pi-search" placeholder="Suche nach Name, Zweck, Stack, Tag oder Audience…" autocomplete="off" />
+        <span class="pi-count" id="projectIndexCount"></span>
+      </div>
+      <div class="pi-grid" id="projectIndexGrid">
+        <div class="pi-empty">Wird geladen…</div>
       </div>
     </div>
   </section>
@@ -5161,6 +5203,89 @@ function applyNarrative(n) {
 }
 
 loadNarrative().then(applyNarrative);
+
+// === Projekt-Index (alle Repos, durchsuchbar) ===
+async function loadProjectIndex() {
+  try {
+    const res = await fetch('/data-repos.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const repos = Object.values(data.repos || {});
+    if (!repos.length) return;
+    renderProjectIndex(repos);
+  } catch (err) {
+    console.warn('[project-index] load failed:', err.message);
+  }
+}
+
+function renderProjectIndex(repos) {
+  const grid = document.getElementById('projectIndexGrid');
+  const search = document.getElementById('projectIndexSearch');
+  const count = document.getElementById('projectIndexCount');
+  if (!grid) return;
+
+  const statusOrder = { active: 0, stable: 1, pilot: 2, spec: 3, experimental: 4, dormant: 5, archived: 6 };
+  const sorted = [...repos].sort((a, b) => {
+    const sa = statusOrder[(a.status || '').toLowerCase()] ?? 9;
+    const sb = statusOrder[(b.status || '').toLowerCase()] ?? 9;
+    if (sa !== sb) return sa - sb;
+    return (a.full || '').localeCompare(b.full || '');
+  });
+
+  function render(list) {
+    if (!list.length) {
+      grid.innerHTML = '<div class="pi-empty">Keine Treffer.</div>';
+    } else {
+      grid.innerHTML = list.map(r => {
+        const status = (r.status || 'active').toLowerCase();
+        const tags = (r.tags || []).slice(0, 5).map(t => `<span class="pi-tag">${escapeHtml(t)}</span>`).join('');
+        const url = r.full ? `https://github.com/${encodeURI(r.full)}` : null;
+        const nameText = r.full || '—';
+        const nameHtml = url
+          ? `<a href="${url}" target="_blank" rel="noopener">${escapeHtml(nameText)}</a>`
+          : escapeHtml(nameText);
+        const stackLine = r.stack ? `<div class="pi-card-footer"><strong>Stack:</strong> ${escapeHtml(r.stack)}</div>` : '';
+        const audienceLine = r.audience ? `<div class="pi-card-footer"><strong>Für:</strong> ${escapeHtml(r.audience)}</div>` : '';
+        return `
+          <div class="pi-card">
+            <div class="pi-card-head">
+              <div class="pi-card-name">${nameHtml}</div>
+              <span class="pi-status pi-status-${escapeHtml(status)}">${escapeHtml(status)}</span>
+            </div>
+            <div class="pi-card-oneliner">${escapeHtml(r.oneLiner || '—')}</div>
+            ${tags ? `<div class="pi-card-meta">${tags}</div>` : ''}
+            ${stackLine}
+            ${audienceLine}
+          </div>
+        `;
+      }).join('');
+    }
+    if (count) count.textContent = list.length === sorted.length
+      ? `${sorted.length} Repositories`
+      : `${list.length} von ${sorted.length}`;
+  }
+
+  render(sorted);
+
+  if (search) {
+    let t;
+    search.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        const q = search.value.trim().toLowerCase();
+        if (!q) { render(sorted); return; }
+        const filtered = sorted.filter(r => {
+          const hay = [r.full, r.oneLiner, r.purpose, r.stack, r.audience, (r.tags || []).join(' ')]
+            .filter(Boolean).join(' ').toLowerCase();
+          return hay.includes(q);
+        });
+        render(filtered);
+      }, 80);
+    });
+  }
+}
+
+loadProjectIndex();
 
 function renderTicker(events) {
   if (!events || !events.length) return;
