@@ -1,0 +1,1311 @@
+{
+  "generatedAt": "2026-04-21T11:32:42.064Z",
+  "model": "anthropic/claude-sonnet-4-6",
+  "count": 87,
+  "orgs": [
+    "zvvch",
+    "marcelrapold",
+    "ALPA-one"
+  ],
+  "user": "muraschal",
+  "repos": {
+    "zvvch/zvv-kontrollapp": {
+      "full": "zvvch/zvv-kontrollapp",
+      "oneLiner": "PWA für ZVV-Kontrollpersonal zur präzisen Zeitmessung und Auswertung von Billett-Kontrollen, gebaut auf Vanilla JS, Express und Redis.",
+      "purpose": "Die App erfasst Dauer, Trägermedium (SwissPass, E-Ticket) und Ergebnis jeder Billett-Kontrolle und speichert diese Messungen in Redis. Über eine REST-API werden Messungen abgerufen, gespeichert und als CSV exportiert. Offline-Funktionalität via Service Worker ermöglicht den Einsatz ohne stabile Netzverbindung.",
+      "stack": "vanilla js, css3, node.js, express, redis, upstash/redis, vercel, pwa, service worker",
+      "audience": "ZVV-Kontrollpersonal (intern)",
+      "status": "active",
+      "tags": [
+        "public-transport",
+        "pwa",
+        "internal-tool",
+        "analytics",
+        "zvv"
+      ]
+    },
+    "zvvch/zvv-entdeckungsreise": {
+      "full": "zvvch/zvv-entdeckungsreise",
+      "oneLiner": "Ticketcode-Validierung und Schulanmeldungsportal für die ZVV-Entdeckungsreise, gebaut auf Next.js, Supabase und Resend.",
+      "purpose": "Das System validiert Bestellcodes für das ZVV-Bildungsangebot «Entdeckungsreise» und nimmt Schulanmeldungen über ein Formular entgegen. Einreichungen werden in einer Supabase-PostgreSQL-Datenbank mit Row-Level-Security gespeichert; Bestätigungs-E-Mails werden via Resend versandt. Ein Admin-Dashboard ermöglicht die Verwaltung und den Excel-Export der Anmeldedaten.",
+      "stack": "next.js, typescript, supabase, postgresql, resend, tailwind css, radix ui, shadcn/ui, recharts, vercel",
+      "audience": "Schulen / Lehrkräfte (public), ZVV-Administration (intern)",
+      "status": "active",
+      "tags": [
+        "public-transport",
+        "portal",
+        "ticket-validation",
+        "education",
+        "zvv"
+      ]
+    },
+    "zvvch/.github": {
+      "full": "zvvch/.github",
+      "oneLiner": "Öffentliches GitHub-Profil-Repository des Zürcher Verkehrsverbunds mit Organisations-README.",
+      "purpose": "Das Repository enthält ausschliesslich das Organisations-README für das GitHub-Profil des ZVV. Es vermittelt Kontext über den ZVV als Organisation und stellt Kontaktinformationen bereit. Zweck aus technischer Sicht: reine Präsenzseite, kein produktiver Code.",
+      "stack": "markdown",
+      "audience": "GitHub-Besucher (public)",
+      "status": "stable",
+      "tags": [
+        "profile",
+        "zvv",
+        "organisation"
+      ]
+    },
+    "zvvch/zvv-fund-pilot": {
+      "full": "zvvch/zvv-fund-pilot",
+      "oneLiner": "Offlinefähige Web-App für ZVV-Nutzende zur Ermittlung des zuständigen Fundbüros anhand der Liniennummer, gebaut als statische Next.js-App ohne Backend.",
+      "purpose": "ZVV-FundPilot strukturiert die bisher nur als PDF vorliegende Fundbüro-Zuordnungsliste des ZVV und macht sie über eine Liniensuche durchsuchbar. Die App ist vollständig statisch, benötigt kein Backend und unterstützt Offline-Nutzung. Architektonisch ist das Datenmodell von der UI entkoppelt, um künftige API-Integrationen (z. B. easyfind.ch) zu ermöglichen.",
+      "stack": "next.js, javascript, static site, vercel",
+      "audience": "ZVV-Fahrgäste (public), ZVV-Mitarbeitende (intern)",
+      "status": "active",
+      "tags": [
+        "public-transport",
+        "lost-and-found",
+        "internal-tool",
+        "zvv",
+        "static"
+      ]
+    },
+    "zvvch/zvv-testimonials": {
+      "full": "zvvch/zvv-testimonials",
+      "oneLiner": "Responsiver Testimonial-Slider-Prototyp für das ZVV-Employer-Branding, gebaut auf Next.js und Tailwind CSS.",
+      "purpose": "Das Projekt stellt einen animierten Karussell-Slider für authentische Mitarbeiter-Erfahrungsberichte bereit, primär für HR, Recruiting und Unternehmenskommunikation. Der aktuelle Stand ist laut README ein Prototyp/Mockup, erstellt mit v0.vercel. Eine produktive Datenanbindung ist aus dem README nicht ersichtlich.",
+      "stack": "next.js, typescript, tailwind css, radix ui, shadcn/ui",
+      "audience": "ZVV HR / Recruiting (intern)",
+      "status": "pilot",
+      "tags": [
+        "employer-branding",
+        "ui-component",
+        "prototype",
+        "zvv"
+      ]
+    },
+    "zvvch/mcp-gtfs": {
+      "full": "zvvch/mcp-gtfs",
+      "oneLiner": "MCP-Server, der offizielle Schweizer GTFS-Fahrplandaten über eine SQLite-Datenbank für AI/LLM-Clients abfragbar macht.",
+      "purpose": "Das Projekt lädt GTFS-Fahrplandaten von opentransportdata.swiss herunter, importiert alle neun GTFS-Tabellen in eine lokale SQLite-Datenbank und exponiert sie über sechs MCP-Tools (Haltestellensuche, Linien, Abfahrten, Fahrplan-Details). AI-Clients wie Claude oder ChatGPT können so strukturiert Fahrplaninformationen abfragen. Der Server kommuniziert via StreamableHTTP und ist für Vercel- und Docker-Deployment ausgelegt.",
+      "stack": "node.js, model context protocol, sqlite, better-sqlite3, express, zod, vercel, docker",
+      "audience": "AI/LLM-Clients, interne Entwickler",
+      "status": "experimental",
+      "tags": [
+        "ai",
+        "mcp",
+        "gtfs",
+        "public-transport",
+        "llm",
+        "zvv"
+      ]
+    },
+    "zvvch/zvv-tama": {
+      "full": "zvvch/zvv-tama",
+      "oneLiner": "Interaktives Dashboard zur Visualisierung und Verwaltung der Vernehmlassungsresultate zum ZVV-Tarifmodell TAMA 2026, gebaut auf Next.js 15 und Supabase.",
+      "purpose": "Das Dashboard aggregiert und visualisiert Antworten aus einer Vernehmlassung (öffentliches Konsultationsverfahren) zum ZVV-Tarifmodell TAMA. Es bietet KPI-Übersichten, interaktive Leaflet-Karte, Recharts-Diagramme, Teilnehmer-Detailansichten und Excel-Export. Typeform-Einreichungen werden per Webhook in Echtzeit sowie stündlich per Fullsync in Supabase synchronisiert; die Authentifizierung erfolgt über HMAC-gesicherte Cookie-Sessions.",
+      "stack": "next.js 15, typescript, supabase, postgresql, tailwind css, radix ui, shadcn/ui, leaflet, recharts, vercel",
+      "audience": "ZVV-Tarifteam / interne Stakeholder (intern)",
+      "status": "active",
+      "tags": [
+        "dashboard",
+        "public-transport",
+        "analytics",
+        "internal-tool",
+        "zvv"
+      ]
+    },
+    "zvvch/zvv-app-modal": {
+      "full": "zvvch/zvv-app-modal",
+      "oneLiner": "Einbettbares Next.js-Widget zur interaktiven Präsentation der ZVV-App-Features auf zvv.ch, mit Framer-Motion-Animationen und AEM-Integration.",
+      "purpose": "Das Projekt liefert eine Next.js-App mit einem eigenständigen, in AEM einbettbaren Widget, das neun App-Screens der mobilen ZVV-App in einem iPhone-Mockup animiert darstellt. Es deckt Dark/Light-Mode, responsives Design und ZVV-konformes Branding ab. Die Anwendung ist als autonomes Frontend-Modul konzipiert, das ohne Backend-Anbindung auskommt.",
+      "stack": "next.js 15, typescript, tailwind css, framer-motion, radix ui, shadcn/ui",
+      "audience": "zvv.ch-Besucher (public), ZVV-Webteam / AEM-Integration (intern)",
+      "status": "active",
+      "tags": [
+        "ui-component",
+        "widget",
+        "aem",
+        "zvv",
+        "marketing"
+      ]
+    },
+    "zvvch/zvv-customer-radar": {
+      "full": "zvvch/zvv-customer-radar",
+      "oneLiner": "Echtzeit-Visualisierungsplattform für anonymisiertes ZVV-Kundenfeedback mit Gestensteuerung via TensorFlow.js, gebaut auf Next.js, Three.js und Supabase.",
+      "purpose": "ZVV KundenRadar streamt Kundenfeedback in Echtzeit aus Supabase und stellt es als interaktive 3D-Visualisierung dar. Über TensorFlow.js HandPose ermöglicht die App eine gestenbasierte Navigation (Wischen, Faust, Victory-Sign). Sentiment-Analyse und visuelle Effekte via Three.js/React Three Fiber machen Feedbackmuster direkt erlebbar.",
+      "stack": "next.js 15, typescript, supabase, tensorflow.js, mediapipe, three.js, react-three-fiber, framer-motion, tailwind css, vercel",
+      "audience": "ZVV-Interne / Eventpräsentationen (intern)",
+      "status": "experimental",
+      "tags": [
+        "ai",
+        "dashboard",
+        "feedback",
+        "3d",
+        "zvv",
+        "analytics"
+      ]
+    },
+    "zvvch/zvv-ai-crawl": {
+      "full": "zvvch/zvv-ai-crawl",
+      "oneLiner": "GEO-Projekt (Generative Engine Optimization) für zvv.ch zur Bereitstellung von llm.txt und strukturierten JSON-Daten für AI-Crawler wie GPTBot und ClaudeBot.",
+      "purpose": "Das Projekt stellt kuratierte Artefakte bereit — llm.txt, maschinenlesbare JSON-Daten zu Linien, Tickets und Tarifen sowie robots.txt-Anpassungen —, damit LLM-basierte Suchsysteme (ChatGPT, Perplexity, Claude) zvv.ch als primäre Informationsquelle indexieren. Ziel ist es, fehlerhafte oder veraltete Antworten aus inoffiziellen Quellen zu verhindern. Das Repository ist archiviert; es enthält keine ausführbare Applikation, nur statische Deliverables.",
+      "stack": "markdown, json",
+      "audience": "ZVV-Webteam / SEO-Verantwortliche (intern)",
+      "status": "archived",
+      "tags": [
+        "geo",
+        "seo",
+        "ai",
+        "llm",
+        "zvv",
+        "static"
+      ]
+    },
+    "zvvch/zvv-novakundenspiegel": {
+      "full": "zvvch/zvv-novakundenspiegel",
+      "oneLiner": "Interne Spiegelplattform, die NOVA-Kundenstammdaten als Golden Record konsolidiert und ZVV-Subsystemen (CRM, Marketing, Analytics) über eine stabile Read-API bereitstellt.",
+      "purpose": "Der NOVA KundenSpiegel entkoppelt die ZVV-Systemlandschaft technisch vom nationalen ÖV-System NOVA, indem er Kundendaten historisiert, konsolidiert und als Single Source of Truth verfügbar macht. Zielsetzung ist die Reduktion direkter NOVA-Anbindungen um über 80 % bei einer Delta-Synchronisation unter 60 Sekunden. Das Repository enthält aktuell ausschliesslich die Ausschreibungsdokumentation (SIMAP, Architekturspezifikation, Datenmodell, OpenAPI-Spec); eine Implementierung ist noch nicht vorhanden.",
+      "stack": "OpenAPI (spec), SQL (Datenmodell), Markdown-Dokumentation",
+      "audience": "Interne ZVV-Teams (CRM, Marketing, Analytics) sowie Anbieter im Ausschreibungsprozess",
+      "status": "spec",
+      "tags": [
+        "nova",
+        "data-platform",
+        "golden-record",
+        "internal-api",
+        "transit",
+        "spec"
+      ]
+    },
+    "zvvch/zvv-kontoradar": {
+      "full": "zvvch/zvv-kontoradar",
+      "oneLiner": "Internes Budget-Dashboard für ZVV-Mitarbeitende, das Abacus/MyAbacus-Buchungsdaten zu Objektkrediten in Echtzeit visualisiert – gebaut auf Next.js 15, Supabase und ECharts.",
+      "purpose": "KontoRadar löst das fehlende Budget-Visibility-Problem bei der Rechnungsfreigabe in MyAbacus: Mitarbeitende konnten bisher den Kontostand auf Objektkrediten nur im teuren Abacus Fat Client einsehen. Die Webapp importiert Buchungsdaten aus Abacus/MayBacus, speichert sie in Supabase und stellt interaktive ECharts-Diagramme bereit, damit Freigaben informiert und proaktiv erfolgen können.",
+      "stack": "Next.js 15 · TypeScript · Supabase · Tailwind CSS · ECharts · Lucide React",
+      "audience": "ZVV-interne Mitarbeitende (Rechnungsfreigabe, Budgetverantwortliche)",
+      "status": "active",
+      "tags": [
+        "finance",
+        "budget",
+        "internal-tool",
+        "dashboard",
+        "transit",
+        "abacus"
+      ]
+    },
+    "zvvch/zvv-lottie": {
+      "full": "zvvch/zvv-lottie",
+      "oneLiner": "Interaktiver Lottie-Animationsviewer für 34 ZVV Header-Animationen, deployed als statische Vanilla-JS/HTML-App auf Vercel.",
+      "purpose": "Das Repo bündelt 34 Lottie-JSON-Animationen für ZVV-Headerelemente und stellt einen browserbasierten Player mit Dark Mode, Suchfunktion, Keyboard-Shortcuts und vollständiger Playback-Kontrolle bereit. Eine REST-API (animations.js) ermöglicht programmatischen Zugriff auf die Animationsmetadaten. Primärer Zweck ist die interne Vorschau und Verwaltung des Animationsbestands.",
+      "stack": "vanilla js · html · lottie 5.9 · vercel",
+      "audience": "ZVV-interne Design- und Entwicklungsteams",
+      "status": "stable",
+      "tags": [
+        "animation",
+        "lottie",
+        "design-assets",
+        "internal-tool",
+        "frontend"
+      ]
+    },
+    "zvvch/zvv-kundenradar": {
+      "full": "zvvch/zvv-kundenradar",
+      "oneLiner": "Experimentelle Echtzeit-Kundenfeedback-Visualisierungsplattform für den ZVV mit TensorFlow.js-Gestenerkennung, KI-Sentimentanalyse und 3D-Rendering auf Next.js und Supabase.",
+      "purpose": "KundenRadar transformiert eingehendes Kundenfeedback aus dem Schweizer ÖV in eine interaktive 3D-Visualisierung (Three.js/React Three Fiber) mit Live-Updates via Supabase Realtime. TensorFlow.js HandPose und MediaPipe ermöglichen gestenbasierte Navigation ohne Touch-Eingabe. Die Plattform richtet sich an interne Präsentations- und Analysecontexte; ob sie produktiv betrieben wird, ist aus dem README nicht eindeutig ableitbar.",
+      "stack": "Next.js · TypeScript · TensorFlow.js · MediaPipe · React Three Fiber · Three.js · Supabase · Framer Motion · Tailwind CSS",
+      "audience": "Interne ZVV-Teams (Analytics, Kommunikation)",
+      "status": "experimental",
+      "tags": [
+        "feedback",
+        "ai",
+        "3d-visualization",
+        "gesture-control",
+        "sentiment-analysis",
+        "transit"
+      ]
+    },
+    "zvvch/zvv-n8n-flows": {
+      "full": "zvvch/zvv-n8n-flows",
+      "oneLiner": "Sammlung interner n8n-Automationsworkflows für E-Mail, Reporting und Notifications im ZVV.",
+      "purpose": "Das Repository versioniert n8n-Workflow-Definitionen für interne Automatisierungen im ZVV, darunter E-Mail-Versand, Berichterstellung und Benachrichtigungen. Detailliertere Informationen zu einzelnen Flows sind aus README und Metadaten nicht ableitbar.",
+      "stack": "n8n",
+      "audience": "Internes ZVV-Operations-Team",
+      "status": "active",
+      "tags": [
+        "automation",
+        "n8n",
+        "internal-tool",
+        "workflow",
+        "notifications"
+      ]
+    },
+    "zvvch/zvv-app-banner": {
+      "full": "zvvch/zvv-app-banner",
+      "oneLiner": "Isoliertes IIFE-Micro-Frontend (React 18 + Vite) zur Mobile-Promotion der ZVV App – Einbindung per einzelnem Script-Tag ohne AEM-Refactoring.",
+      "purpose": "Der App Banner rendert auf mobilen Viewports (≤768 px) einen persistenten Promo-Banner für die offizielle ZVV App nach dem Zalando-Pattern. Das IIFE-Bundle kapselt React und ReactDOM vollständig, schreibt keine globalen Styles und hinterlässt nach Entfernung des Script-Tags und Mount-Divs keine Artefakte. Sichtbarkeit wird über einen localStorage-Zeitstempel für 6 Monate unterdrückt.",
+      "stack": "react 18 · typescript · vite (iife) · vercel",
+      "audience": "ZVV-Webteam (Integration in bestehende Webpräsenz) / indirekt: ZVV-App-Nutzende",
+      "status": "stable",
+      "tags": [
+        "micro-frontend",
+        "mobile",
+        "promo",
+        "react",
+        "vite",
+        "frontend"
+      ]
+    },
+    "zvvch/zvv-kundenkonto": {
+      "full": "zvvch/zvv-kundenkonto",
+      "oneLiner": "Next.js-Mockup (v0-Prototyp) für das ZVV Kundenkonto 2026 – Self-Service-Portal zur Verwaltung von SwissPass, Abos, Tickets und Zahlungsmitteln.",
+      "purpose": "Das Repo enthält einen frühen Prototyp (v0 Mockup für n47) des ZVV Kundenkontos 2026, der vollständige UI-Flows für SwissPass-Kartenverwaltung, Abonnements, E-Tickets, Zahlungsmittel und Kundendaten abbildet. Technisch setzt der Prototyp auf Next.js 14/React 19 mit Radix UI, shadcn/ui und React Hook Form. Als Mockup ist kein produktiver Backend-Anschluss erkennbar.",
+      "stack": "Next.js 14 · React 19 · TypeScript · Radix UI · shadcn/ui · Tailwind CSS 3.4 · React Hook Form · Zod",
+      "audience": "Interne ZVV-Produktteams und Agentur n47 (Design-Review / Anforderungsvalidierung)",
+      "status": "pilot",
+      "tags": [
+        "self-service",
+        "portal",
+        "swisspass",
+        "mockup",
+        "transit",
+        "kundenkonto"
+      ]
+    },
+    "zvvch/zvv-medienspiegel": {
+      "full": "zvvch/zvv-medienspiegel",
+      "oneLiner": "Automatisierte Medienmonitoring-Pipeline für den ZVV, die PDF-Presseclippings per GPT-4o analysiert und als interaktive HTML-Newsletter via Resend versendet.",
+      "purpose": "Medienspiegel 4.0 verarbeitet täglich angelieferte PDF-Presseclippings über eine n8n-Automationspipeline: Texte werden via pdf2text.rapold.io extrahiert, durch GPT-4o auf Sentiment, Relevanz und Keywords analysiert und mit Google Custom Search deep-gelinkt. Das Ergebnis ist ein strukturierter HTML-Newsletter, der über Resend an interne Verteiler zugestellt wird; Artikel und Metadaten werden in Supabase persistiert.",
+      "stack": "n8n · openai gpt-4o · supabase · resend · google custom search · pdf2text (pymupdf) · html",
+      "audience": "Interne ZVV-Kommunikations- und Medienteams",
+      "status": "active",
+      "tags": [
+        "media-monitoring",
+        "ai",
+        "automation",
+        "newsletter",
+        "n8n",
+        "openai"
+      ]
+    },
+    "zvvch/zvv-mailer": {
+      "full": "zvvch/zvv-mailer",
+      "oneLiner": "Internes Kampagnen- und Newsletter-System des ZVV für professionellen E-Mail-Versand an Empfängerlisten, gebaut auf Next.js und Supabase.",
+      "purpose": "ZVV Mailer ist die produktive Inhouse-Lösung für E-Mail-Kampagnen des ZVV (mailer.zvv.ch). Die App umfasst einen visuellen Kampagnen-Builder (Drag-and-Drop via dnd-kit), Empfängerverwaltung, Versandsteuerung und eine dokumentierte OpenAPI. Deployment erfolgt über einen Branch-basierten Promotion-Pfad (topic → integration → main) mit Supabase als Datenschicht.",
+      "stack": "Next.js · TypeScript · Supabase · Radix UI · dnd-kit · Tailwind CSS · Scalar API Reference",
+      "audience": "Interne ZVV-Marketing- und Kommunikationsteams",
+      "status": "active",
+      "tags": [
+        "email",
+        "campaign",
+        "internal-tool",
+        "newsletter",
+        "transit",
+        "marketing"
+      ]
+    },
+    "zvvch/zvv-statuspage": {
+      "full": "zvvch/zvv-statuspage",
+      "oneLiner": "Moderne Statusseite für ZVV-Dienste mit fünf Status-Typen, gebaut auf Next.js 15 und Tailwind CSS v4, deployed auf Vercel.",
+      "purpose": "Die Statusseite kommuniziert den Betriebszustand interner und externer ZVV-Dienste (operational, degraded, partial outage, major outage, maintenance) in einer übersichtlichen Weboberfläche. Das Projekt setzt auf Next.js 15 App Router mit Radix UI-Komponenten und Tailwind CSS v4. Eine Backend-Integration für dynamische Statusdaten ist aus dem README nicht ersichtlich; die aktuelle Version erscheint als UI-Prototyp.",
+      "stack": "Next.js 15 · TypeScript · Tailwind CSS v4 · Radix UI · Vercel",
+      "audience": "ZVV-interne Teams und potenziell externe Nutzer (Dienststatus-Monitoring)",
+      "status": "pilot",
+      "tags": [
+        "statuspage",
+        "monitoring",
+        "internal-tool",
+        "frontend",
+        "transit"
+      ]
+    },
+    "zvvch/zvv-aemcs-ausschreibung-2026": {
+      "full": "zvvch/zvv-aemcs-ausschreibung-2026",
+      "oneLiner": "Archivierte Ausschreibungsunterlagen (offenes Verfahren, SubmV ZH) für die AEMaaCS-Weiterentwicklung von zvv.ch mit Kostendach CHF 200'000/Jahr.",
+      "purpose": "Enthält die vollständige Beschaffungsdokumentation für die betriebssichere, upgradesichere Weiterentwicklung der Corporate Website zvv.ch auf Adobe Experience Manager as a Cloud Service (AEMaaCS). Das Verfahren folgt § 12 SubmV Kanton Zürich und wurde auf SIMAP publiziert. Das Repository ist archiviert und dient als versionierter Nachweis der Ausschreibungsunterlagen (v1.1.0, Publikationsstatus).",
+      "stack": "aemaacs, adobe experience manager, python, pdf",
+      "audience": "Anbieter / Bieter (öffentlich via SIMAP), ZVV Beschaffungsstelle",
+      "status": "archived",
+      "tags": [
+        "procurement",
+        "aem",
+        "public-sector",
+        "requirements",
+        "enterprise",
+        "cms"
+      ]
+    },
+    "zvvch/zvv-aemcs-oeffentliche-ausschreibung-2026": {
+      "full": "zvvch/zvv-aemcs-oeffentliche-ausschreibung-2026",
+      "oneLiner": "Aktives Repository mit auto-generierten Ausschreibungsdokumenten (DOCX/PDF) für Betrieb und Weiterentwicklung von zvv.ch auf AEMaaCS, veröffentlicht via GitHub Releases.",
+      "purpose": "Verwaltet die offiziellen Ausschreibungsunterlagen für die öffentliche Beschaffung des AEMaaCS-Betriebs und der Weiterentwicklung von zvv.ch. Eine CI/CD-Pipeline (GitHub Actions) exportiert die Dokumente automatisch als DOCX und PDF und stellt sie als GitHub Release Assets bereit. Dieses Repository ist die aktive Nachfolgeversion des archivierten Pendant-Repos.",
+      "stack": "aemaacs, adobe experience manager, python, github actions, docx, pdf",
+      "audience": "Anbieter / Bieter (öffentlich via SIMAP), ZVV Beschaffungsstelle",
+      "status": "active",
+      "tags": [
+        "procurement",
+        "aem",
+        "public-sector",
+        "requirements",
+        "cms"
+      ]
+    },
+    "zvvch/zvv-vscode-theme": {
+      "full": "zvvch/zvv-vscode-theme",
+      "oneLiner": "VS Code / Cursor Theme mit ZVV-Farbpalette und automatischem zeitbasiertem Hell-/Dunkel-Wechsel, installierbar per einzeiligem npx-Befehl.",
+      "purpose": "Stellt drei ZVV-gebrandete Editor-Themes (Light, Hellblau, Dark) bereit, die anhand der Uhrzeit automatisch per Skript gewechselt werden. Die Installation erfolgt vollautomatisch über ein remote ausführbares TypeScript-Script via npx, das Theme-Dateien, VS Code Tasks und Package-Scripts in das Zielprojekt einrichtet. Primär ein Developer-Experience-Tool für das ZVV-Entwicklungsteam.",
+      "stack": "typescript, vscode extension api, tsx, node.js",
+      "audience": "Internes ZVV-Entwicklungsteam",
+      "status": "active",
+      "tags": [
+        "developer-experience",
+        "vscode",
+        "theming",
+        "internal-tool"
+      ]
+    },
+    "zvvch/zvv-fzdb-spec": {
+      "full": "zvvch/zvv-fzdb-spec",
+      "oneLiner": "Technische Spezifikation für die Web-Ablösung der MS-Access-Fahrzeugdatenbank des ZVV, dokumentiert als Live-Website auf Vercel (Next.js · Supabase · Azure AD).",
+      "purpose": "Definiert Architektur, Datenmodell (~70 PostgreSQL-Felder), Auth-Konzept (Azure AD SSO) und Berechtigungslogik für eine zentrale Web-App, die die bestehende dezentrale MS-Access-Lösung ablöst. Der Scope umfasst ca. 1'000 aktive und über 1'000 historische Fahrzeuge für unter 20 MVU-Nutzer. Das Repo dient als SSOT für die Make-or-Buy-Entscheidung im MVP-Stadium.",
+      "stack": "next.js, supabase, postgresql, vercel, azure ad, tailwind css, html",
+      "audience": "ZVV-interne Stakeholder, MVUs (Marktverantwortliche Unternehmen), ZVV Finanzen",
+      "status": "spec",
+      "tags": [
+        "specification",
+        "fahrzeugdatenbank",
+        "transit",
+        "internal-tool",
+        "mvp"
+      ]
+    },
+    "zvvch/zvv-info": {
+      "full": "zvvch/zvv-info",
+      "oneLiner": "KI-gestützter Fahrplaninformationsdienst für den Schweizer ÖV, der GTFS-Daten via MCP mit Anthropic- und OpenAI-Modellen kombiniert und natürlichsprachige Antworten liefert.",
+      "purpose": "Stellt einen AI-powered Timetable-Informationsservice bereit, der Natural-Language-Abfragen zu ZVV-Fahrplänen beantwortet. Das Backend nutzt die AI SDK von Vercel (Anthropic, OpenAI) in Kombination mit MCP für GTFS-Datenzugriff. Das Frontend basiert auf Next.js mit React und rendert Antworten als Markdown inklusive Mermaid-Diagrammen.",
+      "stack": "next.js, react, typescript, ai sdk (anthropic, openai), mcp, zod, tailwind, mermaid",
+      "audience": "ZVV-Kunden (intern/öffentlich, unklar aus README), ZVV-Team",
+      "status": "active",
+      "tags": [
+        "ai",
+        "transit",
+        "fahrplan",
+        "chatbot",
+        "internal-tool"
+      ]
+    },
+    "zvvch/zvv-jahreshochrechnung-2025": {
+      "full": "zvvch/zvv-jahreshochrechnung-2025",
+      "oneLiner": "Dokumentarisches R-Skript-Repository für die ZVV Jahreshochrechnung 2025 — Liniendaten-Aufbereitung und HOP-Datenlieferungen, nicht für produktiven Einsatz.",
+      "purpose": "Enthält R-Skripte zur Aufbereitung von MVU-Liniendaten (nach Verbundgebiet), zur Detailaufbereitung einzelner Linien sowie zur Zusammenführung von HOP-Datenlieferungen im Parquet-Format via SQL. Das Repository ist explizit nur für dokumentarische Zwecke bestimmt und nicht zur produktiven Ausführung geeignet.",
+      "stack": "r, sql, parquet",
+      "audience": "Internes ZVV-Analyseteam",
+      "status": "dormant",
+      "tags": [
+        "analytics",
+        "transit",
+        "data-pipeline",
+        "internal-tool",
+        "reporting"
+      ]
+    },
+    "zvvch/ical-renderer-for-confluence": {
+      "full": "zvvch/ical-renderer-for-confluence",
+      "oneLiner": "Minimaler Node.js-Service, der einen ICS-Feed parsed und aktuelle sowie nächste On-Call-Zuweisungen als kompaktes HTML für Confluence-iFrame-Embeds rendert.",
+      "purpose": "Fetcht einen konfigurierbaren ICS-Kalender-Feed, leitet daraus den aktuellen und die nächsten N On-Call-Verantwortlichen ab und gibt eine schlanke HTML-Ansicht zurück, die als iframe in Confluence eingebettet wird. In-Memory-Caching mit konfigurierbarem TTL sowie Fallback auf zuletzt erfolgreiche Daten bei Abruffehlern sind eingebaut. Deploybar als Vercel-Node.js-Function oder via npm start.",
+      "stack": "node.js, javascript, node-ical, vercel",
+      "audience": "ZVV-internes Team (Confluence-Nutzer, On-Call-Teams)",
+      "status": "active",
+      "tags": [
+        "internal-tool",
+        "oncall",
+        "confluence",
+        "ical",
+        "embed"
+      ]
+    },
+    "zvvch/zvv-workload-portfolio": {
+      "full": "zvvch/zvv-workload-portfolio",
+      "oneLiner": "Management-Dashboard zur Übersicht über Projekte, Betrieb, Ownership und Jahresaufwandprognosen von Marcel Rapold beim ZVV.",
+      "purpose": "Zweck aus README nicht ableitbar (README leer). Laut GitHub-Description und Package-Description handelt es sich um ein management-seitiges Workload- und Delivery-Portfolio, das Projekte, Betriebsverantwortung und Jahresplanung aggregiert darstellt.",
+      "stack": "html",
+      "audience": "ZVV-Management, Marcel Rapold",
+      "status": "active",
+      "tags": [
+        "internal-tool",
+        "portfolio",
+        "management",
+        "planning"
+      ]
+    },
+    "marcelrapold/radiox": {
+      "full": "marcelrapold/radiox",
+      "oneLiner": "KI-gestützte Radio-Content-Plattform mit 11 FastAPI-Microservices, die automatisch News sammeln, AI-generierte Sendungen produzieren und Audio via ElevenLabs mischen.",
+      "purpose": "RadioX automatisiert den gesamten Radio-Content-Workflow: Ein API-Gateway koordiniert 11 unabhängige Microservices für Content-Collection (RSS), KI-Textgenerierung (OpenAI GPT-4), Text-to-Speech (ElevenLabs), Audio-Mixing, Börsendaten und Telegram-Steuerung. Supabase dient als zentrale Datenschicht, das React-Frontend als Bedienoberfläche. Ein adaptives Performance-System optimiert die Client-Darstellung in 5 Stufen.",
+      "stack": "python, fastapi, react, supabase, openai gpt-4, elevenlabs, vercel, telegram bot api",
+      "audience": "Eigengebrauch (marcelrapold / ÆON)",
+      "status": "active",
+      "tags": [
+        "ai",
+        "radio",
+        "microservices",
+        "audio",
+        "content-generation"
+      ]
+    },
+    "marcelrapold/aeon-homepage": {
+      "full": "marcelrapold/aeon-homepage",
+      "oneLiner": "Statische Einzel-Seiten-Homepage für das KI-Operator-Persona ÆON (Marcel Rapold) — Glassmorphism-Dark-Theme, Zero-Dependencies, deployed auf Vercel.",
+      "purpose": "Präsentiert das ÆON-AI-Operator-Profil als personal Homepage ohne Build-Step und ohne externe Abhängigkeiten. Design-Schwerpunkte sind Glassmorphism-Karten, CSS-Animationen, ein animiertes Terminal-Widget und ein Telegram-Chat-Embed für direkten Bot-Zugriff. Deployment erfolgt via Vercel Auto-Deploy auf Push.",
+      "stack": "html5, css, vanilla js, vercel",
+      "audience": "Öffentlich (Portfolio-Besucher, potenzielle Auftraggeber)",
+      "status": "active",
+      "tags": [
+        "portfolio",
+        "homepage",
+        "ai-operator",
+        "static-site"
+      ]
+    },
+    "marcelrapold/openclaw-bridge": {
+      "full": "marcelrapold/openclaw-bridge",
+      "oneLiner": "Bidirektionale WebSocket-Bridge zwischen zwei OpenClaw-Instanzen (ÆON ↔ ÆTHRA) im LAN, gebaut auf Node.js — umgeht die Telegram-Bot-zu-Bot-Kommunikationslücke.",
+      "purpose": "Das Projekt löst das Problem, dass Telegram Nachrichten von Bots nicht an andere Bots in Gruppenchats weiterleitet. Die Bridge stellt einen persistenten WebSocket-Kanal zwischen zwei OpenClaw Gateway-Instanzen auf separaten Maschinen im gleichen LAN her und forwarded Nachrichten bidirektional in Echtzeit. ÆON (claude-opus-4) übernimmt die Control Plane, ÆTHRA (claude-haiku) die Delivery Plane.",
+      "stack": "Node.js, WebSocket",
+      "audience": "Internes Setup (Marcel Rapold / ÆON-Ökosystem)",
+      "status": "active",
+      "tags": [
+        "multi-agent",
+        "websocket",
+        "bridge",
+        "ai-agent",
+        "automation"
+      ]
+    },
+    "marcelrapold/soul": {
+      "full": "marcelrapold/soul",
+      "oneLiner": "Identitäts- und Betriebsspezifikation (SOUL.md) für den KI-Operator ÆON — definiert Persönlichkeit, Verhaltensprinzipien und Multi-Agent-Protokolle.",
+      "purpose": "Das Repository enthält ausschliesslich SOUL.md, das vollständige Identity-Dokument des KI-Operators ÆON. Es wird bei jedem Session-Start in ÆONs Workspace geladen und dient als primäre Verhaltensgrundlage für alle Entscheidungen, Interaktionen und Multi-Agent-Koordination. Es handelt sich um proprietäre Spezifikation, keine Open-Source-Lizenz.",
+      "stack": "Markdown",
+      "audience": "Internes Setup (Marcel Rapold / ÆON-Ökosystem)",
+      "status": "spec",
+      "tags": [
+        "ai-agent",
+        "specification",
+        "identity",
+        "openclaw"
+      ]
+    },
+    "marcelrapold/explorative-web": {
+      "full": "marcelrapold/explorative-web",
+      "oneLiner": "Sandbox für schnelle Web-Experimente und UI-Prototypen in Vanilla HTML/CSS/JS, deployed auf Vercel — kein Build-Tooling, kein Framework.",
+      "purpose": "Das Repository dient als Playground für explorative Web-Experimente ohne Framework-Overhead. Alle Artefakte sind statisches HTML, das direkt via Vercel auto-deployed wird. Archiviert; wurde primär für kreatives Prototyping und schnelles Feedback eingesetzt.",
+      "stack": "HTML5, CSS3, Vanilla JS, Vercel",
+      "audience": "Eigengebrauch (Marcel Rapold / ÆON)",
+      "status": "archived",
+      "tags": [
+        "experiments",
+        "prototyping",
+        "static",
+        "web"
+      ]
+    },
+    "marcelrapold/aeon-skills": {
+      "full": "marcelrapold/aeon-skills",
+      "oneLiner": "Modulare Skill-Bibliothek für den KI-Operator ÆON auf OpenClaw — strukturierte Workflows für Engineering, Security, Deployment und Domain-Intelligence, in Python.",
+      "purpose": "Das Repository bündelt 11 wiederverwendbare Skills, die ÆONs Funktionsumfang auf der OpenClaw-Plattform erweitern. Jeder Skill besteht aus einem SKILL.md mit YAML-Frontmatter und optionalen Referenzmaterialien. Flaggschiff ist «copycat» (Website-Cloning-Pipeline), weitere Skills decken Security-Audits (sentinel-ai), lokale Dev-Umgebungen und Requirement Engineering ab. Repository ist archiviert.",
+      "stack": "Python, OpenClaw, Vercel",
+      "audience": "Internes Setup (Marcel Rapold / ÆON-Ökosystem)",
+      "status": "archived",
+      "tags": [
+        "ai-agent",
+        "automation",
+        "openclaw",
+        "skills",
+        "internal-tool"
+      ]
+    },
+    "marcelrapold/fahrplaninfo-zvv": {
+      "full": "marcelrapold/fahrplaninfo-zvv",
+      "oneLiner": "Reverse-Engineering-Analyse und Erneuerungsspezifikation für fahrplaninfo.zvv.ch — dokumentiert bestehenden PHP/jQuery-Stack und definiert Next.js 15 + Supabase als Zielarchitektur.",
+      "purpose": "Das Repository enthält zwei Kerndokumente: eine vollständige technische Analyse der bestehenden Fahrplaninfo-Applikation (6 Endpunkte, Autocomplete-API, Linien-ID-System, PDF-Storage) sowie ein 85 funktionale und 30 nicht-funktionale Anforderungen umfassendes Renewal-Dokument. Zielarchitektur ist Next.js 15 + Supabase + Vercel mit einem 9-Wochen-Projektplan in 3 Phasen. Das Repo enthält ausschliesslich Spezifikationsdokumente, keinen produktiven Code.",
+      "stack": "Markdown, Next.js 15 (Zielarchitektur), Supabase (Zielarchitektur), Vercel (Zielarchitektur)",
+      "audience": "ZVV / Internes Projektteam",
+      "status": "spec",
+      "tags": [
+        "zvv",
+        "public-transport",
+        "reverse-engineering",
+        "requirements",
+        "transit"
+      ]
+    },
+    "marcelrapold/memento": {
+      "full": "marcelrapold/memento",
+      "oneLiner": "Minimalistisches digitales Tagebuch für Einzelnutzer — ein Eintrag pro Tag mit Stimmungs-Tracker und Timeline, gebaut auf Next.js 15 + Supabase + Vercel.",
+      "purpose": "Memento löst das Problem von Komplexität in Journal-Apps durch radikale Reduktion: genau ein Tageseintrag, eine Impulsfrage, ein Stimmungs-Wert. Die Daten werden in Supabase (PostgreSQL) persistiert; Auth ist für das Single-User-MVP deaktiviert. Der Stack ist Next.js 15 / React 19 / TypeScript mit Custom CSS (Merriweather + Inter), deployed auf Vercel.",
+      "stack": "Next.js 15, React 19, TypeScript, Supabase, Vercel, Custom CSS",
+      "audience": "Eigengebrauch (Einzelnutzer)",
+      "status": "active",
+      "tags": [
+        "journal",
+        "personal",
+        "nextjs",
+        "supabase",
+        "typescript"
+      ]
+    },
+    "marcelrapold/zvv-zonenplan": {
+      "full": "marcelrapold/zvv-zonenplan",
+      "oneLiner": "Interaktive 3D-Visualisierung der ZVV-Tarifzonen mit Three.js, als statische HTML-Applikation.",
+      "purpose": "Das Projekt implementiert eine interaktive Karte der Zürcher Verkehrsverbund-Tarifzonen mit 3D-Rendering via Three.js. Weitere Details zum Funktionsumfang sind aus dem leeren README nicht ableitbar. Stack und Zweck sind aus GitHub-Description und Sprache (HTML) inferiert.",
+      "stack": "HTML, Three.js",
+      "audience": "Unklar aus README (vermutlich Eigengebrauch oder ZVV-intern)",
+      "status": "experimental",
+      "tags": [
+        "zvv",
+        "transit",
+        "visualization",
+        "3d",
+        "public-transport"
+      ]
+    },
+    "marcelrapold/zvv-fahrplan": {
+      "full": "marcelrapold/zvv-fahrplan",
+      "oneLiner": "Zero-Dependency-Webapp für parallele ZVV-Fahrplanabfragen über drei Schweizer API-Backends (HAFAS, OJP, Transport OpenData) mit Side-by-Side-Vergleich — deployed auf Vercel.",
+      "purpose": "Die Applikation fragt simultan drei unabhängige öffentliche Verkehrs-APIs (SBB HAFAS Cloud, OJP Swiss National Router, Transport OpenData) ab und zeigt Verbindungsresultate nebeneinander an, um Unterschiede in Routing, Timing und Echtzeit-Daten transparent zu machen. Sie deckt das ZVV-Netz ab, ist aber dank nationaler API-Abdeckung schweizweit nutzbar. Kein Build-Tooling, kein Framework — reines HTML/JS.",
+      "stack": "HTML, Vanilla JS, HAFAS Cloud API, OJP API, Transport OpenData API, Vercel",
+      "audience": "Entwickler / technische Nutzer mit Interesse an Schweizer ÖV-APIs",
+      "status": "active",
+      "tags": [
+        "zvv",
+        "transit",
+        "hafas",
+        "ojp",
+        "api-comparison",
+        "public-transport"
+      ]
+    },
+    "marcelrapold/aethra-skills": {
+      "full": "marcelrapold/aethra-skills",
+      "oneLiner": "Skill-Bibliothek für den KI-Operator ÆTHRA — 7 auf lokale LLM-Inferenz (Qwen3-VL auf RTX 5080/5090) optimierte Skills ohne Cloud-Dependency.",
+      "purpose": "Das Repository stellt 7 Skills für ÆTHRA bereit, optimiert für lokale LLM-Inferenz auf zwei NVIDIA-RTX-Maschinen (MRA1/MRA2) ohne Cloud-Abhängigkeit. Skills umfassen ZVV-Fahrplanabfragen, Code-Review, Security-Audits, Requirement Engineering, Domain-OSINT, automatisiertes Journaling und Text-to-Speech via ElevenLabs. Prompt-Design ist auf 8B-Modelle ausgelegt (≤500 Token, One-Task-per-Request, auto-escalation zu 30B). Repository ist archiviert.",
+      "stack": "HTML, OpenClaw, Qwen3-VL-8B, Qwen3-VL-30B, NVIDIA RTX, ElevenLabs API",
+      "audience": "Internes Setup (Marcel Rapold / ÆTHRA-Ökosystem)",
+      "status": "archived",
+      "tags": [
+        "ai-agent",
+        "local-llm",
+        "skills",
+        "openclaw",
+        "automation"
+      ]
+    },
+    "marcelrapold/ai-arena": {
+      "full": "marcelrapold/ai-arena",
+      "oneLiner": "Multi-Modell-Benchmark- und Vergleichsplattform für KI-Modelle — Zweck aus README nicht ableitbar, nur GitHub-Description verfügbar.",
+      "purpose": "Zweck aus README nicht ableitbar. Die GitHub-Description benennt eine \"Multi-Model AI Benchmark & Comparison Platform\"; konkrete Implementierungsdetails, unterstützte Modelle und Metriken sind nicht dokumentiert.",
+      "stack": "HTML",
+      "audience": "Unklar aus README",
+      "status": "experimental",
+      "tags": [
+        "ai",
+        "benchmark",
+        "comparison",
+        "multi-model"
+      ]
+    },
+    "marcelrapold/copycat-seetreff": {
+      "full": "marcelrapold/copycat-seetreff",
+      "oneLiner": "KI-generierter Neubau von seetreff.ch (Pizzarestaurant Erlenbach ZH) als CopyCat-Demo, erstellt mit dem ÆON-Pipeline-Skill auf Next.js 15, Tailwind CSS 4 und TypeScript.",
+      "purpose": "Demonstriert die ÆON-CopyCat-Pipeline: Eine bestehende Restaurant-Website wird automatisiert analysiert, geklont und mit modernem Stack neu aufgebaut. Das Repo enthält fünf inhaltliche Seiten sowie eine Side-by-Side-Vergleichsseite (Original vs. Rebuild). Dark Mode, Mobile-first und Lighthouse-Audits sind Teil des automatisierten Build-Prozesses.",
+      "stack": "Next.js 15, React 19, Tailwind CSS 4, TypeScript, Vercel",
+      "audience": "Technisches Publikum / Demo-Empfänger des ÆON CopyCat Skills (public)",
+      "status": "active",
+      "tags": [
+        "copycat",
+        "demo",
+        "website-clone",
+        "ai-generated",
+        "nextjs",
+        "restaurant"
+      ]
+    },
+    "marcelrapold/dezentralschweiz-ep66-bitcoin-baden": {
+      "full": "marcelrapold/dezentralschweiz-ep66-bitcoin-baden",
+      "oneLiner": "Archiviertes HTML-Repo mit dem Transkript der Dezentralschweiz-Podcast-Episode #66 über Bitcoin Baden (Dezember 2025).",
+      "purpose": "Enthält das Transkript einer spezifischen Podcast-Episode als statisches Artefakt. Kein aktiver Code, keine Dependencies — dient ausschliesslich als Ablage und Referenz für den publizierten Inhalt. Repo ist archiviert.",
+      "stack": "HTML",
+      "audience": "Podcast-Hörer / Bitcoin-Community (public)",
+      "status": "archived",
+      "tags": [
+        "bitcoin",
+        "podcast",
+        "transcript",
+        "archive"
+      ]
+    },
+    "marcelrapold/aeon-cli": {
+      "full": "marcelrapold/aeon-cli",
+      "oneLiner": "Archiviertes, plugin-basiertes Bash/Python-CLI-Framework zur Verwaltung eines Raspberry-Pi-Fleets mit Cyberpunk-tmux-Dashboards — Vorgänger von marcelrapold/cli.",
+      "purpose": "ÆON CLI war das ursprüngliche modulare Command-Center für den Betrieb mehrerer Raspberry Pis: Fleet-Deployment, System-Monitoring, Matrix-Regen-Animationen und Live-Feeds (Krypto, Wetter, News) in einem tmux-Workspace. Das CLI passt das Layout automatisch an Bildschirmauflösungen von 640×480 bis 4K an. Nachfolger ist das öffentliche Repo marcelrapold/cli; dieses Repo ist archiviert.",
+      "stack": "Bash 5.x, Python 3.9+, tmux, Raspberry Pi",
+      "audience": "Interner Eigengebrauch (private, archived)",
+      "status": "archived",
+      "tags": [
+        "cli",
+        "raspberry-pi",
+        "fleet-management",
+        "dashboard",
+        "automation",
+        "internal-tool"
+      ]
+    },
+    "marcelrapold/aeon-workspace": {
+      "full": "marcelrapold/aeon-workspace",
+      "oneLiner": "Privates Mono-Repo als persönliche AI-Operator-Infrastruktur für Marcel Rapold — enthält CLI, Deployment-Scripts, Skill-Configs und Projektverweise für ÆON & ÆTHRA.",
+      "purpose": "Dient als zentrales Arbeitsverzeichnis und Deployment-Hub: Es bündelt Konfigurationen für Raspberry-Pi-Fleets, Referenzen auf Subprojekte (RadioX, ZVV, Skills) sowie AI-Identitätsdokumente (SOUL.md, USER.md, MEMORY.md). Kein eigenständig deployares Produkt, sondern operative Infrastruktur für den täglichen Betrieb der AI-Agenten.",
+      "stack": "TypeScript, blessed, blessed-contrib, Shell",
+      "audience": "Interner Eigengebrauch — Marcel Rapold (private)",
+      "status": "active",
+      "tags": [
+        "infrastructure",
+        "mono-repo",
+        "ai-operator",
+        "raspberry-pi",
+        "internal-tool"
+      ]
+    },
+    "marcelrapold/skills": {
+      "full": "marcelrapold/skills",
+      "oneLiner": "Zentrale, versionierte Skill-Bibliothek für die AI-Agenten ÆON und ÆTHRA — 16 modulare Instruction-Sets in Python, gemeinsam genutzt und auditierbar.",
+      "purpose": "Single Source of Truth für alle Skill-Module der rapoldio-AI-Flotte. Skills sind parametrisierbare Instruction-Sets, die Agenten spezialisierte Fähigkeiten verleihen (z.B. Transit-Routing, Security-Auditing, CopyCat). Durch den zentralen Ansatz wird Drift zwischen Agenten vermieden und neue Agenten können Skills sofort aufnehmen.",
+      "stack": "Python",
+      "audience": "AI-Agenten ÆON & ÆTHRA / interne Entwicklung (private)",
+      "status": "active",
+      "tags": [
+        "ai",
+        "skills",
+        "automation",
+        "internal-tool",
+        "agent"
+      ]
+    },
+    "marcelrapold/cli": {
+      "full": "marcelrapold/cli",
+      "oneLiner": "Öffentliches, multi-agent Bash/Python-CLI-Framework für Raspberry-Pi-Fleet-Management und Cyberpunk-tmux-Dashboards, betrieben durch die AI-Agenten ÆON und ÆTHRA.",
+      "purpose": "Nachfolger von aeon-cli: Das rapoldio CLI unterstützt zwei AI-Agenten-Identitäten (ÆON und ÆTHRA) mit je eigenem Einstiegspunkt und Persönlichkeit, teilt aber dieselbe Codebasis. Es orchestriert Fleet-Deployment, System-Monitoring und Live-Feeds (Krypto, Wetter, News) in einem adaptiven tmux-Workspace. Version 2.0.0.",
+      "stack": "Bash 5.x, Python 3.9+, tmux, Raspberry Pi",
+      "audience": "Technisch interessierte Öffentlichkeit / Eigengebrauch (public)",
+      "status": "active",
+      "tags": [
+        "cli",
+        "raspberry-pi",
+        "fleet-management",
+        "dashboard",
+        "ai-operator",
+        "automation"
+      ]
+    },
+    "marcelrapold/aeon-webconsole": {
+      "full": "marcelrapold/aeon-webconsole",
+      "oneLiner": "Browser-basiertes Terminal-Frontend für aeon-cli auf Raspberry Pi — xterm.js über WebSocket mit bcrypt-Authentifizierung, deployed auf Vercel.",
+      "purpose": "Ermöglicht passwortgeschützten Remote-Zugriff auf das aeon-cli-tmux-Dashboard via Browser ohne VPN oder SSH-Client. Das Next.js-Frontend verbindet sich per WebSocket (ws/Socket.IO) mit einem Shell-Prozess auf dem Raspberry Pi. Authentifizierung erfolgt über bcrypt-gehashte Passwörter mit Session-Cookies.",
+      "stack": "Next.js, React, xterm.js, WebSocket (ws), bcryptjs, Vercel, Raspberry Pi",
+      "audience": "Interner Eigengebrauch — Marcel Rapold (private)",
+      "status": "active",
+      "tags": [
+        "terminal",
+        "remote-access",
+        "raspberry-pi",
+        "websocket",
+        "internal-tool",
+        "nextjs"
+      ]
+    },
+    "marcelrapold/aeon-web-dashboard": {
+      "full": "marcelrapold/aeon-web-dashboard",
+      "oneLiner": "Browser-basiertes Cyberpunk-Dashboard als Web-Äquivalent des aeon-cli-Terminals — Live-Kryptopreise, Wetter, Weltuhren und System-Stats via Next.js.",
+      "purpose": "Repliziert die visuellen aeon-cli-tmux-Panels im Browser: Matrix-Regen (Canvas API), Live-Kryptokurse (BTC, ETH, Gold), Zürich-Wetter, Weltuhren und News-Ticker. System-Stats werden vom Raspberry Pi bezogen. Das Dashboard ist passwortgeschützt und wird auf Vercel deployed.",
+      "stack": "Next.js 14, React 18, Recharts, rss-parser, date-fns, Canvas API, Vercel",
+      "audience": "Interner Eigengebrauch — Marcel Rapold (private)",
+      "status": "active",
+      "tags": [
+        "dashboard",
+        "raspberry-pi",
+        "crypto",
+        "internal-tool",
+        "nextjs",
+        "monitoring"
+      ]
+    },
+    "marcelrapold/romy-bayer": {
+      "full": "marcelrapold/romy-bayer",
+      "oneLiner": "Privatkundenprojekt: Website für Psychologin und Meditationslehrerin Romy Bayer mit Glassmorphism-Design, gebaut auf Next.js und TypeScript.",
+      "purpose": "Kundenwebsite für eine Einzel-Praxis im Bereich Psychologie und Meditation. Das README enthält ausschliesslich das Next.js-Boilerplate; Zweck und Seitenstruktur sind aus der GitHub-Beschreibung und dem Design-Ansatz (Glassmorphism) ableitbar. Deployment erfolgt via Vercel vom main-Branch.",
+      "stack": "Next.js, React, TypeScript, Vercel",
+      "audience": "Endkunde Romy Bayer / deren Klientel (private)",
+      "status": "active",
+      "tags": [
+        "website",
+        "client-project",
+        "psychology",
+        "nextjs"
+      ]
+    },
+    "marcelrapold/cv-marcelrapold": {
+      "full": "marcelrapold/cv-marcelrapold",
+      "oneLiner": "Persönliches CV- und Portfolio-Website für marcelrapold.com — animiert mit Framer Motion, Dark-Mode via next-themes, deployed auf Vercel.",
+      "purpose": "Öffentliche Portfolio- und Lebenslauf-Seite von Marcel Rapold. Setzt auf Framer Motion für Animationen, next-themes für Dark/Light-Mode und Vercel Analytics für Traffic-Messung. README nicht vorhanden; Zweck vollständig aus Beschreibung und Dependencies ableitbar.",
+      "stack": "Next.js, React, TypeScript, Framer Motion, Tailwind (tailwind-merge, clsx), next-themes, Vercel Analytics, Vercel",
+      "audience": "Potenzielle Arbeitgeber / Kunden / Öffentlichkeit (private repo, public site)",
+      "status": "active",
+      "tags": [
+        "portfolio",
+        "cv",
+        "personal",
+        "nextjs",
+        "framer-motion"
+      ]
+    },
+    "marcelrapold/cv-muriellebielawski": {
+      "full": "marcelrapold/cv-muriellebielawski",
+      "oneLiner": "Statische Portfolio-Website für Physiotherapeutin Murielle Bielawski, gebaut mit Next.js, Tailwind und Framer Motion.",
+      "purpose": "Persönliche Präsentationsseite für eine Physiotherapeutin. Setzt auf animierte UI-Komponenten via Framer Motion und Dark-Mode-Support über next-themes. Zweck über den Einsatz als CV/Portfolio hinaus aus README nicht ableitbar.",
+      "stack": "Next.js · React · TypeScript · Tailwind CSS · Framer Motion · next-themes · lucide-react · clsx",
+      "audience": "Öffentlichkeit / Klienten von Murielle Bielawski",
+      "status": "stable",
+      "tags": [
+        "portfolio",
+        "cv",
+        "landing-page",
+        "physiotherapy"
+      ]
+    },
+    "marcelrapold/mycvbuilder.app": {
+      "full": "marcelrapold/mycvbuilder.app",
+      "oneLiner": "KI-native Resume-Plattform, die hochgeladene CVs per GPT-4.1 in strukturierte, öffentlich teilbare Profilseiten umwandelt — Next.js-Monorepo mit Supabase-Backend.",
+      "purpose": "Nutzer laden ein PDF/DOCX/TXT-CV hoch, GPT-4.1 extrahiert und überarbeitet alle Sektionen in einem editorischen Ton (DE/EN) und speichert das Ergebnis als öffentliche Profilseite unter `/cv/[slug]`. Ein schwebendes AI-Chat-Widget erlaubt iterative Verbesserungen im Edit-Modus. Die Plattform ist als Next.js-16-Monorepo mit App Router, Supabase (Auth + Postgres) und OpenAI strukturiert.",
+      "stack": "Next.js 16 · React · TypeScript · Supabase · OpenAI GPT-4.1 · Vercel · Turborepo",
+      "audience": "Jobsuchende / Personen, die ein professionelles Online-CV erstellen wollen",
+      "status": "active",
+      "tags": [
+        "ai",
+        "resume",
+        "saas",
+        "openai",
+        "monorepo"
+      ]
+    },
+    "marcelrapold/news.rapold.io": {
+      "full": "marcelrapold/news.rapold.io",
+      "oneLiner": "Selbst-gehostetes OSINT-Intelligence-Dashboard (Crucix-Fork) mit 27 Live-Datenquellen — Node.js/Express, zero externe Dependencies.",
+      "purpose": "Aggregiert 27 OSINT-Quellen (Satelliten-Branddetektion, Flugtracking, Strahlungsmonitoring, Marktdaten, Konfliktdaten u. a.) in einem lokalen Live-Dashboard. Der Server läuft mit einer einzigen Dependency (Express) und kann optional mit einem LLM-Layer erweitert werden. Primär als persönliche Instanz von news.rapold.io betrieben, basierend auf dem öffentlichen Crucix-Projekt.",
+      "stack": "Node.js 22 · Express · Docker · JavaScript",
+      "audience": "Eigengebrauch / OSINT-Interessierte",
+      "status": "active",
+      "tags": [
+        "osint",
+        "intelligence",
+        "dashboard",
+        "self-hosted",
+        "news"
+      ]
+    },
+    "marcelrapold/SnapMacros": {
+      "full": "marcelrapold/SnapMacros",
+      "oneLiner": "KI-gestütztes Meal-Tracking als Next.js-PWA und native SwiftUI-iOS-App mit dualem AI-Engine (Claude + GPT-4o) und Supabase-Backend.",
+      "purpose": "Nutzer fotografieren eine Mahlzeit; ein duales KI-Backend (Claude + GPT-4o) analysiert das Bild und trackt Makronährstoffe automatisch. Die Architektur ist ein Turborepo-Monorepo mit einer Next.js-16-Web-App (PWA) und einer SwiftUI-iOS-App, die sich dasselbe Supabase-Backend und dieselben API-Routen teilen. Der Repository-Name «SnapMacros» und die GitHub-Beschreibung «macOS Keyboard Macro App» stimmen nicht mit dem README überein — laut README handelt es sich um Meal-Tracking.",
+      "stack": "Next.js 16 · SwiftUI · Supabase · OpenAI GPT-4o · Anthropic Claude · Turborepo · TypeScript",
+      "audience": "Eigengebrauch / Gesundheits- und Fitness-Nutzer",
+      "status": "experimental",
+      "tags": [
+        "ai",
+        "meal-tracking",
+        "ios",
+        "pwa",
+        "monorepo",
+        "health"
+      ]
+    },
+    "marcelrapold/cockpit": {
+      "full": "marcelrapold/cockpit",
+      "oneLiner": "Persönliches Engineering-Dashboard, das GitHub-, Vercel- und Supabase-Metriken in einer Single-Page-App bündelt — Vanilla JS Frontend mit Vercel Serverless Functions und Redis-Cache.",
+      "purpose": "Konsolidiert Live-KPIs aus GitHub (Commits, Issues, PRs, Sprachverteilung), Vercel (Deployments, Erfolgsrate) und Supabase (DB-Health) in einem einzigen View. Unterstützt Multi-Org-Setups, enthält einen Commit-Heatmap-Kalender, einen Dependency-Scanner und einen URL-Uptime-Monitor. Das Frontend ist eine zustandslose HTML/JS-SPA ohne Build-Step; serverlose API-Funktionen liefern die Daten; Redis (ioredis) dient als Cache-Layer.",
+      "stack": "Vanilla JS · HTML · Vercel Serverless Functions · Next.js · ioredis · Redis · GitHub API · Vercel API · Supabase API",
+      "audience": "Eigengebrauch (Engineering-Selbstmonitoring)",
+      "status": "active",
+      "tags": [
+        "dashboard",
+        "devops",
+        "github",
+        "vercel",
+        "monitoring",
+        "internal-tool"
+      ]
+    },
+    "marcelrapold/dominicanoexpress.com": {
+      "full": "marcelrapold/dominicanoexpress.com",
+      "oneLiner": "Statisches Monorepo für dominicanoexpress.com — Hauptwebsite und KI-gestützter ID-Scanner, deployed via Vercel ohne Build-Step.",
+      "purpose": "Enthält zwei Apps: die Hauptwebsite von Dominicano Express und eine Scan-App, die OCR (ocr.space API) für das Einlesen von Ausweisdokumenten nutzt. Vollständig statisches HTML/CSS/JS ohne Compile-Schritt; Vercel übernimmt Routing und CDN-Delivery. OG-Image-Generierung via @vercel/og.",
+      "stack": "HTML · CSS · JavaScript · Vercel · @vercel/og · ocr.space API",
+      "audience": "Kunden / Nutzer von Dominicano Express",
+      "status": "active",
+      "tags": [
+        "static-site",
+        "ocr",
+        "vercel",
+        "monorepo",
+        "landing-page"
+      ]
+    },
+    "ALPA-one/velozweb_demo": {
+      "full": "ALPA-one/velozweb_demo",
+      "oneLiner": "Statische Demo-Website für die Veloz Cycling Platform mit Express-Backend für Kontaktformular-Versand via Resend.",
+      "purpose": "Leichtgewichtige HTML/CSS/JS-Demo ohne Build-Tools, die als Frontend-Referenz für die Veloz-Cycling-Plattform dient. Ein minimales Express-Backend übernimmt den E-Mail-Versand des Kontaktformulars über die Resend-API. Das README orientiert sich explizit an den Google Engineering Practices und dient als Qualitätsreferenz für das Team.",
+      "stack": "HTML · CSS · JavaScript · Express · Resend",
+      "audience": "Internes Team / Veloz-Plattform-Stakeholder",
+      "status": "pilot",
+      "tags": [
+        "cycling",
+        "static-site",
+        "demo",
+        "contact-form"
+      ]
+    },
+    "muraschal/austin-tech-beer-map": {
+      "full": "muraschal/austin-tech-beer-map",
+      "oneLiner": "Minimales HTML-Projekt — Zweck aus README nicht ableitbar, vermutlich Vorgänger oder Rohfassung von BeerMap für Austin.",
+      "purpose": "Zweck aus README nicht ableitbar. Der Repo-Name deutet auf eine kartenbasierte Darstellung von Tech- und Bier-Locations in Austin, Texas hin. Kein Code, keine Dependencies und kein beschreibendes README vorhanden.",
+      "stack": "HTML",
+      "audience": "Unklar",
+      "status": "dormant",
+      "tags": [
+        "map",
+        "beer",
+        "austin"
+      ]
+    },
+    "muraschal/BeerMap": {
+      "full": "muraschal/BeerMap",
+      "oneLiner": "Interaktiver Craft-Beer-Location-Finder — HTML-Projekt, technische Details aus README nicht ableitbar.",
+      "purpose": "Laut GitHub-Beschreibung ein interaktiver Finder für Craft-Beer-Locations. Technischer Aufbau, verwendete Karten-API und Datenquellen sind aus dem leeren README nicht ableitbar. Keine Dependencies dokumentiert.",
+      "stack": "HTML",
+      "audience": "Craft-Beer-Interessierte / Öffentlichkeit",
+      "status": "dormant",
+      "tags": [
+        "map",
+        "beer",
+        "craft-beer",
+        "finder"
+      ]
+    },
+    "muraschal/darden": {
+      "full": "muraschal/darden",
+      "oneLiner": "Boilerplate-Repository «darden» — Zweck und Stack aus README nicht ableitbar.",
+      "purpose": "Zweck aus README nicht ableitbar. README und Beschreibung nennen nur «the darden-boilerplate» ohne weitere Erläuterung. Keine Sprache, keine Dependencies und kein weiterführender Inhalt dokumentiert.",
+      "stack": "nicht dokumentiert",
+      "audience": "Unklar",
+      "status": "dormant",
+      "tags": [
+        "boilerplate"
+      ]
+    },
+    "muraschal/finCheck": {
+      "full": "muraschal/finCheck",
+      "oneLiner": "Finanz-Analyse-Tool – Zweck und Stack aus README nicht ableitbar.",
+      "purpose": "Zweck aus README nicht ableitbar. Lediglich der GitHub-Titel «FinCheck — Finanz-Analyse Tool» deutet auf eine Anwendung zur Finanzanalyse hin. Weder README noch Dependencies liegen vor.",
+      "stack": "unbekannt",
+      "audience": "Unklar – vermutlich Eigengebrauch oder Lernprojekt",
+      "status": "dormant",
+      "tags": [
+        "finance",
+        "analysis",
+        "internal-tool"
+      ]
+    },
+    "muraschal/hwz-cas-bitcoin-lightning": {
+      "full": "muraschal/hwz-cas-bitcoin-lightning",
+      "oneLiner": "Kursunterlagen (Präsentationen, Demos, Praxisbeispiele) zum Bitcoin Lightning Network für den HWZ CAS Bitcoin Economy, kuratiert von Marcel Rapold.",
+      "purpose": "Das Repo bündelt Lehrmaterial für einen Kurstag im HWZ CAS Bitcoin Economy: Grundlagen von Bitcoin L1, Limitierungen und Übergang zu Layer 2, sowie Hands-on-Demos zu Node-Setup, Channel-Management und Liquidity-Strategien. Es dient als strukturierte Ressource für Dozierende und Kursteilnehmende – kein lauffähiger Code, sondern reine Content-Collection.",
+      "stack": "markdown, pdf, presentation-assets",
+      "audience": "HWZ CAS-Kursteilnehmende und Dozierende (Bitcoin Economy)",
+      "status": "stable",
+      "tags": [
+        "bitcoin",
+        "lightning-network",
+        "education",
+        "hwz",
+        "layer2"
+      ]
+    },
+    "muraschal/hwz-case-studies": {
+      "full": "muraschal/hwz-case-studies",
+      "oneLiner": "Statische HTML5-Index-Seite für HWZ Case Studies (PDF-Sammlung), deployed auf Vercel mit Suchfunktion und responsivem Karten-Layout.",
+      "purpose": "Die Seite stellt eine navigierbare Übersicht von Case Studies im PDF-Format bereit. Eine clientseitige Suchfunktion (vanilla JS) filtert die Einträge; jede Case Study ist als Detailseite ausgebaut. Deployment erfolgt automatisiert via Vercel Static.",
+      "stack": "html5, css3, javascript, vercel",
+      "audience": "HWZ-Studierende und Kursverantwortliche",
+      "status": "stable",
+      "tags": [
+        "education",
+        "hwz",
+        "static-site",
+        "case-study",
+        "vercel"
+      ]
+    },
+    "muraschal/hwz-hangman": {
+      "full": "muraschal/hwz-hangman",
+      "oneLiner": "Interaktives Hangman-Spiel mit EMBA-Buzzwords für HWZ Executive MBA, gebaut auf Next.js 14 · TypeScript · Tailwind · Framer Motion, deployed auf Vercel.",
+      "purpose": "Das Spiel lässt Nutzende MBA-relevante Fachbegriffe durch klassische Hangman-Mechanik erraten, ergänzt durch progressive Hinweise und Glassmorphism-UI. Es entstand als HWZ-Kursarbeit und demonstriert moderne Frontend-Patterns (App Router, Zustand State Management, canvas-confetti Feedback). Vercel Analytics trackt die Nutzung.",
+      "stack": "next.js 14, typescript, tailwind css, framer-motion, zustand, radix-ui, vercel",
+      "audience": "HWZ Executive MBA Studierende (Lernspiel im Kurskontext)",
+      "status": "stable",
+      "tags": [
+        "education",
+        "hwz",
+        "game",
+        "next.js",
+        "emba"
+      ]
+    },
+    "muraschal/IronMatrix100": {
+      "full": "muraschal/IronMatrix100",
+      "oneLiner": "100-Tage-Fitness- und Ernährungsprotokoll (PPL-Split + Warrior Diet) als strukturierte Markdown-Dokumentation für Eigengebrauch.",
+      "purpose": "IronMatrix100 dokumentiert ein 100-tägiges Selbstexperiment: 3× wöchentliches Krafttraining nach Push-Pull-Legs-Schema, Warrior Diet unter der Woche und ein definierter Supplement-Stack. Das Repo enthält Trainingsplan, Essensplan und Wochenstruktur als Markdown-Dateien – kein lauffähiger Code, sondern ein persönliches Protokoll zur Reduktion von Entscheidungsaufwand im Alltag.",
+      "stack": "markdown",
+      "audience": "Eigengebrauch (persönliches Fitness-Protokoll)",
+      "status": "active",
+      "tags": [
+        "fitness",
+        "nutrition",
+        "self-improvement",
+        "personal",
+        "documentation"
+      ]
+    },
+    "muraschal/Kebab": {
+      "full": "muraschal/Kebab",
+      "oneLiner": "Zweck aus README nicht ableitbar – kein README, keine Description, keine Dependencies vorhanden.",
+      "purpose": "Zweck aus README nicht ableitbar. Weder Beschreibung noch Code-Inhalte sind aus den vorliegenden Metadaten ersichtlich.",
+      "stack": "unbekannt",
+      "audience": "Unklar",
+      "status": "dormant",
+      "tags": [
+        "unknown"
+      ]
+    },
+    "muraschal/kompetenzen": {
+      "full": "muraschal/kompetenzen",
+      "oneLiner": "Skill- und Expertise-Matrix als persönliches Kompetenz-Inventar – Inhalt über Metadaten hinaus nicht ableitbar.",
+      "purpose": "Das Repo soll laut GitHub-Description eine Kompetenz-Matrix mit Skills und Expertise-Übersicht enthalten. Das README besteht nur aus dem Titel; konkrete Inhalte, Format oder Zielstruktur sind aus den vorliegenden Daten nicht ableitbar.",
+      "stack": "unbekannt",
+      "audience": "Eigengebrauch oder potenzielle Arbeitgeber / Auftraggeber",
+      "status": "dormant",
+      "tags": [
+        "portfolio",
+        "skills",
+        "personal",
+        "documentation"
+      ]
+    },
+    "muraschal/lnhunt": {
+      "full": "muraschal/lnhunt",
+      "oneLiner": "Gamifizierte Bitcoin-Lightning-Lern-App mit standortbasierten Quiz-Stationen, die via LNURL-Pay freigeschaltet werden – gebaut auf Next.js · Framer Motion · Vercel.",
+      "purpose": "LNHunt kombiniert physische Schnitzeljagd mit Lightning-Zahlungen: Spielende finden QR-Codes an realen Orten, schalten Quiz-Fragen durch Mikrozahlungen (LNURL-Pay) frei und sammeln digitale Lösungswörter. Die App ist als Event- und Bildungsformat konzipiert, um praktisches Lightning-Wissen (Wallets, Gebühren, Protokoll-Design) erlebbar zu machen.",
+      "stack": "next.js, javascript, tailwind css, framer-motion, radix-ui, axios, vercel",
+      "audience": "Bitcoin/Lightning-Lernende in Kurs- und Event-Kontexten",
+      "status": "active",
+      "tags": [
+        "bitcoin",
+        "lightning-network",
+        "education",
+        "gamification",
+        "lnurl",
+        "next.js"
+      ]
+    },
+    "muraschal/LNthesis": {
+      "full": "muraschal/LNthesis",
+      "oneLiner": "Interaktive Web-App zur wissenschaftlichen Analyse von sechs Lightning-Network-Thesen mit MECE-Framework, gebaut auf React · TypeScript · Express · Neon DB.",
+      "purpose": "LNthesis präsentiert eine akademische Forschungsarbeit zu sechs kontroversen Hypothesen über das Bitcoin Lightning Network (u.a. L1- vs. L2-Wertigkeit, Zentralisierungstendenzen, regulatorische KYC-Gatekeeper) als durchsuchbare Webanwendung. Das MECE-Framework strukturiert die Analyse; spieltheoretische Szenarien und ein BibTeX-Literaturverzeichnis ergänzen den wissenschaftlichen Anspruch. Backend läuft via Express mit Neon Serverless Postgres.",
+      "stack": "react, typescript, tailwind css, express.js, neon db (serverless postgres), radix-ui, vercel",
+      "audience": "Akademische Leserschaft, Bitcoin-Forschende, HWZ-Kursteilnehmende",
+      "status": "stable",
+      "tags": [
+        "bitcoin",
+        "lightning-network",
+        "research",
+        "academic",
+        "next.js",
+        "typescript"
+      ]
+    },
+    "muraschal/MCA-BIT25-1": {
+      "full": "muraschal/MCA-BIT25-1",
+      "oneLiner": "Zufallsbasierter Team-Allocations-Generator für HWZ-Kurse, gebaut auf Next.js · TypeScript · Tailwind · Radix UI mit CSV-Export und animierter Teilnehmer-Darstellung.",
+      "purpose": "Die App randomisiert Kursteilnehmende zu Teams variabler Grösse und visualisiert die Zuweisung durch animierte Avatare (StudentChaos-Komponente). Dozierenden stehen Import (Teilnehmerliste), Export (CSV) und Reset zur Verfügung. Das Projekt entstand als HWZ-Kursarbeit im Modul Bitcoin & Innovation Technology (BIT25).",
+      "stack": "next.js, typescript, tailwind css, radix-ui, framer-motion, react-hook-form",
+      "audience": "HWZ-Dozierende und Kursverantwortliche (Gruppen-Einteilung im Kursalltag)",
+      "status": "stable",
+      "tags": [
+        "education",
+        "hwz",
+        "internal-tool",
+        "next.js",
+        "typescript",
+        "team-generator"
+      ]
+    },
+    "muraschal/memory": {
+      "full": "muraschal/memory",
+      "oneLiner": "Klassisches 4×4-Memory-Spiel mit skeuomorphem Holz-Design, Web Audio API-Feedback und automatischem Vercel-Deployment, gebaut mit React 18 und TypeScript.",
+      "purpose": "Implementiert ein browserbasiertes Memory-Kartenspiel mit Tier-Emoji-Symbolen auf einem 4×4-Spielfeld. Visuelle Flip-Animationen (CSS3) und kontextsensitive Töne via Web Audio API geben dem Spieler direktes Feedback bei Karten-Matches und Spielende. Das Projekt wird bei jedem Push auf `main` automatisch via GitHub Actions auf Vercel deployt.",
+      "stack": "React 18 · TypeScript · Vite · CSS3 · Web Audio API · GitHub Actions · Vercel",
+      "audience": "Allgemeine Öffentlichkeit (Endnutzer)",
+      "status": "active",
+      "tags": [
+        "game",
+        "browser",
+        "react",
+        "typescript",
+        "frontend"
+      ]
+    },
+    "muraschal/meta": {
+      "full": "muraschal/meta",
+      "oneLiner": "WhatsApp-Bot, der eingehende Nachrichten via Meta Business API empfängt und mit OpenAI-Modellen beantwortet, deployed auf Vercel.",
+      "purpose": "Verbindet die Meta WhatsApp Business API mit OpenAI, um automatisierte Konversationen über WhatsApp zu ermöglichen. Der Webhook-Empfänger verifiziert Anfragen per eigenem Token und leitet Nachrichten an OpenAI weiter; Token-Verwaltung und Konfiguration sind in separaten Config-Modulen gekapselt. Deployment erfolgt via Vercel CLI.",
+      "stack": "Node.js · JavaScript · axios · openai · node-fetch · dotenv · Vercel",
+      "audience": "Eigengebrauch / Entwickler",
+      "status": "experimental",
+      "tags": [
+        "whatsapp",
+        "bot",
+        "openai",
+        "meta-api",
+        "automation"
+      ]
+    },
+    "muraschal/muraschal": {
+      "full": "muraschal/muraschal",
+      "oneLiner": "GitHub-Profil-Repository mit persönlicher README als öffentliche Visitenkarte des Owners.",
+      "purpose": "Enthält ausschliesslich die öffentliche Profil-README für das GitHub-Konto muraschal. Beschreibt den Owner als Full-Stack-Operator mit Fokus auf regulierte Umgebungen und permissionless Infrastructure; kein ausführbarer Code vorhanden.",
+      "stack": "Markdown",
+      "audience": "GitHub-Besucher / Recruiter",
+      "status": "stable",
+      "tags": [
+        "profile",
+        "github-config",
+        "documentation"
+      ]
+    },
+    "muraschal/paris": {
+      "full": "muraschal/paris",
+      "oneLiner": "Fullstack-Experiment auf Next.js mit Leaflet-Karten, Framer Motion-Animationen und Lenis-Smooth-Scroll — konkreter Zweck aus README nicht ableitbar.",
+      "purpose": "Bootstrapped Next.js-App (App Router) mit einem animationsreichen Frontend-Stack: Framer Motion für UI-Animationen, Lenis für Smooth Scrolling, Leaflet/React-Leaflet für interaktive Karten und Lucide-React für Icons. Der domänenspezifische Zweck des Projekts ist aus der Standard-README nicht ableitbar; es handelt sich offenbar um ein Experimentier- oder Side-Project.",
+      "stack": "Next.js · React · TypeScript · Framer Motion · Leaflet · React-Leaflet · Lenis · Lucide-React · Vercel",
+      "audience": "Eigengebrauch / Entwickler",
+      "status": "experimental",
+      "tags": [
+        "frontend",
+        "maps",
+        "animation",
+        "nextjs",
+        "side-project"
+      ]
+    },
+    "muraschal/pdf2text": {
+      "full": "muraschal/pdf2text",
+      "oneLiner": "Self-hosted PDF-to-Text-Extraction-API mit Web-UI für URL- und Upload-Input, gebaut auf FastAPI und PyMuPDF.",
+      "purpose": "Stellt einen HTTP-Endpunkt bereit, der PDFs entweder per öffentlicher URL (via httpx) oder File-Upload entgegennimmt und daraus bereinigten Fliesstext extrahiert. PyMuPDF übernimmt die Extraktion; Post-Processing umfasst automatisches Zusammenführen gebrochener Zeilen, Erkennung und Entfernung von Kopf-/Fusszeilen sowie GPT-kompatible Token-Schätzung. Eine Dark-Theme-Web-UI erlaubt direkten Einsatz ohne API-Client.",
+      "stack": "Python · FastAPI · PyMuPDF · httpx · uvicorn · Docker · HTML/JS",
+      "audience": "Entwickler / interne Tools",
+      "status": "active",
+      "tags": [
+        "pdf",
+        "extraction",
+        "fastapi",
+        "nlp",
+        "self-hosted",
+        "api"
+      ]
+    },
+    "muraschal/pulse": {
+      "full": "muraschal/pulse",
+      "oneLiner": "Echtzeit-Activity-Dashboard und Monitoring-Service — Zweck und Stack aus README nicht ableitbar.",
+      "purpose": "Zweck aus README nicht ableitbar. Die GitHub-Beschreibung nennt «Real-time Activity Dashboard & Monitoring»; weder README noch Dependencies sind vorhanden, um Architektur oder konkreten Einsatzbereich zu belegen.",
+      "stack": "<UNKNOWN>",
+      "audience": "Eigengebrauch / Entwickler",
+      "status": "spec",
+      "tags": [
+        "monitoring",
+        "dashboard",
+        "realtime"
+      ]
+    },
+    "muraschal/Radio-X-old": {
+      "full": "muraschal/Radio-X-old",
+      "oneLiner": "KI-generierter Radiosender (GTA/Cyberpunk-Stil) mit Spotify-Musik, ElevenLabs-TTS und GPT-News-Snippets — archivierte Ursprungsversion in Python.",
+      "purpose": "Produziert automatisiert einen durchgehenden Radiostream, indem Spotify-Playlists, ElevenLabs-TTS-Voice-Overs, GPT-generierte Nachrichten und Pseudo-Werbung via Audio-Mixing-Pipeline zu einem MP3-Output oder Live-Stream zusammengeführt werden. User-Profile steuern Moderationsstil und Musikpräferenzen. Dieses Repository ist die ältere Monolith-Implementierung vor der n8n-basierten Neuarchitektur.",
+      "stack": "Python · Spotify API · ElevenLabs · OpenAI GPT · Docker",
+      "audience": "Eigengebrauch / Entwickler",
+      "status": "archived",
+      "tags": [
+        "ai",
+        "radio",
+        "tts",
+        "audio",
+        "generative",
+        "python"
+      ]
+    },
+    "muraschal/radiox-n8n": {
+      "full": "muraschal/radiox-n8n",
+      "oneLiner": "n8n-Workflow-Orchestrierung für die RadioX-AI-Radio-Pipeline mit FastAPI-Backend, ElevenLabs-TTS und Supabase-Persistenz.",
+      "purpose": "Migriert die RadioX-Audiogenerierung von einem Python-Monolith auf eine n8n-orchestrierte Microservice-Architektur: n8n übernimmt Scheduling, Fehlerbehandlung und HTTP-Verkettung der einzelnen API-Schritte (Content-Generierung via GPT, TTS via ElevenLabs, optionales Icecast-Streaming). Das FastAPI-Backend liefert fokussierte Endpunkte; Supabase dient zur Datenpersistenz.",
+      "stack": "Python · FastAPI · n8n · ElevenLabs · OpenAI GPT · Supabase · Icecast",
+      "audience": "Eigengebrauch / Entwickler",
+      "status": "experimental",
+      "tags": [
+        "ai",
+        "radio",
+        "automation",
+        "n8n",
+        "tts",
+        "workflow"
+      ]
+    },
+    "muraschal/radiox-tts": {
+      "full": "muraschal/radiox-tts",
+      "oneLiner": "Dedizierter Text-to-Speech-Microservice für die RadioX-AI-Radio-Pipeline — Stack und Implementierungsdetails aus README nicht ableitbar.",
+      "purpose": "Zweck aus README nicht ableitbar. Gemäss GitHub-Beschreibung und Repo-Name handelt es sich um einen isolierten TTS-Service innerhalb des RadioX-Ökosystems; weder README noch Dependencies sind vorhanden, um Implementierungsdetails zu belegen.",
+      "stack": "Python",
+      "audience": "Eigengebrauch / Entwickler",
+      "status": "experimental",
+      "tags": [
+        "tts",
+        "audio",
+        "ai",
+        "radio",
+        "microservice"
+      ]
+    },
+    "muraschal/toeffparadies.ch": {
+      "full": "muraschal/toeffparadies.ch",
+      "oneLiner": "Unternehmenswebsite für Töff Paradies Ernst Känel (Motorrad-Handel & Reparatur, Küsnacht ZH), gebaut mit Next.js 14 App Router und Glassmorphism-Design.",
+      "purpose": "Stellt die öffentliche Web-Präsenz eines lokalen Motorradhandels bereit. Die Next.js-App (App Router, kein CSS-Framework) deckt Seiten für Verkauf, Anhängervermietung, Kontakt und Impressum ab und ist für SEO mit Metadata, Robots/Sitemap und JSON-LD LocalBusiness-Strukturdaten ausgestattet. Hosting erfolgt via Vercel.",
+      "stack": "Next.js 14 · React · TypeScript · Custom CSS · Vercel · JSON-LD",
+      "audience": "Kunden von Töff Paradies (public)",
+      "status": "active",
+      "tags": [
+        "website",
+        "local-business",
+        "seo",
+        "nextjs",
+        "frontend"
+      ]
+    },
+    "muraschal/v0-zvv-navi-demo": {
+      "full": "muraschal/v0-zvv-navi-demo",
+      "oneLiner": "KI-generierter UI-Prototyp für eine ZVV-Navigationsanwendung, automatisch aus v0.dev synchronisiert und auf Vercel deployt.",
+      "purpose": "Enthält einen mit v0.dev generierten und per Screenshot-Rekonstruktion erzeugten UI-Prototypen für eine ZVV-Navigationsapp. Das Repository wird automatisch mit v0.dev-Deployments synchronisiert und auf Vercel gehostet. Konkreter Funktionsumfang über das UI-Gerüst hinaus ist aus README nicht ableitbar.",
+      "stack": "Next.js · TypeScript · Radix UI · Tailwind · Vercel · v0.dev",
+      "audience": "ZVV-interne Stakeholder / UX-Reviewer (Demo/Prototyp)",
+      "status": "pilot",
+      "tags": [
+        "transit",
+        "prototype",
+        "ui",
+        "demo",
+        "zvv"
+      ]
+    },
+    "muraschal/zvv-landingpage": {
+      "full": "muraschal/zvv-landingpage",
+      "oneLiner": "Marketing- und Kampagnen-Landingpage-Templates für den Zürcher Verkehrsverbund (ZVV).",
+      "purpose": "Stellt Landingpage-Templates für ZVV-Marketingkampagnen bereit. Zweck, Technologie-Stack und Funktionsumfang sind aus README und Abhängigkeiten nicht ableitbar — weder README noch Dependencies vorhanden.",
+      "stack": "unklar (keine Dependencies oder Sprache hinterlegt)",
+      "audience": "ZVV-Marketingteam",
+      "status": "dormant",
+      "tags": [
+        "marketing",
+        "landing-page",
+        "zvv",
+        "campaign"
+      ]
+    },
+    "muraschal/zvv-lnticket": {
+      "full": "muraschal/zvv-lnticket",
+      "oneLiner": "Proof-of-Concept-Webapp für ZVV-Ticketkauf via Bitcoin Lightning mit Apple Wallet Integration, gebaut auf Next.js und shadcn/ui.",
+      "purpose": "Demonstriert einen vollständigen Ticketkauf-Flow mit gemockter Bitcoin-Lightning-Zahlung und Export als Apple Wallet Pass (.pkpass) mit personalisierten QR-Codes. Das Projekt zeigt, wie ein reibungsloser, UX-fokussierter Bezahlprozess im ÖV-Kontext aussehen könnte. Lightning-Zahlung ist bewusst gemockt; passkit-generator und qrcode.react übernehmen die Pass-Generierung.",
+      "stack": "Next.js · TypeScript · shadcn/ui · Tailwind · passkit-generator · qrcode.react · Vercel · Jest",
+      "audience": "ZVV-interne Innovation / technische Stakeholder (PoC)",
+      "status": "experimental",
+      "tags": [
+        "bitcoin",
+        "lightning",
+        "transit",
+        "poc",
+        "apple-wallet",
+        "zvv"
+      ]
+    },
+    "muraschal/zvv-mcp": {
+      "full": "muraschal/zvv-mcp",
+      "oneLiner": "MCP-Server, der ZVV-GTFS-Daten via Spice.ai und OpenAI GPT-4o für natürlichsprachliche Verkehrsabfragen zugänglich macht.",
+      "purpose": "Verbindet öffentliche GTFS-Verkehrsdaten des ZVV (opendata.swiss) mit Spice.ai als Datenverarbeitungs-Engine und einem OpenAI-LLM-Backend, um natürlichsprachliche Abfragen auf Fahrplandaten zu ermöglichen. Das Next.js-Frontend dient als Benutzeroberfläche; die Architektur folgt dem Model Context Protocol (MCP). Konkrete MCP-Tool-Definitionen sind aus dem README nicht vollständig ersichtlich.",
+      "stack": "Next.js · TypeScript · Spice.ai · OpenAI GPT-4o · GTFS · opendata.swiss",
+      "audience": "ZVV-interne Entwickler / AI-Experimentierteam",
+      "status": "experimental",
+      "tags": [
+        "ai",
+        "mcp",
+        "transit",
+        "llm",
+        "gtfs",
+        "zvv"
+      ]
+    },
+    "muraschal/zvv-pm": {
+      "full": "muraschal/zvv-pm",
+      "oneLiner": "Internes PWA-Dashboard zur Übersicht und Verwaltung aller ZVV-Projekte nach Abteilungen, gebaut mit Vanilla JS und Upstash Redis.",
+      "purpose": "Bietet eine strukturierte Übersicht aller ZVV-Projekte gegliedert nach Abteilungen, inklusive Filterfunktion, Suchfunktion und Detailansicht. Die Applikation ist als Progressive Web App ausgelegt und unterstützt Offline-Nutzung. Upstash Redis deutet auf serverseitige Datenpersistenz hin; primäre Implementierung basiert auf Vanilla HTML/CSS/JS.",
+      "stack": "HTML5 · CSS3 · Vanilla JS · PWA · Upstash Redis",
+      "audience": "ZVV-Projektmanagement / interne Teams",
+      "status": "active",
+      "tags": [
+        "internal-tool",
+        "project-management",
+        "pwa",
+        "zvv",
+        "dashboard"
+      ]
+    },
+    "muraschal/zvv-statuspage": {
+      "full": "muraschal/zvv-statuspage",
+      "oneLiner": "Next.js-basierte Statusseite für ZVV-Dienste mit umfangreichem Radix-UI-Komponentensatz.",
+      "purpose": "Standard-Next.js-Applikation mit vollständigem Radix-UI-Stack, die dem Namen und der Repo-Struktur nach als Statusseite für ZVV-Dienste konzipiert ist. Konkreter Funktionsumfang (welche Services gelistet werden, Datenquelle für Statusmeldungen) ist aus README und Dependencies nicht ableitbar.",
+      "stack": "Next.js · TypeScript · Radix UI · Tailwind · CSS",
+      "audience": "ZVV-Kunden / interne Betriebsteams",
+      "status": "pilot",
+      "tags": [
+        "status-page",
+        "transit",
+        "zvv",
+        "monitoring"
+      ]
+    },
+    "muraschal/zvv-styleguide": {
+      "full": "muraschal/zvv-styleguide",
+      "oneLiner": "Design-System und Branding-Guidelines für den Zürcher Verkehrsverbund (ZVV).",
+      "purpose": "Stellt Designvorgaben, Branding-Guidelines und vermutlich UI-Komponenten-Definitionen für ZVV-Digitalprodukte bereit. Technologie-Stack, Umfang und konkreter Inhalt sind aus README und Abhängigkeiten nicht ableitbar — weder README noch Dependencies vorhanden.",
+      "stack": "unklar (keine Dependencies oder Sprache hinterlegt)",
+      "audience": "ZVV-Designteam / Frontend-Entwickler",
+      "status": "dormant",
+      "tags": [
+        "design-system",
+        "branding",
+        "styleguide",
+        "zvv"
+      ]
+    }
+  }
+}
