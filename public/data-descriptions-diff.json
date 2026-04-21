@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-04-21T11:39:23.669Z",
-  "apply": false,
+  "generatedAt": "2026-04-21T11:49:34.623Z",
+  "apply": true,
   "source": "2026-04-21T11:32:42.064Z",
   "summary": {
     "total": 87,
@@ -538,6 +538,328 @@
       "current": "ZVV Styleguide — Design-System & Branding Guidelines",
       "proposed": "Design-System und Branding-Guidelines für den Zürcher Verkehrsverbund (ZVV).",
       "action": "update"
+    }
+  ],
+  "applied": [
+    {
+      "repo": "zvvch/zvv-kontrollapp",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-entdeckungsreise",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/.github",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-fund-pilot",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-testimonials",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/mcp-gtfs",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-tama",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-app-modal",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-customer-radar",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-novakundenspiegel",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-kontoradar",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-lottie",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-kundenradar",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-n8n-flows",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-app-banner",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-kundenkonto",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-medienspiegel",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-mailer",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-statuspage",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-aemcs-oeffentliche-ausschreibung-2026",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-vscode-theme",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-fzdb-spec",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-info",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-jahreshochrechnung-2025",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/ical-renderer-for-confluence",
+      "ok": true
+    },
+    {
+      "repo": "zvvch/zvv-workload-portfolio",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/radiox",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/aeon-homepage",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/openclaw-bridge",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/soul",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/fahrplaninfo-zvv",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/memento",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/zvv-zonenplan",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/zvv-fahrplan",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/ai-arena",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/copycat-seetreff",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/aeon-workspace",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/skills",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/cli",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/aeon-webconsole",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/aeon-web-dashboard",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/romy-bayer",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/cv-marcelrapold",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/cv-muriellebielawski",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/mycvbuilder.app",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/news.rapold.io",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/SnapMacros",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/cockpit",
+      "ok": true
+    },
+    {
+      "repo": "marcelrapold/dominicanoexpress.com",
+      "ok": true
+    },
+    {
+      "repo": "ALPA-one/velozweb_demo",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/austin-tech-beer-map",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/BeerMap",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/darden",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/finCheck",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/hwz-cas-bitcoin-lightning",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/hwz-case-studies",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/hwz-hangman",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/IronMatrix100",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/Kebab",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/kompetenzen",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/lnhunt",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/LNthesis",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/MCA-BIT25-1",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/memory",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/meta",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/muraschal",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/paris",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/pdf2text",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/pulse",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/Radio-X-old",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/radiox-n8n",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/radiox-tts",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/toeffparadies.ch",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/v0-zvv-navi-demo",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/zvv-landingpage",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/zvv-lnticket",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/zvv-mcp",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/zvv-pm",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/zvv-statuspage",
+      "ok": true
+    },
+    {
+      "repo": "muraschal/zvv-styleguide",
+      "ok": true
     }
   ]
 }
