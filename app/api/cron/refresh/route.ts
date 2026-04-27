@@ -1,5 +1,5 @@
 import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/cron/refresh.js';
+import handler from '@/api-legacy/cron/refresh.js';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';

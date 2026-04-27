@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 // Pure App Router route — no legacy adapter, so the bundler treats this as a
 // canonical Next.js route. The legacy /api/_lib/cache.js is still imported as
 // a CommonJS module via webpack interop, which is fine.
-import cache from '@/api/_lib/cache.js';
+import cache from '@/api-legacy/_lib/cache.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

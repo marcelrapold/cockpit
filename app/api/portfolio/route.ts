@@ -1,5 +1,5 @@
 import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/portfolio.js';
+import handler from '@/api-legacy/portfolio.js';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';

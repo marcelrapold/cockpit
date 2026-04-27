@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import cache from '@/api/_lib/cache.js';
+import cache from '@/api-legacy/_lib/cache.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

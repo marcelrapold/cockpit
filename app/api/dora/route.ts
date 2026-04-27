@@ -1,6 +1,6 @@
 import { unstable_noStore } from 'next/cache';
 import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/legacy-dora-route.js';
+import handler from '@/api-legacy/legacy-dora-route.js';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';

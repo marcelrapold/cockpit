@@ -1,5 +1,5 @@
 import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/language-stats.js';
+import handler from '@/api-legacy/language-stats.js';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';

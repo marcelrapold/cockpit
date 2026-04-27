@@ -1,5 +1,5 @@
 import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/v1/health.js';
+import handler from '@/api-legacy/v1/health.js';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';

@@ -1,5 +1,5 @@
 import { adaptLegacy } from '@/lib/legacy-adapter';
-import handler from '@/api/v1/dora.js';
+import handler from '@/api-legacy/v1/dora.js';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';

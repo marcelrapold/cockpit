@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import fetchRepoSummaries from '@/api/_lib/fetch-repo-summaries.js';
-import fetchNarrative from '@/api/_lib/fetch-narrative.js';
+import fetchRepoSummaries from '@/api-legacy/_lib/fetch-repo-summaries.js';
+import fetchNarrative from '@/api-legacy/_lib/fetch-narrative.js';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
