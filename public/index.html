@@ -5148,17 +5148,23 @@ function escapeHtml(str) {
   }[c]));
 }
 
-// === AI-generierte Management-Narrative (täglich aktualisiert) ===
+// === AI-generierte Management-Narrative (Runtime-API, alle 6h via Cron refreshed) ===
 async function loadNarrative() {
-  try {
-    const res = await fetch('/data-narrative.json', { cache: 'no-store' });
-    if (!res.ok) return null;
-    const n = await res.json();
-    if (!n?.generatedAt) return null;
-    const ageMs = Date.now() - new Date(n.generatedAt).getTime();
-    if (ageMs > 48 * 3600 * 1000) return null;
-    return n;
-  } catch { return null; }
+  // Primary: live API backed by Redis cache. Falls back to the bundled JSON only if Redis is empty
+  // (first deploy after migration), so we never block UI on a missing artifact.
+  const sources = ['/api/narrative', '/data-narrative.json'];
+  for (const url of sources) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const n = await res.json();
+      if (!n?.generatedAt) continue;
+      const ageMs = Date.now() - new Date(n.generatedAt).getTime();
+      if (ageMs > 48 * 3600 * 1000) continue;
+      return n;
+    } catch { /* try next source */ }
+  }
+  return null;
 }
 
 function applyNarrative(n) {
@@ -5206,17 +5212,21 @@ function applyNarrative(n) {
 
 loadNarrative().then(applyNarrative);
 
-// === Projekt-Index (alle Repos, durchsuchbar) ===
+// === Projekt-Index (alle Repos, durchsuchbar) — Runtime-API, alle 6h via Cron refreshed ===
 async function loadProjectIndex() {
-  try {
-    const res = await fetch('/data-repos.json', { cache: 'no-store' });
-    if (!res.ok) return;
-    const data = await res.json();
-    const repos = Object.values(data.repos || {});
-    if (!repos.length) return;
-    renderProjectIndex(repos);
-  } catch (err) {
-    console.warn('[project-index] load failed:', err.message);
+  const sources = ['/api/repos', '/data-repos.json'];
+  for (const url of sources) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const repos = Object.values(data.repos || {});
+      if (!repos.length) continue;
+      renderProjectIndex(repos);
+      return;
+    } catch (err) {
+      console.warn(`[project-index] ${url} failed:`, err.message);
+    }
   }
 }
 

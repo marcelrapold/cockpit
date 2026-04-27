@@ -22,6 +22,11 @@ const KEYS = {
   healthCheck: 'cache:health-check',
   // v3: prior keys could hold portfolio JSON or metrics:{} + projects[] poisoned merges
   dora: 'cache:dora:v3',
+  // LLM outputs — long TTL so cache survives cron failures; refresh decided by hash-skip.
+  narrative: 'cache:narrative',
+  narrativeHash: 'cache:narrative:hash',
+  repos: 'cache:repos',
+  reposHash: 'cache:repos:hash',
 };
 
 const VALID_RANGES = ['7d', '30d', '90d', 'ytd', '12m'];
@@ -54,6 +59,8 @@ function rangeToDays(range) {
 }
 
 const TTL = 600;
+// LLM outputs are expensive; keep them around for a week so a missed cron does not blank the UI.
+const TTL_LLM = 60 * 60 * 24 * 7;
 
 async function get(key) {
   const raw = await getClient().get(key);
@@ -63,6 +70,18 @@ async function get(key) {
 
 async function set(key, data) {
   return getClient().set(key, JSON.stringify(data), 'EX', TTL);
+}
+
+async function setWithTtl(key, data, ttlSeconds) {
+  return getClient().set(key, JSON.stringify(data), 'EX', ttlSeconds);
+}
+
+async function setRaw(key, value, ttlSeconds) {
+  return getClient().set(key, String(value), 'EX', ttlSeconds);
+}
+
+async function getRaw(key) {
+  return getClient().get(key);
 }
 
 /** Only accept DORA-shaped JSON (Four Keys); reject portfolio or any stray payload in Redis. */
@@ -83,9 +102,13 @@ module.exports = {
   getClient,
   KEYS,
   TTL,
+  TTL_LLM,
   VALID_RANGES,
   get,
   set,
+  setWithTtl,
+  setRaw,
+  getRaw,
   rangeKey,
   parseRange,
   rangeToDays,

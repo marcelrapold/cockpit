@@ -39,6 +39,10 @@
     {
       "path": "/api/cron/refresh",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/refresh-llm",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
