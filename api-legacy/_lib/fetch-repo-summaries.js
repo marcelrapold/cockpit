@@ -177,10 +177,9 @@ function buildRepoListSignature(repos) {
 async function fetchRepoSummaries(opts = {}) {
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   if (!token) throw new Error('GITHUB_TOKEN required');
-  // @ai-sdk/gateway auth: AI_GATEWAY_API_KEY first, else VERCEL_OIDC_TOKEN (auto-injected on Vercel).
-  if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) {
-    throw new Error('AI Gateway auth missing: neither AI_GATEWAY_API_KEY nor VERCEL_OIDC_TOKEN is set');
-  }
+  // Auth wird von @ai-sdk/gateway gehandhabt: AI_GATEWAY_API_KEY oder OIDC.
+  // Auf Vercel Functions kommt der OIDC-Token als request-header `x-vercel-oidc-token`
+  // (nicht als process.env), deshalb hier KEIN Pre-Flight-Check.
 
   const user = process.env.GITHUB_USER || 'muraschal';
   const orgs = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
