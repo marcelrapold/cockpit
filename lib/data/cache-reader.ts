@@ -54,6 +54,77 @@ export type NarrativePayload = {
   strategic: string;
 };
 
+export type DoraTier = 'elite' | 'high' | 'medium' | 'low' | 'unknown';
+
+export type DoraPayload = {
+  timestamp: string;
+  period: { days: number; since: string; until: string };
+  metrics: {
+    deployFrequency: {
+      value: number;
+      unit: string;
+      tier: DoraTier;
+      trend?: number;
+      total?: number;
+      sparkline?: number[];
+    };
+    leadTime: {
+      value: number;
+      unit: string;
+      tier: DoraTier;
+      trend?: number;
+      samples?: number;
+    };
+    changeFailureRate: {
+      value: number;
+      unit: string;
+      tier: DoraTier;
+      trend?: number;
+      errors?: number;
+      total?: number;
+    };
+    mttr: {
+      value: number;
+      unit: string;
+      tier: DoraTier;
+      incidents?: number;
+    };
+  };
+  configMissing?: boolean;
+  error?: string;
+};
+
+export type InfraPayload = {
+  timestamp: string;
+  vercel: {
+    configured: boolean;
+    teams?: number;
+    totalProjects?: number;
+    deploymentsToday?: number;
+    deploymentsWeek?: number;
+    successRate?: number;
+    latestDeploy?: {
+      project?: string;
+      state?: string;
+      time?: string;
+      url?: string;
+    };
+  } | null;
+  supabase: {
+    configured: boolean;
+    totalProjects?: number;
+    healthy?: number;
+    avgLatency?: number;
+    projects?: Array<{
+      name: string;
+      status?: string;
+      ok?: boolean;
+      latency?: number;
+      region?: string;
+    }>;
+  } | null;
+};
+
 export type ReposPayload = {
   generatedAt: string;
   model: string;
@@ -107,6 +178,22 @@ export const readNarrative = reactCache(async (): Promise<NarrativePayload | nul
 export const readRepos = reactCache(async (): Promise<ReposPayload | null> => {
   try {
     return ((await get(KEYS.repos)) as ReposPayload | null) ?? null;
+  } catch {
+    return null;
+  }
+});
+
+export const readDora = reactCache(async (): Promise<DoraPayload | null> => {
+  try {
+    return ((await get(KEYS.dora)) as DoraPayload | null) ?? null;
+  } catch {
+    return null;
+  }
+});
+
+export const readInfra = reactCache(async (): Promise<InfraPayload | null> => {
+  try {
+    return ((await get(KEYS.infraStats)) as InfraPayload | null) ?? null;
   } catch {
     return null;
   }

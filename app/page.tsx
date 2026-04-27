@@ -1,19 +1,28 @@
 /**
- * Hybrid-Architektur (Sprint 1):
- *  - SSR-Hero über dem iframe (NarrativeTeaser + KPI-Strip) → liefert
- *    sofort sichtbaren Inhalt, gut für FCP/LCP und SEO/OG.
- *  - Detail-Dashboard bleibt vorerst als statisches /index.html im iframe;
- *    wird sukzessive in eigene Server-Components migriert (Sprint 2+).
+ * Hybrid-Architektur (Welle C — Phase 1):
+ *  Native SSR-Hero mit allen kritischen KPIs, der Detail-iframe wird
+ *  nach unten verschoben und enthält jetzt nur noch Portfolio-Tabs +
+ *  Charts (Phase 2/3 ersetzen ihn schrittweise).
  *
- * Caching: ISR mit `revalidate=60` — KPIs aktualisieren sich auf Vercel
- * automatisch hintergrund-rerender. Der LLM-Teaser hat seinen eigenen
- * 6h-Refresh-Zyklus via /api/cron/refresh-llm.
+ *  Reihenfolge ist redaktionell, nicht technisch:
+ *    1. NarrativeHero  — der "warum"-Teaser (LLM, 6h-Refresh)
+ *    2. KpiStrip       — Hochfrequente Aktivitäts-KPIs (10 min-Refresh)
+ *    3. DoraStrip      — DORA Four-Keys (Vercel, ~Stunden-Refresh)
+ *    4. InfraHealth    — Vercel/Supabase-Health auf einen Blick
+ *    5. LiveActivity   — Letzter Commit + Top-Repos (Kontext)
+ *    6. Detail-iframe  — Portfolio-Tabs, Charts, Vergleich (Phase 2/3)
+ *
+ *  Caching: ISR mit `revalidate=60`. Jede Server-Component liest aus
+ *  Redis (Cache-Reader), kein HTTP-Roundtrip in den eigenen API-Endpoints.
  */
 
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
+import { DoraStrip, DoraStripSkeleton } from '@/components/hero/DoraStrip';
+import { InfraHealth, InfraHealthSkeleton } from '@/components/hero/InfraHealth';
 import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
+import { LiveActivity, LiveActivitySkeleton } from '@/components/hero/LiveActivity';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
 import { readNarrative } from '@/lib/data/cache-reader';
 
@@ -56,20 +65,37 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function Home() {
   return (
-    <main className="flex h-[100svh] min-h-[100dvh] w-full flex-col bg-[#0b1120] text-slate-100">
-      <div className="border-b border-white/5 bg-gradient-to-b from-[#0d1426] to-[#0b1120]">
+    <main className="min-h-[100svh] w-full bg-[#0b1120] text-slate-100">
+      <div className="border-b border-white/5 bg-gradient-to-b from-[#0d1426] to-[#0b1120] pb-2">
         <Suspense fallback={<NarrativeHeroSkeleton />}>
           <NarrativeHero />
         </Suspense>
         <Suspense fallback={<KpiStripSkeleton />}>
           <KpiStrip />
         </Suspense>
+        <Suspense fallback={<DoraStripSkeleton />}>
+          <DoraStrip />
+        </Suspense>
+        <Suspense fallback={<InfraHealthSkeleton />}>
+          <InfraHealth />
+        </Suspense>
+        <Suspense fallback={<LiveActivitySkeleton />}>
+          <LiveActivity />
+        </Suspense>
       </div>
-      <iframe
-        src="/index.html"
-        title="Cockpit Dashboard"
-        className="min-h-0 w-full flex-1 border-0"
-      />
+
+      <details className="group mx-auto max-w-screen-2xl px-4 py-3 md:px-6">
+        <summary className="cursor-pointer select-none text-[11px] uppercase tracking-[0.18em] text-slate-500 hover:text-slate-300">
+          Portfolio &amp; Charts
+          <span className="ml-2 text-slate-600 group-open:hidden">(klicken zum Öffnen)</span>
+        </summary>
+        <iframe
+          src="/index.html#portfolio"
+          title="Portfolio-Übersicht und Charts"
+          className="mt-3 h-[80vh] w-full rounded-lg border border-white/10 bg-[#0f172a]"
+          loading="lazy"
+        />
+      </details>
     </main>
   );
 }

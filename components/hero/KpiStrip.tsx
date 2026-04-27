@@ -70,7 +70,12 @@ export async function KpiStrip() {
   const items: Array<{ label: string; value: string; accent: string; title?: string }> = [
     { label: 'Heute', value: fmt(gh?.today), accent: 'text-white', title: 'Commits heute (UTC)' },
     { label: '7 Tage', value: fmt(gh?.week), accent: 'text-white', title: 'Commits in den letzten 7 Tagen' },
-    { label: 'WoW', value: v.text, accent: TONE_CLASS[v.tone], title: 'Velocity Woche-über-Woche' },
+    {
+      label: 'Velocity (WoW)',
+      value: v.text,
+      accent: TONE_CLASS[v.tone],
+      title: 'Velocity Woche-über-Woche · Commits diese Woche vs. Vorwoche',
+    },
     { label: '30 Tage', value: fmt(gh?.month), accent: 'text-white', title: 'Commits in den letzten 30 Tagen' },
     {
       label: 'Aktive Repos',
@@ -78,8 +83,18 @@ export async function KpiStrip() {
       accent: 'text-white',
       title: 'Repos mit Commits in den letzten 7 Tagen',
     },
-    { label: 'Offene PRs', value: fmt(gh?.openPRs), accent: 'text-white', title: 'Offene Pull Requests' },
-    { label: 'Projekte', value: fmt(portfolio?.total), accent: 'text-white', title: 'Aktive Projekte im Portfolio' },
+    {
+      label: 'Offene PRs',
+      value: fmt(gh?.openPRs),
+      accent: 'text-white',
+      title: 'Offene Pull Requests über alle Repos',
+    },
+    {
+      label: 'Projekte',
+      value: fmt(portfolio?.total),
+      accent: 'text-white',
+      title: 'Aktive Projekte im Portfolio',
+    },
   ];
 
   return (
