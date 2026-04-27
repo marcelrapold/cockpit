@@ -150,6 +150,16 @@ export type InfraPayload = {
   } | null;
 };
 
+export type LanguageStatsPayload = {
+  timestamp: string;
+  totalRepos?: number;
+  orgs?: string[];
+  languages: Record<string, number>;
+  languagesByRepo?: Record<string, Record<string, number>>;
+  events?: unknown[];
+  error?: string;
+};
+
 export type ReposPayload = {
   generatedAt: string;
   model: string;
@@ -223,3 +233,13 @@ export const readInfra = reactCache(async (): Promise<InfraPayload | null> => {
     return null;
   }
 });
+
+export const readLanguageStats = reactCache(
+  async (): Promise<LanguageStatsPayload | null> => {
+    try {
+      return ((await get(KEYS.languageStats)) as LanguageStatsPayload | null) ?? null;
+    } catch {
+      return null;
+    }
+  },
+);

@@ -19,6 +19,11 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
+import {
+  ActivityHeatmap,
+  ActivityHeatmapSkeleton,
+} from '@/components/charts/ActivityHeatmap';
+import { LanguageDonut, LanguageDonutSkeleton } from '@/components/charts/LanguageDonut';
 import { DoraStrip, DoraStripSkeleton } from '@/components/hero/DoraStrip';
 import { InfraHealth, InfraHealthSkeleton } from '@/components/hero/InfraHealth';
 import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
@@ -88,18 +93,26 @@ export default function Home() {
         </Suspense>
       </div>
 
+      <Suspense fallback={<ActivityHeatmapSkeleton />}>
+        <ActivityHeatmap />
+      </Suspense>
+
+      <Suspense fallback={<LanguageDonutSkeleton />}>
+        <LanguageDonut />
+      </Suspense>
+
       <Suspense fallback={<PortfolioBoardSkeleton />}>
         <PortfolioBoard />
       </Suspense>
 
       <details className="group mx-auto max-w-screen-2xl px-4 py-3 md:px-6">
         <summary className="cursor-pointer select-none text-[11px] uppercase tracking-[0.18em] text-slate-500 hover:text-slate-300">
-          Charts &amp; Detailansicht (Legacy)
-          <span className="ml-2 text-slate-600 group-open:hidden">(klicken zum Öffnen)</span>
+          Erweiterte Detailansicht (Legacy-Iframe)
+          <span className="ml-2 text-slate-600 group-open:hidden">(Compare-Modus, PDF-Export, Globe — Phase 4 entfernt iframe)</span>
         </summary>
         <iframe
-          src="/index.html#charts"
-          title="Charts und Detail-Visualisierungen"
+          src="/index.html"
+          title="Legacy-Detail-Dashboard"
           className="mt-3 h-[80vh] w-full rounded-lg border border-white/10 bg-[#0f172a]"
           loading="lazy"
         />
