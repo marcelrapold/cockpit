@@ -242,8 +242,11 @@ async function generateWithRetry(context) {
  * @returns {Promise<{ payload: object, skipped: boolean, reason?: string }>}
  */
 async function fetchNarrative(opts = {}) {
-  if (!process.env.AI_GATEWAY_API_KEY) {
-    throw new Error('AI_GATEWAY_API_KEY required');
+  // Auth resolution is delegated to @ai-sdk/gateway: it tries AI_GATEWAY_API_KEY first,
+  // then falls back to VERCEL_OIDC_TOKEN which Vercel auto-injects into Functions.
+  // We only fail early if BOTH are missing (e.g. running outside Vercel without a manual key).
+  if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) {
+    throw new Error('AI Gateway auth missing: neither AI_GATEWAY_API_KEY nor VERCEL_OIDC_TOKEN is set');
   }
 
   const context = await buildContext();
