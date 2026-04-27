@@ -1,19 +1,24 @@
 /**
- * Hybrid-Architektur (Welle C — Phase 1):
- *  Native SSR-Hero mit allen kritischen KPIs, der Detail-iframe wird
- *  nach unten verschoben und enthält jetzt nur noch Portfolio-Tabs +
- *  Charts (Phase 2/3 ersetzen ihn schrittweise).
+ * Cockpit-Startseite — komplett native (Welle C — Phase 4: iframe-frei).
  *
- *  Reihenfolge ist redaktionell, nicht technisch:
- *    1. NarrativeHero  — der "warum"-Teaser (LLM, 6h-Refresh)
- *    2. KpiStrip       — Hochfrequente Aktivitäts-KPIs (10 min-Refresh)
- *    3. DoraStrip      — DORA Four-Keys (Vercel, ~Stunden-Refresh)
- *    4. InfraHealth    — Vercel/Supabase-Health auf einen Blick
- *    5. LiveActivity   — Letzter Commit + Top-Repos (Kontext)
- *    6. Detail-iframe  — Portfolio-Tabs, Charts, Vergleich (Phase 2/3)
+ *  Sektion-Reihenfolge:
+ *    1. NarrativeHero    — LLM-Teaser, Build-Badge, Stale-Pulse (6h-Refresh)
+ *    2. KpiStrip         — Aktivitäts-KPIs (Heute/7d/30d/Velocity/Repos/PRs)
+ *    3. DoraStrip        — DORA Four-Keys mit Tier-Badges + Sparkline
+ *    4. InfraHealth      — Vercel + Supabase Status-Pulse
+ *    5. LiveActivity     — Letzter Commit + Top-3 aktive Repos
+ *    6. ActivityHeatmap  — 30-Tage-Aktivität als SVG-Heatmap
+ *    7. LanguageDonut    — Sprachen-Verteilung als SVG-Donut
+ *    8. PortfolioBoard   — Tabs + Suche, Server-Component + Client-Island
+ *    9. SiteFooter       — Build-Info + externe Links + Legacy-Archiv
  *
- *  Caching: ISR mit `revalidate=60`. Jede Server-Component liest aus
- *  Redis (Cache-Reader), kein HTTP-Roundtrip in den eigenen API-Endpoints.
+ *  Caching: ISR mit `revalidate=60`. Jede Server-Component liest direkt
+ *  aus Redis (cache-reader), kein HTTP-Roundtrip zu den eigenen
+ *  API-Endpoints. Suspense-Boundaries pro Sektion isolieren langsame
+ *  Reads, damit der Render nicht block.
+ *
+ *  Bundle-Footprint: < 110 kB First-Load JS, davon ~2 kB für die
+ *  Portfolio-Tab/Search-Insel (alles andere = SSR-only, 0 Client-JS).
  */
 
 import type { Metadata } from 'next';
@@ -29,6 +34,7 @@ import { InfraHealth, InfraHealthSkeleton } from '@/components/hero/InfraHealth'
 import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
 import { LiveActivity, LiveActivitySkeleton } from '@/components/hero/LiveActivity';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import {
   PortfolioBoard,
   PortfolioBoardSkeleton,
@@ -105,18 +111,7 @@ export default function Home() {
         <PortfolioBoard />
       </Suspense>
 
-      <details className="group mx-auto max-w-screen-2xl px-4 py-3 md:px-6">
-        <summary className="cursor-pointer select-none text-[11px] uppercase tracking-[0.18em] text-slate-500 hover:text-slate-300">
-          Erweiterte Detailansicht (Legacy-Iframe)
-          <span className="ml-2 text-slate-600 group-open:hidden">(Compare-Modus, PDF-Export, Globe — Phase 4 entfernt iframe)</span>
-        </summary>
-        <iframe
-          src="/index.html"
-          title="Legacy-Detail-Dashboard"
-          className="mt-3 h-[80vh] w-full rounded-lg border border-white/10 bg-[#0f172a]"
-          loading="lazy"
-        />
-      </details>
+      <SiteFooter />
     </main>
   );
 }

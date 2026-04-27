@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /legacy.html
+
+Sitemap: https://cockpit.rapold.io/sitemap.xml

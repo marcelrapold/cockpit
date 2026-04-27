@@ -7,14 +7,16 @@ test.describe('Smoke — Seiten & Shell', () => {
     await expect(page.locator('main')).toBeVisible();
   });
 
-  test('iframe Cockpit Dashboard ist sichtbar', async ({ page }) => {
+  test('Hero-Sektionen sind nativ gerendert', async ({ page }) => {
     await page.goto('/');
-    const frame = page.frameLocator('iframe[title="Cockpit Dashboard"]');
-    await expect(frame.locator('body')).toBeVisible({ timeout: 30_000 });
+    // Native Server-Components — kein iframe mehr.
+    await expect(page.locator('section[aria-label="Live-KPIs"]')).toBeVisible();
+    await expect(page.locator('section[aria-label="DORA Four-Keys"]')).toBeVisible();
+    await expect(page.locator('section[aria-label="Portfolio-Übersicht"]')).toBeVisible();
   });
 
-  test('Legacy /index.html lädt direkt (200)', async ({ request }) => {
-    const res = await request.get('/index.html');
+  test('Legacy /legacy.html bleibt als Archiv erreichbar (200)', async ({ request }) => {
+    const res = await request.get('/legacy.html');
     expect(res.status()).toBe(200);
     const ct = res.headers()['content-type'] || '';
     expect(ct).toContain('text/html');
