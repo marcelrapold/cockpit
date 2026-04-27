@@ -24,6 +24,10 @@ import { InfraHealth, InfraHealthSkeleton } from '@/components/hero/InfraHealth'
 import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
 import { LiveActivity, LiveActivitySkeleton } from '@/components/hero/LiveActivity';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
+import {
+  PortfolioBoard,
+  PortfolioBoardSkeleton,
+} from '@/components/portfolio/PortfolioBoard';
 import { readNarrative } from '@/lib/data/cache-reader';
 
 export const revalidate = 60;
@@ -84,14 +88,18 @@ export default function Home() {
         </Suspense>
       </div>
 
+      <Suspense fallback={<PortfolioBoardSkeleton />}>
+        <PortfolioBoard />
+      </Suspense>
+
       <details className="group mx-auto max-w-screen-2xl px-4 py-3 md:px-6">
         <summary className="cursor-pointer select-none text-[11px] uppercase tracking-[0.18em] text-slate-500 hover:text-slate-300">
-          Portfolio &amp; Charts
+          Charts &amp; Detailansicht (Legacy)
           <span className="ml-2 text-slate-600 group-open:hidden">(klicken zum Öffnen)</span>
         </summary>
         <iframe
-          src="/index.html#portfolio"
-          title="Portfolio-Übersicht und Charts"
+          src="/index.html#charts"
+          title="Charts und Detail-Visualisierungen"
           className="mt-3 h-[80vh] w-full rounded-lg border border-white/10 bg-[#0f172a]"
           loading="lazy"
         />

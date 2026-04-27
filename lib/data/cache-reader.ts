@@ -36,11 +36,36 @@ export type GithubStats = {
   timestamp?: string;
 };
 
+export type PortfolioProject = {
+  name: string;
+  purpose?: string;
+  work?: string;
+  mode?: 'build' | 'run' | 'improve' | 'govern' | string;
+  modeLabel?: string;
+  lc?: 'prod' | 'pilot' | 'spec' | 'tool' | 'jw' | 'archive' | string;
+  lcLabel?: string;
+  pt?: string;
+  ptMid?: number;
+  cat?: 'change' | 'run' | 'steward' | 'govern' | string;
+  lcNote?: string;
+  forecast?: string;
+  commits?: Record<string, number> | { total?: number; week?: number; month?: number };
+  github?: string;
+  repo: string;
+  pushed_at?: string;
+  stars?: number;
+  language?: string | null;
+  topics?: string[];
+  prod?: string;
+  vercel?: string;
+  supabase?: string;
+};
+
 export type PortfolioCache = {
   total: number;
   orgs: string[];
   user: string;
-  projects?: Array<Record<string, unknown>>;
+  projects?: PortfolioProject[];
   timestamp: string;
 };
 
