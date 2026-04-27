@@ -126,12 +126,20 @@ async function loadRepoSummaries() {
 }
 
 async function buildContext() {
+  // Pfade so geordnet, dass das Function-Bundle (outputFileTracingIncludes in
+  // next.config.ts) sie via statische Literale tracen kann.
   const data = readJsonFile('public/data.json');
   const deps = readJsonFile('public/data-deps.json');
   const history = readJsonFile('public/data-history.json');
-  const portfolio = readJsonFile('api/portfolio-config.json');
+  // portfolio-config liegt nach dem Rename unter api-legacy/.
+  // Fallback auf alten Pfad falls altes Bundle.
+  const portfolio =
+    readJsonFile('api-legacy/portfolio-config.json') ||
+    readJsonFile('api/portfolio-config.json');
   if (!data || !deps || !portfolio) {
-    throw new Error('Missing input data: data.json / data-deps.json / portfolio-config.json');
+    throw new Error(
+      `Missing input data — data:${!!data} deps:${!!deps} portfolio:${!!portfolio} history:${!!history} cwd:${process.cwd()}`,
+    );
   }
   const repoSummaries = await loadRepoSummaries();
   const week = last7DaysCommits(data.calendar);
