@@ -1,0 +1,233 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+
+type Evidence = 'weak' | 'moderate' | 'strong';
+type Direction = 'higher' | 'lower' | 'none';
+
+type LunarSummary = {
+  generatedAt: string;
+  demoMode: boolean;
+  username: string;
+  periodStart: string;
+  periodEnd: string;
+  fullMoonWindowDays: number;
+  velocityPctDiff: number | null;
+  evidence: Evidence;
+  direction: Direction;
+  pValue: number;
+  mostAffectedRepo: string | null;
+  topDaysInFullMoonShare: number;
+  verdict: string;
+  detailUrl: string;
+};
+
+type CardState =
+  | { status: 'loading' }
+  | { status: 'ready'; summary: LunarSummary; source: 'live' | 'static' }
+  | { status: 'error'; message: string };
+
+const STATIC_SUMMARY_URL = '/data-lunar-velocity.json';
+const LIVE_SUMMARY_URL = process.env.NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?.trim();
+
+const EVIDENCE_STYLE: Record<Evidence, string> = {
+  weak: 'border-slate-500/40 bg-slate-500/10 text-slate-300',
+  moderate: 'border-amber-300/40 bg-amber-300/10 text-amber-200',
+  strong: 'border-emerald-300/40 bg-emerald-300/10 text-emerald-200',
+};
+
+function isLunarSummary(value: unknown): value is LunarSummary {
+  const data = value as Partial<LunarSummary> | null;
+  return Boolean(
+    data &&
+      typeof data.generatedAt === 'string' &&
+      typeof data.demoMode === 'boolean' &&
+      typeof data.username === 'string' &&
+      typeof data.periodStart === 'string' &&
+      typeof data.periodEnd === 'string' &&
+      typeof data.fullMoonWindowDays === 'number' &&
+      (typeof data.velocityPctDiff === 'number' || data.velocityPctDiff === null) &&
+      (data.evidence === 'weak' || data.evidence === 'moderate' || data.evidence === 'strong') &&
+      (data.direction === 'higher' || data.direction === 'lower' || data.direction === 'none') &&
+      typeof data.pValue === 'number' &&
+      (typeof data.mostAffectedRepo === 'string' || data.mostAffectedRepo === null) &&
+      typeof data.topDaysInFullMoonShare === 'number' &&
+      typeof data.verdict === 'string' &&
+      typeof data.detailUrl === 'string',
+  );
+}
+
+function withWindowParam(source: string): string {
+  const url = new URL(source, window.location.origin);
+  if (!url.searchParams.has('window')) {
+    url.searchParams.set('window', '2');
+  }
+  return url.toString();
+}
+
+async function loadSummary(): Promise<CardState> {
+  const candidates = [
+    ...(LIVE_SUMMARY_URL ? [{ url: LIVE_SUMMARY_URL, source: 'live' as const }] : []),
+    { url: STATIC_SUMMARY_URL, source: 'static' as const },
+  ];
+
+  let lastError = 'No Lunar Velocity summary source configured.';
+
+  for (const candidate of candidates) {
+    try {
+      const response = await fetch(withWindowParam(candidate.url), {
+        cache: candidate.source === 'live' ? 'no-store' : 'no-cache',
+      });
+      if (!response.ok) {
+        lastError = `Lunar summary returned HTTP ${response.status}.`;
+        continue;
+      }
+
+      const data: unknown = await response.json();
+      if (!isLunarSummary(data)) {
+        lastError = 'Lunar summary payload does not match the endpoint contract.';
+        continue;
+      }
+
+      return { status: 'ready', summary: data, source: candidate.source };
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : 'Failed to load Lunar summary.';
+    }
+  }
+
+  return { status: 'error', message: lastError };
+}
+
+function formatVelocity(value: number | null, direction: Direction): string {
+  if (value == null || Number.isNaN(value)) return 'TODO';
+  const rounded = Math.round(value);
+  if (direction === 'none' || rounded === 0) return '0%';
+  return `${rounded > 0 ? '+' : ''}${rounded}%`;
+}
+
+function formatPValue(value: number): string {
+  if (Number.isNaN(value)) return 'p=--';
+  if (value < 0.001) return 'p<0.001';
+  return `p=${value.toFixed(3)}`;
+}
+
+function formatShare(value: number): string {
+  if (Number.isNaN(value)) return '--';
+  return `${Math.round(value)}%`;
+}
+
+export function LunarVelocityCard() {
+  const [state, setState] = useState<CardState>({ status: 'loading' });
+
+  useEffect(() => {
+    let cancelled = false;
+    loadSummary().then((next) => {
+      if (!cancelled) setState(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const content = useMemo(() => {
+    if (state.status === 'loading') {
+      return {
+        velocity: '...',
+        evidence: 'weak' as Evidence,
+        verdict: 'Lunar Velocity summary wird geladen.',
+        detailUrl: '',
+        sourceLabel: 'loading',
+        meta: 'window +/-2d',
+        repo: 'pending',
+        share: '--',
+        pValue: 'p=--',
+      };
+    }
+
+    if (state.status === 'error') {
+      return {
+        velocity: 'TODO',
+        evidence: 'weak' as Evidence,
+        verdict: state.message,
+        detailUrl: '',
+        sourceLabel: 'error',
+        meta: 'endpoint pending',
+        repo: 'pending',
+        share: '--',
+        pValue: 'p=--',
+      };
+    }
+
+    const { summary, source } = state;
+    return {
+      velocity: formatVelocity(summary.velocityPctDiff, summary.direction),
+      evidence: summary.evidence,
+      verdict: summary.verdict,
+      detailUrl: summary.detailUrl,
+      sourceLabel: source === 'live' ? 'live endpoint' : 'static fallback',
+      meta: `${summary.periodStart} - ${summary.periodEnd} / +/-${summary.fullMoonWindowDays}d`,
+      repo: summary.mostAffectedRepo || 'pending',
+      share: formatShare(summary.topDaysInFullMoonShare),
+      pValue: formatPValue(summary.pValue),
+    };
+  }, [state]);
+
+  return (
+    <section aria-label="Lunar Velocity Summary" className="px-4 pb-4 md:px-6">
+      <div className="overflow-hidden rounded-lg border border-amber-200/15 bg-[linear-gradient(135deg,rgba(245,158,11,0.11),rgba(14,165,233,0.08)_48%,rgba(15,23,42,0.5))] px-4 py-3 shadow-[0_18px_70px_rgba(2,6,23,0.28)]">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-amber-100/80">
+                Lunar Velocity
+              </span>
+              <span
+                className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${EVIDENCE_STYLE[content.evidence]}`}
+              >
+                {content.evidence}
+              </span>
+              <span className="font-mono text-[10px] text-slate-500">{content.sourceLabel}</span>
+            </div>
+            <p className="text-sm font-medium leading-snug text-slate-100 md:text-[15px]">
+              {content.verdict}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] text-slate-500">
+              <span>{content.meta}</span>
+              <span>{content.pValue}</span>
+              <span>top-days {content.share}</span>
+              <span>{content.repo}</span>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center justify-between gap-3 md:justify-end">
+            <div className="text-right">
+              <div className="font-mono text-3xl font-semibold tabular-nums text-amber-100">
+                {content.velocity}
+              </div>
+              <div className="text-[10px] uppercase tracking-wider text-slate-500">
+                full moon lift
+              </div>
+            </div>
+            {content.detailUrl ? (
+              <a
+                href={content.detailUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-300 transition hover:border-amber-200/40 hover:text-amber-100"
+              >
+                Details
+              </a>
+            ) : (
+              <span
+                title="Lunar Velocity Vercel deploy pending"
+                className="rounded-md border border-dashed border-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-500"
+              >
+                Details TODO
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

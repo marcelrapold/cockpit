@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-07-01T20:30:00.000Z",
+  "demoMode": true,
+  "username": "marcel",
+  "periodStart": "2024-07-01",
+  "periodEnd": "2026-07-01",
+  "fullMoonWindowDays": 2,
+  "velocityPctDiff": null,
+  "evidence": "weak",
+  "direction": "none",
+  "pValue": 1,
+  "mostAffectedRepo": null,
+  "topDaysInFullMoonShare": 0,
+  "verdict": "Lunar Velocity endpoint pending - deploy radiox/apps/lunar-velocity before Cockpit can show the live moon signal.",
+  "detailUrl": ""
+}

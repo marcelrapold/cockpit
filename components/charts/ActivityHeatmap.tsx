@@ -133,9 +133,7 @@ export async function ActivityHeatmap() {
                 rx={2}
                 fill={STEPS[intensity(c.value, max)]}
               >
-                <title>
-                  {dateLabel(c.date)} · {c.value} Commit{c.value === 1 ? '' : 's'}
-                </title>
+                <title>{`${dateLabel(c.date)} · ${c.value} Commit${c.value === 1 ? '' : 's'}`}</title>
               </rect>
             ) : null,
           )}

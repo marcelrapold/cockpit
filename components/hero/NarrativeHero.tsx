@@ -46,10 +46,9 @@ export async function NarrativeHero({ hideInsightsLink = false }: Props = {}) {
       }).format(generated)
     : null;
 
-  const freshness = combineFreshness(
-    classifyFreshness(gh?.timestamp),
-    classifyFreshness(narrative?.generatedAt),
-  );
+  const freshness = gh?.timestamp
+    ? classifyFreshness(gh.timestamp)
+    : combineFreshness(classifyFreshness(narrative?.generatedAt));
 
   return (
     <header className="px-4 pb-3 pt-5 md:px-6 md:pb-4 md:pt-7">
@@ -73,12 +72,20 @@ export async function NarrativeHero({ hideInsightsLink = false }: Props = {}) {
             </span>
           ) : null}
           {!hideInsightsLink ? (
-            <Link
-              href="/insights"
-              className="font-mono text-[10px] text-slate-500 hover:text-sky-300"
-            >
-              Insights →
-            </Link>
+            <>
+              <span
+                title="Lunar Velocity deploy pending"
+                className="font-mono text-[10px] text-slate-600"
+              >
+                Lunar TODO
+              </span>
+              <Link
+                href="/insights"
+                className="font-mono text-[10px] text-slate-500 hover:text-sky-300"
+              >
+                Insights →
+              </Link>
+            </>
           ) : null}
         </span>
       </div>

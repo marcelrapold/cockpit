@@ -33,6 +33,7 @@ import { DoraStrip, DoraStripSkeleton } from '@/components/hero/DoraStrip';
 import { InfraHealth, InfraHealthSkeleton } from '@/components/hero/InfraHealth';
 import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
 import { LiveActivity, LiveActivitySkeleton } from '@/components/hero/LiveActivity';
+import { LunarVelocityCard } from '@/components/hero/LunarVelocityCard';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import {
@@ -88,6 +89,7 @@ export default function Home() {
         <Suspense fallback={<KpiStripSkeleton />}>
           <KpiStrip />
         </Suspense>
+        <LunarVelocityCard />
         <Suspense fallback={<DoraStripSkeleton />}>
           <DoraStrip />
         </Suspense>

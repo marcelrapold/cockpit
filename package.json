@@ -21,10 +21,13 @@
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.104",
     "ai": "^6.0.168",
+    "astronomy-engine": "^2.1.19",
     "ioredis": "^5.10.1",
+    "lucide-react": "^1.23.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "recharts": "^3.9.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

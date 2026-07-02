@@ -148,9 +148,9 @@ export function PortfolioBoardClient({ items, updatedAt }: Props) {
         </div>
       ) : (
         <ul className="grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
-          {filtered.map((it) => (
+          {filtered.map((it, index) => (
             <li
-              key={it.repo}
+              key={`${it.repo || it.name}-${index}`}
               className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-3 transition hover:border-white/20 hover:bg-white/[0.07]"
             >
               <div className="flex items-start justify-between gap-2">

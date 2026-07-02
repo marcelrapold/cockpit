@@ -12,6 +12,21 @@ import 'server-only';
 import { cache as reactCache } from 'react';
 
 import legacyCache from '@/api-legacy/_lib/cache.js';
+import {
+  readPublicDora,
+  readPublicGithubStats,
+  readPublicInfra,
+  readPublicLanguageStats,
+  readPublicPortfolio,
+  readPublicRepos,
+} from '@/lib/data/public-fallback';
+import {
+  readStaticGithubStats,
+  readStaticLanguageStats,
+  readStaticNarrative,
+  readStaticPortfolio,
+  readStaticRepos,
+} from '@/lib/data/static-fallback';
 
 const { get, KEYS } = legacyCache as {
   get: (key: string) => Promise<unknown>;
@@ -188,58 +203,77 @@ export type ReposPayload = {
  */
 export const readGithubStats = reactCache(async (): Promise<GithubStats | null> => {
   try {
-    return ((await get(KEYS.githubStats)) as GithubStats | null) ?? null;
+    return (
+      ((await get(KEYS.githubStats)) as GithubStats | null) ??
+      (await readPublicGithubStats()) ??
+      (await readStaticGithubStats())
+    );
   } catch {
-    return null;
+    return (await readPublicGithubStats()) ?? readStaticGithubStats();
   }
 });
 
 export const readPortfolio = reactCache(async (): Promise<PortfolioCache | null> => {
   try {
-    return ((await get(KEYS.portfolio)) as PortfolioCache | null) ?? null;
+    return (
+      ((await get(KEYS.portfolio)) as PortfolioCache | null) ??
+      (await readPublicPortfolio()) ??
+      (await readStaticPortfolio())
+    );
   } catch {
-    return null;
+    return (await readPublicPortfolio()) ?? readStaticPortfolio();
   }
 });
 
 export const readNarrative = reactCache(async (): Promise<NarrativePayload | null> => {
   try {
-    return ((await get(KEYS.narrative)) as NarrativePayload | null) ?? null;
+    return (
+      ((await get(KEYS.narrative)) as NarrativePayload | null) ??
+      (await readStaticNarrative())
+    );
   } catch {
-    return null;
+    return readStaticNarrative();
   }
 });
 
 export const readRepos = reactCache(async (): Promise<ReposPayload | null> => {
   try {
-    return ((await get(KEYS.repos)) as ReposPayload | null) ?? null;
+    return (
+      ((await get(KEYS.repos)) as ReposPayload | null) ??
+      (await readPublicRepos()) ??
+      (await readStaticRepos())
+    );
   } catch {
-    return null;
+    return (await readPublicRepos()) ?? readStaticRepos();
   }
 });
 
 export const readDora = reactCache(async (): Promise<DoraPayload | null> => {
   try {
-    return ((await get(KEYS.dora)) as DoraPayload | null) ?? null;
+    return ((await get(KEYS.dora)) as DoraPayload | null) ?? (await readPublicDora());
   } catch {
-    return null;
+    return readPublicDora();
   }
 });
 
 export const readInfra = reactCache(async (): Promise<InfraPayload | null> => {
   try {
-    return ((await get(KEYS.infraStats)) as InfraPayload | null) ?? null;
+    return ((await get(KEYS.infraStats)) as InfraPayload | null) ?? (await readPublicInfra());
   } catch {
-    return null;
+    return readPublicInfra();
   }
 });
 
 export const readLanguageStats = reactCache(
   async (): Promise<LanguageStatsPayload | null> => {
     try {
-      return ((await get(KEYS.languageStats)) as LanguageStatsPayload | null) ?? null;
+      return (
+        ((await get(KEYS.languageStats)) as LanguageStatsPayload | null) ??
+        (await readPublicLanguageStats()) ??
+        (await readStaticLanguageStats())
+      );
     } catch {
-      return null;
+      return (await readPublicLanguageStats()) ?? readStaticLanguageStats();
     }
   },
 );
