@@ -16,7 +16,8 @@ function getClient() {
 
 const KEYS = {
   portfolio: 'cache:portfolio',
-  githubStats: 'cache:github-stats',
+  // v2: identity-aware contribution aggregation + rolling 30-day KPI.
+  githubStats: 'cache:github-stats:v2',
   infraStats: 'cache:infra-stats',
   languageStats: 'cache:language-stats',
   healthCheck: 'cache:health-check',
