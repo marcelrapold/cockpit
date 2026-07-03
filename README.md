@@ -81,6 +81,7 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `GITHUB_ZVV_ORGS` | No | Orgs included by `scope=zvv`, defaults to org names containing `zvv` |
 | `GITHUB_SCOPE` | No | Default contribution scope: `all`, `private`, `organizations`, or `zvv` |
 | `COCKPIT_EXPOSURE_MODE` | No | `public` redacts business/internal details; `private` shows the full operating view |
+| `COCKPIT_PRIVATE_BASIC_AUTH` | Required for private mode | `username:password` credentials for the same-domain private Cockpit |
 | `COCKPIT_PUBLIC_REDACT_OWNERS` | No | Comma-separated repo owners redacted in public mode |
 | `COCKPIT_CORS_ORIGIN` | No | Allowed browser origin for public API CORS, defaults to `https://cockpit.rapold.io` |
 | `LUNAR_GITHUB_USER` | No | GitHub login for Lunar Velocity, defaults to `marcel` |
