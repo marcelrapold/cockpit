@@ -106,12 +106,13 @@ export async function NarrativeHero({ hideInsightsLink = false }: Props = {}) {
           ) : null}
           {!hideInsightsLink ? (
             <>
-              <span
-                title="Lunar Velocity deploy pending"
-                className="font-mono text-[10px] text-slate-600"
+              <Link
+                href="/lunar"
+                title="Lunar Velocity Lab"
+                className="font-mono text-[10px] text-amber-200/80 hover:text-amber-100"
               >
-                Lunar TODO
-              </span>
+                Lunar →
+              </Link>
               <Link
                 href="/insights"
                 className="font-mono text-[10px] text-slate-500 hover:text-sky-300"

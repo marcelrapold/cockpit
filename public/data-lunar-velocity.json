@@ -11,6 +11,6 @@
   "pValue": 1,
   "mostAffectedRepo": null,
   "topDaysInFullMoonShare": 0,
-  "verdict": "Lunar Velocity endpoint pending - deploy radiox/apps/lunar-velocity before Cockpit can show the live moon signal.",
+  "verdict": "Moon signal is armed: Cockpit is ready for the Lunar Velocity endpoint and will light up the live correlation as soon as the moon service deploys.",
   "detailUrl": ""
 }

@@ -99,7 +99,7 @@ async function loadSummary(): Promise<CardState> {
 }
 
 function formatVelocity(value: number | null, direction: Direction): string {
-  if (value == null || Number.isNaN(value)) return 'TODO';
+  if (value == null || Number.isNaN(value)) return '—';
   const rounded = Math.round(value);
   if (direction === 'none' || rounded === 0) return '0%';
   return `${rounded > 0 ? '+' : ''}${rounded}%`;
@@ -141,34 +141,44 @@ export function LunarVelocityCard() {
         repo: 'pending',
         share: '--',
         pValue: 'p=--',
+        actionUrl: '/lunar',
+        actionLabel: 'Open Lab',
+        metricLabel: 'moon signal',
       };
     }
 
     if (state.status === 'error') {
       return {
-        velocity: 'TODO',
+        velocity: '—',
         evidence: 'weak' as Evidence,
-        verdict: state.message,
+        verdict: `Moon signal kurz nicht erreichbar. ${state.message}`,
         detailUrl: '',
-        sourceLabel: 'error',
-        meta: 'endpoint pending',
-        repo: 'pending',
+        sourceLabel: 'offline',
+        meta: 'live signal unavailable',
+        repo: 'fallback',
         share: '--',
         pValue: 'p=--',
+        actionUrl: '/lunar',
+        actionLabel: 'Open Lab',
+        metricLabel: 'moon lift',
       };
     }
 
     const { summary, source } = state;
+    const isPending = summary.velocityPctDiff == null || !summary.detailUrl;
     return {
       velocity: formatVelocity(summary.velocityPctDiff, summary.direction),
       evidence: summary.evidence,
       verdict: summary.verdict,
       detailUrl: summary.detailUrl,
-      sourceLabel: source === 'live' ? 'live endpoint' : 'static fallback',
+      sourceLabel: isPending ? 'signal pending' : source === 'live' ? 'live endpoint' : 'snapshot',
       meta: `${summary.periodStart} - ${summary.periodEnd} / +/-${summary.fullMoonWindowDays}d`,
-      repo: summary.mostAffectedRepo || 'pending',
+      repo: summary.mostAffectedRepo || 'awaiting deploy',
       share: formatShare(summary.topDaysInFullMoonShare),
       pValue: formatPValue(summary.pValue),
+      actionUrl: summary.detailUrl || '/lunar',
+      actionLabel: summary.detailUrl ? 'Details' : 'Open Lab',
+      metricLabel: isPending ? 'moon signal' : 'moon lift',
     };
   }, [state]);
 
@@ -205,26 +215,19 @@ export function LunarVelocityCard() {
                 {content.velocity}
               </div>
               <div className="text-[10px] uppercase tracking-wider text-slate-500">
-                full moon lift
+                {content.metricLabel}
               </div>
             </div>
-            {content.detailUrl ? (
+            {content.actionUrl ? (
               <a
-                href={content.detailUrl}
-                target="_blank"
-                rel="noreferrer"
+                href={content.actionUrl}
+                target={content.actionUrl.startsWith('http') ? '_blank' : undefined}
+                rel={content.actionUrl.startsWith('http') ? 'noreferrer' : undefined}
                 className="rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-300 transition hover:border-amber-200/40 hover:text-amber-100"
               >
-                Details
+                {content.actionLabel}
               </a>
-            ) : (
-              <span
-                title="Lunar Velocity Vercel deploy pending"
-                className="rounded-md border border-dashed border-white/10 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-500"
-              >
-                Details TODO
-              </span>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
