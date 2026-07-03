@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const APPLY = String(process.env.APPLY || '').toLowerCase() === 'true';
 const GH_MAX_DESCRIPTION = 350;
 
 if (!TOKEN) { console.error('GITHUB_TOKEN required'); process.exit(1); }
+
+mkdirSync('data/private', { recursive: true });
 
 async function ghJson(method, url, body) {
   const res = await fetch(url, {
@@ -30,7 +32,7 @@ function truncate(s, max) {
 }
 
 async function main() {
-  const reposFile = JSON.parse(readFileSync('public/data-repos.json', 'utf8'));
+  const reposFile = JSON.parse(readFileSync('data/private/data-repos.json', 'utf8'));
   const entries = Object.entries(reposFile.repos || {});
   console.log(`[sync-desc] loaded ${entries.length} repo summaries (${APPLY ? 'APPLY' : 'DRY-RUN'})`);
 
@@ -106,8 +108,8 @@ async function main() {
     ...(APPLY ? { applied } : {}),
   };
 
-  writeFileSync('public/data-descriptions-diff.json', JSON.stringify(payload, null, 2) + '\n');
-  console.log('[sync-desc] wrote public/data-descriptions-diff.json');
+  writeFileSync('data/private/data-descriptions-diff.json', JSON.stringify(payload, null, 2) + '\n');
+  console.log('[sync-desc] wrote data/private/data-descriptions-diff.json');
 }
 
 main().catch(err => {

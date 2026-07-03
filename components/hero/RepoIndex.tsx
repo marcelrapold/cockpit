@@ -80,14 +80,18 @@ export async function RepoIndex() {
             className="rounded-lg border border-white/5 bg-white/[0.02] px-4 py-3 transition hover:border-white/10 hover:bg-white/[0.04]"
           >
             <div className="mb-1.5 flex flex-wrap items-center gap-2">
-              <a
-                href={`https://github.com/${r.full}`}
-                target="_blank"
-                rel="noreferrer"
-                className="font-mono text-[13px] text-slate-200 hover:text-sky-300"
-              >
-                {r.full}
-              </a>
+              {r.full?.includes('/') ? (
+                <a
+                  href={`https://github.com/${r.full}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-[13px] text-slate-200 hover:text-sky-300"
+                >
+                  {r.full}
+                </a>
+              ) : (
+                <span className="font-mono text-[13px] text-slate-200">{r.full}</span>
+              )}
               {r.status ? (
                 <span
                   className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ring-1 ring-inset ${statusTone(r.status)}`}

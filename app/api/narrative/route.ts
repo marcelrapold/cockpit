@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 // canonical Next.js route. The legacy /api/_lib/cache.js is still imported as
 // a CommonJS module via webpack interop, which is fine.
 import cache from '@/api-legacy/_lib/cache.js';
+import { publicOrigin, sanitizeNarrative } from '@/lib/security/exposure';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,14 +11,15 @@ export const maxDuration = 30;
 
 export async function GET() {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': publicOrigin(),
+    Vary: 'Origin',
     'Cache-Control': 's-maxage=300, stale-while-revalidate=600',
   };
 
   try {
     const cached = await cache.get(cache.KEYS.narrative);
     if (cached) {
-      return NextResponse.json(cached, { headers });
+      return NextResponse.json(sanitizeNarrative(cached), { headers });
     }
   } catch (err) {
     return NextResponse.json(

@@ -31,7 +31,7 @@ export type PortfolioItem = {
   language: string | null;
   topics: string[];
   pushed_at: string | null;
-  github: string;
+  github: string | null;
   prod: string | null;
   vercel: string | null;
   totalCommits: number | null;
@@ -212,14 +212,16 @@ export function PortfolioBoardClient({ items, updatedAt }: Props) {
               </div>
 
               <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
-                <a
-                  href={it.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-300 hover:text-sky-300"
-                >
-                  GitHub →
-                </a>
+                {it.github ? (
+                  <a
+                    href={it.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-300 hover:text-sky-300"
+                  >
+                    GitHub →
+                  </a>
+                ) : null}
                 {it.prod ? (
                   <a
                     href={it.prod}

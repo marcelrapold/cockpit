@@ -1,8 +1,6 @@
-const CACHE_NAME = 'cockpit-v3-next';
+const CACHE_NAME = 'cockpit-v4-public';
 const PRECACHE_URLS = [
   '/',
-  '/data.json',
-  '/data-deps.json',
   '/favicon.svg',
   '/manifest.json',
   'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap',
@@ -16,7 +14,7 @@ function isApiRequest(url) {
 }
 
 function isDataJson(url) {
-  return url.origin === self.location.origin && /^\/data.*\.json$/.test(url.pathname);
+  return false;
 }
 
 function isNavigationRequest(request) {

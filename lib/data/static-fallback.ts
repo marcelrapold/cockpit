@@ -11,6 +11,7 @@ import type {
   PortfolioProject,
   ReposPayload,
 } from './cache-reader';
+import { isPrivateMode, sanitizeNarrative } from '@/lib/security/exposure';
 
 type StaticActivityData = {
   generated: string;
@@ -45,7 +46,7 @@ type PortfolioConfig = {
 
 async function readJson<T>(file: string): Promise<T | null> {
   try {
-    const raw = await readFile(path.join(process.cwd(), 'public', file), 'utf8');
+    const raw = await readFile(path.join(process.cwd(), 'data', 'private', file), 'utf8');
     return JSON.parse(raw) as T;
   } catch {
     return null;
@@ -138,6 +139,10 @@ function normalizeProject(
 }
 
 export async function readStaticGithubStats(): Promise<GithubStats | null> {
+  if (!isPrivateMode()) {
+    return readJson<GithubStats>('data-public-github-stats.json');
+  }
+
   const data = await readJson<StaticActivityData>('data.json');
   if (!data?.calendar || Object.keys(data.calendar).length === 0) return null;
 
@@ -181,10 +186,15 @@ export async function readStaticGithubStats(): Promise<GithubStats | null> {
 }
 
 export async function readStaticNarrative(): Promise<NarrativePayload | null> {
+  if (!isPrivateMode()) {
+    return sanitizeNarrative(null);
+  }
   return readJson<NarrativePayload>('data-narrative.json');
 }
 
 export async function readStaticRepos(): Promise<ReposPayload | null> {
+  if (!isPrivateMode()) return null;
+
   const data = await readJson<StaticReposData>('data-repos.json');
   if (!data?.repos) return null;
   return {
@@ -199,6 +209,8 @@ export async function readStaticRepos(): Promise<ReposPayload | null> {
 }
 
 export async function readStaticPortfolio(): Promise<PortfolioCache | null> {
+  if (!isPrivateMode()) return null;
+
   const [reposData, config] = await Promise.all([readStaticRepos(), readPortfolioConfig()]);
   if (!reposData?.repos) return null;
 
@@ -245,6 +257,8 @@ export async function readStaticPortfolio(): Promise<PortfolioCache | null> {
 }
 
 export async function readStaticLanguageStats(): Promise<LanguageStatsPayload | null> {
+  if (!isPrivateMode()) return null;
+
   const reposData = await readStaticRepos();
   if (!reposData?.repos) return null;
 

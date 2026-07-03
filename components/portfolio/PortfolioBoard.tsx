@@ -15,6 +15,7 @@ import { PortfolioBoardClient, type PortfolioItem } from './PortfolioBoardClient
 const CAT_FALLBACK: PortfolioItem['cat'] = 'change';
 
 function normalize(p: PortfolioProject, llmOneLiner?: string): PortfolioItem {
+  const repoName = p.repo || p.name || 'unknown';
   const cat: PortfolioItem['cat'] = (() => {
     const raw = (p.cat || '').toLowerCase();
     if (raw === 'change' || raw === 'run' || raw === 'steward' || raw === 'govern') return raw;
@@ -31,8 +32,10 @@ function normalize(p: PortfolioProject, llmOneLiner?: string): PortfolioItem {
           )
       : null) ?? null;
 
+  const github = p.github || (repoName.includes('/') ? `https://github.com/${repoName}` : null);
+
   return {
-    repo: p.repo,
+    repo: repoName,
     name: p.name,
     purpose: (p.purpose || '').trim() || llmOneLiner || '',
     work: p.work || '',
@@ -49,7 +52,7 @@ function normalize(p: PortfolioProject, llmOneLiner?: string): PortfolioItem {
     language: p.language || null,
     topics: Array.isArray(p.topics) ? p.topics : [],
     pushed_at: p.pushed_at || null,
-    github: p.github || `https://github.com/${p.repo}`,
+    github,
     prod: p.prod || null,
     vercel: p.vercel || null,
     totalCommits,

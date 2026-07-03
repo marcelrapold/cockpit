@@ -80,6 +80,9 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `GITHUB_REPO_OWNERS` | No | Additional personal/user repo owners to search, beyond `GITHUB_USER` |
 | `GITHUB_ZVV_ORGS` | No | Orgs included by `scope=zvv`, defaults to org names containing `zvv` |
 | `GITHUB_SCOPE` | No | Default contribution scope: `all`, `private`, `organizations`, or `zvv` |
+| `COCKPIT_EXPOSURE_MODE` | No | `public` redacts business/internal details; `private` shows the full operating view |
+| `COCKPIT_PUBLIC_REDACT_OWNERS` | No | Comma-separated repo owners redacted in public mode |
+| `COCKPIT_CORS_ORIGIN` | No | Allowed browser origin for public API CORS, defaults to `https://cockpit.rapold.io` |
 | `LUNAR_GITHUB_USER` | No | GitHub login for Lunar Velocity, defaults to `marcel` |
 | `LUNAR_GITHUB_TOKEN` | No | Optional separate PAT for Lunar Velocity; falls back to `GITHUB_TOKEN` |
 | `LUNAR_GITHUB_ORGS` | No | Optional org owners included in Lunar repo scan; falls back to `GITHUB_ORGS` |
@@ -89,7 +92,7 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `VERCEL_TEAM_IDS` | No | Comma-separated Vercel Team IDs |
 | `SUPABASE_ACCESS_TOKEN` | No | Supabase Management API token |
 | `HEALTH_TARGETS` | No | JSON array of `{ name, url }` for uptime checks |
-| `COCKPIT_PUBLIC_FALLBACK_ORIGIN` | No | Public Cockpit origin used for local SSR fallbacks when Redis/secrets are missing; defaults to `https://cockpit.rapold.io`, set `off` to disable |
+| `COCKPIT_PUBLIC_FALLBACK_ORIGIN` | No | Optional public Cockpit origin used for local SSR fallbacks; disabled by default |
 
 > **Security note:** All tokens are server-side only. They are never exposed to the browser.
 
@@ -102,8 +105,8 @@ GitHub token scopes:
 ### 3. Generate Static Data
 
 ```bash
-node scripts/generate-data.mjs    # → public/data.json + data-history.json
-node scripts/scan-deps.mjs        # → public/data-deps.json
+node scripts/generate-data.mjs    # → data/private/data.json + data-history.json
+node scripts/scan-deps.mjs        # → data/private/data-deps.json
 node scripts/generate-assets.mjs  # → public/og-image.svg, favicon.svg, apple-touch-icon.svg
 ```
 

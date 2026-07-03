@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
  * Scans repos for dependencies across multiple orgs + personal repos.
- * Outputs to public/data-deps.json
+ * Outputs to data/private/data-deps.json
  */
-import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 
@@ -13,6 +13,8 @@ const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filte
 const LOCAL_ROOT = process.env.SCAN_ROOT || '';
 const SKIP = new Set(['.github', 'node_modules']);
 const MY_AUTHORS = (USER).split(',').map(s => s.trim()).filter(Boolean);
+
+mkdirSync('data/private', { recursive: true });
 
 const CATEGORIES = {
   'next': 'Framework', 'react': 'Framework', 'react-dom': 'Framework', 'vue': 'Framework',
@@ -281,7 +283,7 @@ async function main() {
       .sort((a, b) => b.count - a.count),
   };
 
-  writeFileSync('public/data-deps.json', JSON.stringify(output));
+  writeFileSync('data/private/data-deps.json', JSON.stringify(output));
   console.log(`✓ ${Object.keys(repos).length} repos, ${Object.keys(pkgUsage).length} unique packages`);
 }
 

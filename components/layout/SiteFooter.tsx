@@ -10,9 +10,11 @@
 import Link from 'next/link';
 
 import { getBuildInfo } from '@/lib/data/build-info';
+import { isPrivateMode } from '@/lib/security/exposure';
 
 export function SiteFooter() {
   const build = getBuildInfo();
+  const privateMode = isPrivateMode();
   return (
     <footer className="mt-8 border-t border-white/5 bg-[#0a0f1c] px-4 py-6 md:px-6">
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 text-[11px] text-slate-500 md:flex-row md:items-center md:justify-between">
@@ -51,17 +53,16 @@ export function SiteFooter() {
           >
             marcelrapold.com
           </a>
-          <a
-            href="/api/v1/summary"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-sky-300"
-          >
-            API
-          </a>
-          <a href="/legacy.html" className="text-slate-600 hover:text-slate-400">
-            Legacy-Archiv
-          </a>
+          {privateMode ? (
+            <a
+              href="/api/v1/summary"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-sky-300"
+            >
+              API
+            </a>
+          ) : null}
         </nav>
       </div>
     </footer>

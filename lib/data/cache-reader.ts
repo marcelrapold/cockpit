@@ -27,6 +27,14 @@ import {
   readStaticPortfolio,
   readStaticRepos,
 } from '@/lib/data/static-fallback';
+import {
+  sanitizeGithubStats,
+  sanitizeInfra,
+  sanitizeLanguageStats,
+  sanitizeNarrative,
+  sanitizePortfolio,
+  sanitizeRepos,
+} from '@/lib/security/exposure';
 
 const { get, KEYS } = legacyCache as {
   get: (key: string) => Promise<unknown>;
@@ -217,48 +225,56 @@ export type ReposPayload = {
  */
 export const readGithubStats = reactCache(async (): Promise<GithubStats | null> => {
   try {
-    return (
+    const data = (
       ((await get(KEYS.githubStats)) as GithubStats | null) ??
       (await readPublicGithubStats()) ??
       (await readStaticGithubStats())
     );
+    return data ? sanitizeGithubStats(data) : null;
   } catch {
-    return (await readPublicGithubStats()) ?? readStaticGithubStats();
+    const data = (await readPublicGithubStats()) ?? (await readStaticGithubStats());
+    return data ? sanitizeGithubStats(data) : null;
   }
 });
 
 export const readPortfolio = reactCache(async (): Promise<PortfolioCache | null> => {
   try {
-    return (
+    const data = (
       ((await get(KEYS.portfolio)) as PortfolioCache | null) ??
       (await readPublicPortfolio()) ??
       (await readStaticPortfolio())
     );
+    return data ? sanitizePortfolio(data) : null;
   } catch {
-    return (await readPublicPortfolio()) ?? readStaticPortfolio();
+    const data = (await readPublicPortfolio()) ?? (await readStaticPortfolio());
+    return data ? sanitizePortfolio(data) : null;
   }
 });
 
 export const readNarrative = reactCache(async (): Promise<NarrativePayload | null> => {
   try {
-    return (
+    const data = (
       ((await get(KEYS.narrative)) as NarrativePayload | null) ??
       (await readStaticNarrative())
     );
+    return data ? sanitizeNarrative(data) : null;
   } catch {
-    return readStaticNarrative();
+    const data = await readStaticNarrative();
+    return data ? sanitizeNarrative(data) : null;
   }
 });
 
 export const readRepos = reactCache(async (): Promise<ReposPayload | null> => {
   try {
-    return (
+    const data = (
       ((await get(KEYS.repos)) as ReposPayload | null) ??
       (await readPublicRepos()) ??
       (await readStaticRepos())
     );
+    return data ? sanitizeRepos(data) : null;
   } catch {
-    return (await readPublicRepos()) ?? readStaticRepos();
+    const data = (await readPublicRepos()) ?? (await readStaticRepos());
+    return data ? sanitizeRepos(data) : null;
   }
 });
 
@@ -272,22 +288,26 @@ export const readDora = reactCache(async (): Promise<DoraPayload | null> => {
 
 export const readInfra = reactCache(async (): Promise<InfraPayload | null> => {
   try {
-    return ((await get(KEYS.infraStats)) as InfraPayload | null) ?? (await readPublicInfra());
+    const data = ((await get(KEYS.infraStats)) as InfraPayload | null) ?? (await readPublicInfra());
+    return data ? sanitizeInfra(data) : null;
   } catch {
-    return readPublicInfra();
+    const data = await readPublicInfra();
+    return data ? sanitizeInfra(data) : null;
   }
 });
 
 export const readLanguageStats = reactCache(
   async (): Promise<LanguageStatsPayload | null> => {
     try {
-      return (
+      const data = (
         ((await get(KEYS.languageStats)) as LanguageStatsPayload | null) ??
         (await readPublicLanguageStats()) ??
         (await readStaticLanguageStats())
       );
+      return data ? sanitizeLanguageStats(data) : null;
     } catch {
-      return (await readPublicLanguageStats()) ?? readStaticLanguageStats();
+      const data = (await readPublicLanguageStats()) ?? (await readStaticLanguageStats());
+      return data ? sanitizeLanguageStats(data) : null;
     }
   },
 );

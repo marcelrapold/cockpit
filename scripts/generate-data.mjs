@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
@@ -7,6 +7,7 @@ const {
   buildCommitSearchScopes,
   getGithubIdentity,
 } = require('../api-legacy/_lib/github-identity.js');
+const { redactRepoName } = require('../api-legacy/_lib/exposure.js');
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const IDENTITY = getGithubIdentity();
@@ -17,6 +18,8 @@ const HUMAN_AUTHORS = new Set(IDENTITY.humanAuthors);
 const BOTS = new Set(['github-actions[bot]', 'dependabot[bot]', 'renovate[bot]']);
 
 if (!TOKEN) { console.error('GITHUB_TOKEN required'); process.exit(1); }
+
+mkdirSync('data/private', { recursive: true });
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -79,6 +82,67 @@ function getWeekStart(d) {
   const day = date.getDay();
   const diff = date.getDate() - day + (day === 0 ? -6 : 1);
   return new Date(date.getFullYear(), date.getMonth(), diff).toISOString().split('T')[0];
+}
+
+function dateAdd(dateKey, days) {
+  const d = new Date(`${dateKey}T00:00:00.000Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function sumRange(calendar, endDate, days) {
+  let total = 0;
+  for (let i = 0; i < days; i++) total += calendar[dateAdd(endDate, -i)] || 0;
+  return total;
+}
+
+function pctChange(current, previous) {
+  if (previous === 0) return current > 0 ? 100 : 0;
+  return Math.round(((current - previous) / previous) * 100);
+}
+
+function buildPublicGithubStats(data) {
+  const dates = Object.keys(data.calendar || {}).sort();
+  const latestDate = dates[dates.length - 1];
+  if (!latestDate) return null;
+  const today = data.calendar[latestDate] || 0;
+  const week = sumRange(data.calendar, latestDate, 7);
+  const month = sumRange(data.calendar, latestDate, 30);
+  const prevWeekEnd = dateAdd(latestDate, -7);
+  const prevWeek = sumRange(data.calendar, prevWeekEnd, 7);
+  const currentMonth = latestDate.slice(0, 7);
+  const activeRepos = Object.entries(data.repoMonthly || {})
+    .map(([name, months]) => ({ name: redactRepoName(name), commits: months[currentMonth] || 0 }))
+    .filter(repo => repo.commits > 0)
+    .sort((a, b) => b.commits - a.commits)
+    .slice(0, 8);
+  const sparkline = Array.from({ length: 90 }, (_, index) => {
+    const offset = 89 - index;
+    return data.calendar[dateAdd(latestDate, -offset)] || 0;
+  });
+  return {
+    today,
+    week,
+    month,
+    prevWeek,
+    velocity: pctChange(week, prevWeek),
+    avgPerDay: Number((month / 30).toFixed(1)),
+    openIssues: 0,
+    openPRs: 0,
+    activeRepos,
+    streak: 0,
+    orgs: ['public + business scopes'],
+    scope: 'all',
+    dataSources: {
+      scope: 'all',
+      orgs: ['redacted-business-orgs'],
+      repoOwners: ['redacted-business-owners'],
+      searchScopes: ['public + redacted business scopes'],
+      note: 'Public static fallback contains no internal repository names.',
+    },
+    sparkline,
+    timestamp: data.generated,
+  };
 }
 
 async function main() {
@@ -178,7 +242,7 @@ async function main() {
     else aiAuthors[login] = count;
   }
 
-  const historyPath = 'public/data-history.json';
+  const historyPath = 'data/private/data-history.json';
   let history = [];
   if (existsSync(historyPath)) {
     try { history = JSON.parse(readFileSync(historyPath, 'utf8')); } catch {}
@@ -231,8 +295,14 @@ async function main() {
     weeklyTrend: history.slice(-12),
   };
 
-  writeFileSync('public/data.json', JSON.stringify(output));
-  console.log(`✓ Written public/data.json (${JSON.stringify(output).length} bytes)`);
+  writeFileSync('data/private/data.json', JSON.stringify(output));
+  console.log(`✓ Written data/private/data.json (${JSON.stringify(output).length} bytes)`);
+
+  const publicStats = buildPublicGithubStats(output);
+  if (publicStats) {
+    writeFileSync('data/private/data-public-github-stats.json', JSON.stringify(publicStats));
+    console.log('✓ Written data/private/data-public-github-stats.json');
+  }
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

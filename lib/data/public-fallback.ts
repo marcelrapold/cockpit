@@ -9,10 +9,8 @@ import type {
   ReposPayload,
 } from './cache-reader';
 
-const DEFAULT_PUBLIC_FALLBACK_ORIGIN = 'https://cockpit.rapold.io';
-
 function fallbackOrigin(): string | null {
-  const raw = (process.env.COCKPIT_PUBLIC_FALLBACK_ORIGIN || DEFAULT_PUBLIC_FALLBACK_ORIGIN).trim();
+  const raw = (process.env.COCKPIT_PUBLIC_FALLBACK_ORIGIN || '').trim();
   if (!raw || raw === 'off' || raw === 'false') return null;
   return raw.replace(/\/+$/, '');
 }
@@ -31,7 +29,7 @@ async function readPublicEndpoint<T>(
   try {
     const response = await fetch(new URL(pathname, origin), {
       headers: { accept: 'application/json' },
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
     if (!response.ok) return null;
 

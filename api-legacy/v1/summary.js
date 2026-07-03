@@ -1,9 +1,10 @@
 const { authenticate } = require('../_lib/auth');
 const { rateLimit } = require('../_lib/rate-limit');
 const { get, KEYS } = require('../_lib/cache');
+const { setCors } = require('../_lib/exposure');
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  setCors(res);
   res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
 

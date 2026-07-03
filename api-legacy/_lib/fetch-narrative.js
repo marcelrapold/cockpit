@@ -121,16 +121,16 @@ async function loadRepoSummaries() {
     const cached = await get(KEYS.repos);
     if (cached?.repos) return cached.repos;
   } catch {}
-  const bundled = readJsonFile('public/data-repos.json');
+  const bundled = readJsonFile('data/private/data-repos.json');
   return bundled?.repos || null;
 }
 
 async function buildContext() {
   // Pfade so geordnet, dass das Function-Bundle (outputFileTracingIncludes in
   // next.config.ts) sie via statische Literale tracen kann.
-  const data = readJsonFile('public/data.json');
-  const deps = readJsonFile('public/data-deps.json');
-  const history = readJsonFile('public/data-history.json');
+  const data = readJsonFile('data/private/data.json');
+  const deps = readJsonFile('data/private/data-deps.json');
+  const history = readJsonFile('data/private/data-history.json');
   // portfolio-config liegt nach dem Rename unter api-legacy/.
   // Fallback auf alten Pfad falls altes Bundle.
   const portfolio =

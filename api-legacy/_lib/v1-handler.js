@@ -1,10 +1,11 @@
 const { authenticate } = require('./auth');
 const { rateLimit } = require('./rate-limit');
 const { get, rangeKey, parseRange, parseScope, rangeToDays, isValidDoraCachePayload, isDoraRedisKey } = require('./cache');
+const { setCors } = require('./exposure');
 
 function createV1Handler(cacheBaseKey, fetcher, fallbackData) {
   return async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    setCors(res);
     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
     // DORA must not be cached at shared CDNs (stale portfolio-shaped responses were served as HIT).
     const cacheCtl = String(cacheBaseKey).startsWith('cache:dora')

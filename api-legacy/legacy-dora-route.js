@@ -1,8 +1,9 @@
 const { parseRange, rangeToDays } = require('./_lib/cache');
+const { setCors } = require('./_lib/exposure');
 const fetchDora = require('./_lib/fetch-dora');
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  setCors(res);
   res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
 
   const range = parseRange(req.query?.range);

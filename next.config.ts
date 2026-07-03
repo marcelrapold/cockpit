@@ -9,9 +9,10 @@ const nextConfig: NextConfig = {
   // zu Bundle-Dedup-Problemen mit der App-Router-Erkennung.
   outputFileTracingIncludes: {
     '/api/cron/refresh-llm': [
-      './public/data.json',
-      './public/data-deps.json',
-      './public/data-history.json',
+      './data/private/data.json',
+      './data/private/data-deps.json',
+      './data/private/data-history.json',
+      './data/private/data-repos.json',
       './api-legacy/portfolio-config.json',
     ],
   },

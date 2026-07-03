@@ -16,7 +16,7 @@ Use this when another local/cloud coding agent needs to continue the Cockpit/Lun
 - The Cockpit home page has a client-side Lunar card wired to the external `GET /api/summary?window=2` contract.
 - Until Lunar is deployed, the card reads `public/data-lunar-velocity.json` and the header keeps `Lunar TODO`.
 - Once deployed, set `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL=https://<lunar-deploy-url>/api/summary`.
-- `lib/data/static-fallback.ts` reads `public/data*.json` when Redis is absent or empty.
+- `lib/data/static-fallback.ts` reads `data/private/data*.json` when Redis is absent or empty; these files are deliberately not served as public static assets.
 - `lib/data/cache-reader.ts` now falls back to static GitHub stats, narrative, repos, portfolio, and language stats.
 - `npm run build` passes.
 

@@ -1,8 +1,9 @@
 const { get, KEYS, rangeKey, parseRange, parseScope } = require('./_lib/cache');
+const { sanitizeGithubStats, setCors } = require('./_lib/exposure');
 const fetchGithubStats = require('./_lib/fetch-github-stats');
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  setCors(res);
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
 
   const range = parseRange(req.query?.range);
@@ -13,7 +14,7 @@ module.exports = async function handler(req, res) {
     const cached = await get(cacheKey);
     if (cached) {
       const data = typeof cached === 'string' ? JSON.parse(cached) : cached;
-      return res.status(200).json(data);
+      return res.status(200).json(sanitizeGithubStats(data));
     }
   } catch {}
 
@@ -22,7 +23,7 @@ module.exports = async function handler(req, res) {
     if (data?.error) {
       res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
     }
-    return res.status(200).json(data);
+    return res.status(200).json(sanitizeGithubStats(data));
   } catch (err) {
     res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
     return res.status(200).json({

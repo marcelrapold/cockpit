@@ -15,11 +15,9 @@ test.describe('Smoke — Seiten & Shell', () => {
     await expect(page.locator('section[aria-label="Portfolio-Übersicht"]')).toBeVisible();
   });
 
-  test('Legacy /legacy.html bleibt als Archiv erreichbar (200)', async ({ request }) => {
+  test('Legacy /legacy.html ist nicht mehr öffentlich ausgeliefert', async ({ request }) => {
     const res = await request.get('/legacy.html');
-    expect(res.status()).toBe(200);
-    const ct = res.headers()['content-type'] || '';
-    expect(ct).toContain('text/html');
+    expect(res.status()).toBe(404);
   });
 
   test('Manifest & Service Worker erreichbar', async ({ request }) => {
