@@ -1,12 +1,19 @@
 #!/usr/bin/env node
 import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const {
+  buildCommitSearchScopes,
+  getGithubIdentity,
+} = require('../api-legacy/_lib/github-identity.js');
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-const USER = process.env.GITHUB_USER || 'muraschal';
-const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
-const HUMAN_AUTHORS = new Set(
-  (process.env.GITHUB_HUMAN_AUTHORS || USER).split(',').map(s => s.trim()).filter(Boolean)
-);
+const IDENTITY = getGithubIdentity();
+const SOURCE = buildCommitSearchScopes(process.env.GITHUB_SCOPE);
+const USER = IDENTITY.primaryLogin;
+const ORGS = SOURCE.owners.orgs;
+const HUMAN_AUTHORS = new Set(IDENTITY.humanAuthors);
 const BOTS = new Set(['github-actions[bot]', 'dependabot[bot]', 'renovate[bot]']);
 
 if (!TOKEN) { console.error('GITHUB_TOKEN required'); process.exit(1); }
@@ -91,33 +98,41 @@ async function main() {
     cur = next;
   }
 
-  const scopes = [
-    ...ORGS.map(o => `org:${o}`),
-    `user:${USER}`,
-  ];
+  const scopes = SOURCE.scopes;
+  const authorQueries = IDENTITY.commitAuthorQueries;
 
-  console.log(`Fetching commits for author:${USER} across ${scopes.length} scopes × ${months.length} months...`);
+  console.log(
+    `Fetching commits for ${authorQueries.map(a => a.query).join(', ')} ` +
+    `across ${scopes.length} scopes × ${months.length} months...`,
+  );
 
   const allCommits = [];
   const seen = new Set();
   for (const { from, to } of months) {
     console.log(`  ${from} → ${to}`);
     for (const scope of scopes) {
-      try {
-        const items = await searchCommits(`${scope} author:${USER} committer-date:${from}..${to}`);
-        let added = 0;
-        for (const c of items) {
-          if (c.sha && !seen.has(c.sha)) {
-            seen.add(c.sha);
-            allCommits.push(c);
-            added++;
+      for (const author of authorQueries) {
+        try {
+          const query = [scope, author.query, `committer-date:${from}..${to}`]
+            .filter(Boolean)
+            .join(' ');
+          const items = await searchCommits(query);
+          let added = 0;
+          for (const c of items) {
+            const repo = c.repository?.full_name || c.repository?.name || 'unknown';
+            const key = `${repo}:${c.sha}`;
+            if (c.sha && !seen.has(key)) {
+              seen.add(key);
+              allCommits.push(c);
+              added++;
+            }
           }
+          if (added > 0) console.log(`    ${scope || 'global-accessible'} ${author.query}: ${added} commits`);
+        } catch (e) {
+          console.warn(`    ⚠ ${scope || 'global-accessible'} ${author.query}: ${e.message}`);
         }
-        if (added > 0) console.log(`    ${scope}: ${added} commits`);
-      } catch (e) {
-        console.warn(`    ⚠ ${scope}: ${e.message}`);
+        await sleep(1500);
       }
-      await sleep(1500);
     }
   }
 
@@ -197,6 +212,15 @@ async function main() {
     generated: now.toISOString(),
     user: USER,
     orgs: ORGS,
+    scope: SOURCE.scope,
+    identity: IDENTITY.public,
+    dataSources: {
+      scope: SOURCE.scope,
+      orgs: SOURCE.owners.orgs,
+      repoOwners: SOURCE.owners.repoOwners,
+      searchScopes: scopes.map(scope => scope || 'global-accessible'),
+      commitIdentity: IDENTITY.public,
+    },
     calendar,
     hourly,
     authors: { human: humanAuthors, ai: aiAuthors },

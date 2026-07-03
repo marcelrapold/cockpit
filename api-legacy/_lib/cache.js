@@ -30,6 +30,7 @@ const KEYS = {
 };
 
 const VALID_RANGES = ['7d', '30d', '90d', 'ytd', '12m'];
+const VALID_SCOPES = ['all', 'private', 'organizations', 'zvv'];
 
 function parseRange(range) {
   if (!range) return null;
@@ -38,9 +39,18 @@ function parseRange(range) {
   return r;
 }
 
-function rangeKey(base, range) {
-  if (!range || range === '30d') return base;
-  return `${base}:${range}`;
+function parseScope(scope) {
+  if (!scope) return null;
+  const s = String(scope).toLowerCase();
+  if (!VALID_SCOPES.includes(s)) return null;
+  return s;
+}
+
+function rangeKey(base, range, scope) {
+  const parts = [base];
+  if (range && range !== '30d') parts.push(range);
+  if (scope && scope !== 'all') parts.push(`scope:${scope}`);
+  return parts.join(':');
 }
 
 function rangeToDays(range) {
@@ -104,6 +114,7 @@ module.exports = {
   TTL,
   TTL_LLM,
   VALID_RANGES,
+  VALID_SCOPES,
   get,
   set,
   setWithTtl,
@@ -111,6 +122,7 @@ module.exports = {
   getRaw,
   rangeKey,
   parseRange,
+  parseScope,
   rangeToDays,
   isValidDoraCachePayload,
   isDoraRedisKey,

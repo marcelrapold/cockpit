@@ -1,4 +1,4 @@
-const { get, KEYS, rangeKey, parseRange } = require('./_lib/cache');
+const { get, KEYS, rangeKey, parseRange, parseScope } = require('./_lib/cache');
 const fetchGithubStats = require('./_lib/fetch-github-stats');
 
 module.exports = async function handler(req, res) {
@@ -6,7 +6,8 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
 
   const range = parseRange(req.query?.range);
-  const cacheKey = rangeKey(KEYS.githubStats, range);
+  const scope = parseScope(req.query?.scope);
+  const cacheKey = rangeKey(KEYS.githubStats, range, scope);
 
   try {
     const cached = await get(cacheKey);
@@ -17,7 +18,7 @@ module.exports = async function handler(req, res) {
   } catch {}
 
   try {
-    const data = await fetchGithubStats(range ? { range } : {});
+    const data = await fetchGithubStats({ ...(range ? { range } : {}), ...(scope ? { scope } : {}) });
     return res.status(200).json(data);
   } catch (err) {
     return res.status(200).json({

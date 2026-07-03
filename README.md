@@ -75,6 +75,11 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `GITHUB_TOKEN` | Yes | GitHub PAT with `repo` + `read:org` scope |
 | `GITHUB_USER` | Yes | Your GitHub login |
 | `GITHUB_ORGS` | Yes | Comma-separated org names |
+| `GITHUB_AUTHOR_LOGINS` | No | Additional GitHub author logins that should count as the same person |
+| `GITHUB_AUTHOR_EMAILS` | No | Additional Git commit author emails to aggregate; used server-side and masked in public payloads |
+| `GITHUB_REPO_OWNERS` | No | Additional personal/user repo owners to search, beyond `GITHUB_USER` |
+| `GITHUB_ZVV_ORGS` | No | Orgs included by `scope=zvv`, defaults to org names containing `zvv` |
+| `GITHUB_SCOPE` | No | Default contribution scope: `all`, `private`, `organizations`, or `zvv` |
 | `LUNAR_GITHUB_USER` | No | GitHub login for Lunar Velocity, defaults to `marcel` |
 | `LUNAR_GITHUB_TOKEN` | No | Optional separate PAT for Lunar Velocity; falls back to `GITHUB_TOKEN` |
 | `LUNAR_GITHUB_ORGS` | No | Optional org owners included in Lunar repo scan; falls back to `GITHUB_ORGS` |
@@ -111,6 +116,10 @@ The included workflow (`.github/workflows/update-data.yml`) runs 3×/day and on 
 | `GH_PAT` | GitHub PAT |
 | `COCKPIT_USER` | GitHub login |
 | `COCKPIT_ORGS` | Comma-separated org names |
+| `COCKPIT_AUTHOR_LOGINS` | Optional: additional GitHub author aliases |
+| `COCKPIT_AUTHOR_EMAILS` | Optional: additional Git commit author emails |
+| `COCKPIT_REPO_OWNERS` | Optional: additional personal/user repo owners |
+| `COCKPIT_ZVV_ORGS` | Optional: orgs included by `scope=zvv` |
 | `COCKPIT_HUMAN_AUTHORS` | Optional: human author logins |
 
 Repository variable: `APP_URL` (e.g. `https://cockpit.rapold.io`) for health-check alerting.

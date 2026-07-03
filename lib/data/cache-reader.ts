@@ -47,6 +47,20 @@ export type GithubStats = {
   activeRepos?: Array<{ name: string; commits: number }>;
   streak?: number;
   orgs?: string[];
+  scope?: 'all' | 'private' | 'organizations' | 'zvv' | string;
+  identity?: {
+    primaryLogin?: string;
+    authorLogins?: string[];
+    authorEmailCount?: number;
+    authorEmailsMasked?: string[];
+  };
+  dataSources?: {
+    scope?: string;
+    orgs?: string[];
+    repoOwners?: string[];
+    searchScopes?: string[];
+    note?: string;
+  };
   sparkline?: number[];
   timestamp?: string;
 };

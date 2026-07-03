@@ -35,6 +35,14 @@ function velocitySign(velocity: number | null | undefined): {
   return { text: '0%', tone: 'flat' };
 }
 
+function compactList(values: string[] | undefined, max = 4): string {
+  const list = values?.filter(Boolean) ?? [];
+  if (!list.length) return '—';
+  const visible = list.slice(0, max);
+  const rest = list.length - visible.length;
+  return rest > 0 ? `${visible.join(' · ')} · +${rest}` : visible.join(' · ');
+}
+
 const TONE_CLASS: Record<'up' | 'down' | 'flat' | 'unknown', string> = {
   up: 'text-emerald-300',
   down: 'text-rose-300',
@@ -67,6 +75,10 @@ export async function KpiStrip() {
   );
 
   const v = velocitySign(gh?.velocity);
+  const scopeLabel = gh?.scope || gh?.dataSources?.scope || 'all';
+  const identityLabel = compactList(gh?.identity?.authorLogins);
+  const orgLabel = compactList(gh?.dataSources?.orgs || gh?.orgs);
+  const ownerLabel = compactList(gh?.dataSources?.repoOwners);
   const items: Array<{ label: string; value: string; accent: string; title?: string }> = [
     { label: 'Heute', value: fmt(gh?.today), accent: 'text-white', title: 'Commits heute (UTC)' },
     { label: '7 Tage', value: fmt(gh?.week), accent: 'text-white', title: 'Commits in den letzten 7 Tagen' },
@@ -107,6 +119,24 @@ export async function KpiStrip() {
           {freshness.label} · KPIs zeigen den letzten erfolgreichen Refresh.
         </div>
       ) : null}
+
+      <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-slate-400">
+        <span>
+          Scope <span className="text-slate-200">{scopeLabel}</span>
+        </span>
+        <span>
+          Identity <span className="text-sky-200">{identityLabel}</span>
+          {gh?.identity?.authorEmailCount ? (
+            <span className="text-slate-500"> +{gh.identity.authorEmailCount} Mail-Alias</span>
+          ) : null}
+        </span>
+        <span>
+          Orgs <span className="text-slate-200">{orgLabel}</span>
+        </span>
+        <span>
+          Owners <span className="text-slate-200">{ownerLabel}</span>
+        </span>
+      </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-7 md:gap-4">
         {items.map((it) => (

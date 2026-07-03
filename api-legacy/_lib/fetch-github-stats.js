@@ -1,12 +1,11 @@
-const USER = process.env.GITHUB_USER || 'muraschal';
-const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
+const {
+  buildCommitSearchScopes,
+  getGithubIdentity,
+} = require('./github-identity');
 
-const SCOPES = [
-  ...ORGS.map(o => `org:${o}`),
-  `user:${USER}`,
-];
+const COMMIT_SEARCH_MAX_PAGES = Number(process.env.GITHUB_COMMIT_SEARCH_MAX_PAGES || 1);
 
-async function ghFetch(url, token) {
+async function ghSearch(url, token) {
   const res = await fetch(url, {
     headers: {
       Authorization: `token ${token}`,
@@ -14,58 +13,104 @@ async function ghFetch(url, token) {
       'X-GitHub-Api-Version': '2022-11-28',
     },
   });
-  if (!res.ok) throw new Error(`GitHub ${res.status}: ${url}`);
-  return res.json();
-}
-
-async function searchCommits(query, token, perPage = 1) {
-  const res = await fetch(
-    `https://api.github.com/search/commits?q=${encodeURIComponent(query)}&sort=committer-date&order=desc&per_page=${perPage}`,
-    {
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    }
-  );
-  if (!res.ok) return { total_count: 0, items: [] };
-  return res.json();
-}
-
-async function searchCommitsMultiScope(scopes, authorQ, dateQ, token, perPage = 1) {
-  const results = await Promise.all(
-    scopes.map(scope =>
-      searchCommits(`${scope} ${authorQ} ${dateQ}`, token, perPage)
-    )
-  );
-  let totalCount = 0;
-  const allItems = [];
-  for (const r of results) {
-    totalCount += r.total_count || 0;
-    if (r.items) allItems.push(...r.items);
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`GitHub ${res.status}: ${body.slice(0, 160) || url}`);
   }
-  allItems.sort((a, b) => {
-    const da = a.commit?.committer?.date || '';
-    const db = b.commit?.committer?.date || '';
+  return res.json();
+}
+
+async function searchCommitItems(query, token, maxPages = COMMIT_SEARCH_MAX_PAGES) {
+  const items = [];
+  let truncated = false;
+  let totalCount = 0;
+
+  for (let page = 1; page <= maxPages; page++) {
+    const url =
+      `https://api.github.com/search/commits?q=${encodeURIComponent(query)}` +
+      `&sort=committer-date&order=desc&per_page=100&page=${page}`;
+    const data = await ghSearch(url, token);
+    totalCount = data.total_count || totalCount;
+    const pageItems = data.items || [];
+    items.push(...pageItems);
+
+    if (pageItems.length < 100 || items.length >= (data.total_count || 0)) break;
+    if (page === maxPages) truncated = true;
+  }
+
+  return { items, totalCount, truncated };
+}
+
+async function searchCommitItemsAcross(scopes, authorQueries, dateQ, token, opts = {}) {
+  const maxPages = opts.maxPages || COMMIT_SEARCH_MAX_PAGES;
+  const queryParts = [];
+
+  for (const scope of scopes) {
+    for (const author of authorQueries) {
+      queryParts.push({
+        scope,
+        author,
+        query: [scope, author.query, dateQ].filter(Boolean).join(' '),
+      });
+    }
+  }
+
+  const chunks = await Promise.all(
+    queryParts.map(part =>
+      searchCommitItems(part.query, token, maxPages).then(result => ({ ...result, part })),
+    ),
+  );
+
+  const seen = new Map();
+  const truncatedQueries = [];
+  let totalCount = 0;
+
+  for (const chunk of chunks) {
+    if (chunk.truncated) truncatedQueries.push(chunk.part.query);
+    totalCount += chunk.totalCount || 0;
+    for (const item of chunk.items) {
+      const repo = item.repository?.full_name || item.repository?.name || 'unknown';
+      const key = `${repo}:${item.sha}`;
+      if (item.sha && !seen.has(key)) seen.set(key, item);
+    }
+  }
+
+  const items = [...seen.values()].sort((a, b) => {
+    const da = commitDate(a) || '';
+    const db = commitDate(b) || '';
     return db.localeCompare(da);
   });
-  return { total_count: totalCount, items: allItems.slice(0, perPage) };
+
+  return {
+    total_count: totalCount,
+    items,
+    queryCount: queryParts.length,
+    truncated: truncatedQueries.length > 0,
+    truncatedQueries,
+  };
 }
 
 async function searchIssues(query, token) {
-  const res = await fetch(
-    `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=1`,
-    {
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
+  const url = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=100`;
+  return ghSearch(url, token).catch(() => ({ total_count: 0, items: [] }));
+}
+
+async function searchIssuesAcross(scopes, logins, issueQ, token) {
+  const queries = [];
+  for (const scope of scopes) {
+    for (const login of logins) {
+      queries.push([scope, issueQ(login)].filter(Boolean).join(' '));
     }
-  );
-  if (!res.ok) return { total_count: 0 };
-  return res.json();
+  }
+
+  const chunks = await Promise.all(queries.map(query => searchIssues(query, token)));
+  const seen = new Set();
+  for (const chunk of chunks) {
+    for (const item of chunk.items || []) {
+      if (item.html_url) seen.add(item.html_url);
+    }
+  }
+  return { total_count: seen.size };
 }
 
 function startOfWeek(d) {
@@ -74,9 +119,19 @@ function startOfWeek(d) {
   return new Date(d.getFullYear(), d.getMonth(), diff);
 }
 
+function toDateString(d) {
+  return d.toISOString().split('T')[0];
+}
+
+function daysAgo(now, days) {
+  const d = new Date(now);
+  d.setDate(d.getDate() - days);
+  return d;
+}
+
 function rangeToDays(range) {
   if (!range) return null;
-  const m = range.match(/^(\d+)([dwmy])$/i);
+  const m = String(range).match(/^(\d+)([dwmy])$/i);
   if (m) {
     const n = parseInt(m[1], 10);
     switch (m[2].toLowerCase()) {
@@ -84,6 +139,7 @@ function rangeToDays(range) {
       case 'w': return n * 7;
       case 'm': return n * 30;
       case 'y': return n * 365;
+      default: return null;
     }
   }
   if (range === 'ytd') {
@@ -94,112 +150,149 @@ function rangeToDays(range) {
   return null;
 }
 
+function commitDate(item) {
+  return item.commit?.committer?.date || item.commit?.author?.date || null;
+}
+
+function commitDateOnly(item) {
+  return commitDate(item)?.split('T')[0] || null;
+}
+
+function toRecentCommit(item) {
+  const msg = (item.commit?.message || '').split('\n')[0];
+  const repo = item.repository?.full_name || '';
+  return {
+    sha: item.sha?.slice(0, 7),
+    message: msg.length > 72 ? `${msg.slice(0, 69)}...` : msg,
+    repo,
+    time: commitDate(item),
+    url: item.html_url,
+  };
+}
+
+function repoCounts(items) {
+  const counts = {};
+  for (const item of items) {
+    const repo = item.repository?.full_name || item.repository?.name;
+    if (!repo) continue;
+    counts[repo] = (counts[repo] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([name, commits]) => ({ name, commits }));
+}
+
+function itemCount(items) {
+  return items.length;
+}
+
+function dailyCounts(items, now, days) {
+  const byDate = new Map();
+  for (const item of items) {
+    const d = commitDateOnly(item);
+    if (d) byDate.set(d, (byDate.get(d) || 0) + 1);
+  }
+
+  const output = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = toDateString(daysAgo(now, i));
+    output.push({ date: d, count: byDate.get(d) || 0 });
+  }
+  return output;
+}
+
+function currentStreak(items, now, today) {
+  const dates = new Set(items.map(commitDateOnly).filter(Boolean));
+  let streak = 0;
+  const checkDate = new Date(now);
+  if (!dates.has(today)) checkDate.setDate(checkDate.getDate() - 1);
+
+  while (true) {
+    const ds = toDateString(checkDate);
+    if (!dates.has(ds)) break;
+    streak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+  return streak;
+}
+
+function fallbackPayload(error) {
+  return {
+    error,
+    today: 0,
+    week: 0,
+    month: 0,
+    lastCommit: null,
+    activeRepos: [],
+    streak: 0,
+    timestamp: new Date().toISOString(),
+  };
+}
+
 module.exports = async function fetchGithubStats(opts = {}) {
   const token = process.env.GITHUB_TOKEN;
-  if (!token) {
-    return {
-      error: 'GITHUB_TOKEN not configured',
-      today: 0, week: 0, month: 0, lastCommit: null,
-      activeRepos: [], streak: 0, timestamp: new Date().toISOString(),
-    };
+  if (!token) return fallbackPayload('GITHUB_TOKEN not configured');
+
+  const identity = getGithubIdentity();
+  const source = buildCommitSearchScopes(opts.scope);
+  const scopes = source.scopes;
+  const authorQueries = identity.commitAuthorQueries;
+
+  if (!scopes.length || !authorQueries.length) {
+    return fallbackPayload('GitHub identity or source scope not configured');
   }
 
   const now = new Date();
-  const today = now.toISOString().split('T')[0];
-  const monday = startOfWeek(now).toISOString().split('T')[0];
-  const monthStart = `${today.slice(0, 7)}-01`;
+  const today = toDateString(now);
+  const monday = toDateString(startOfWeek(now));
+  const rolling30Since = toDateString(daysAgo(now, 30));
 
   const rangeDays = rangeToDays(opts.range);
-  const rangeSince = rangeDays
-    ? new Date(now.getTime() - rangeDays * 86400000).toISOString().split('T')[0]
-    : null;
-
-  const authorQ = `author:${USER}`;
+  const rangeSince = rangeDays ? toDateString(daysAgo(now, rangeDays)) : null;
 
   const prevMonday = new Date(startOfWeek(now));
   prevMonday.setDate(prevMonday.getDate() - 7);
   const prevSunday = new Date(prevMonday);
   prevSunday.setDate(prevSunday.getDate() + 6);
-  const prevMondayStr = prevMonday.toISOString().split('T')[0];
-  const prevSundayStr = prevSunday.toISOString().split('T')[0];
+  const prevMondayStr = toDateString(prevMonday);
+  const prevSundayStr = toDateString(prevSunday);
 
-  const issueScopes = ORGS.length > 0
-    ? ORGS.map(o => `org:${o}`).join(' ')
-    : `author:${USER}`;
+  const issueScopes = source.scope === 'all'
+    ? ['']
+    : scopes;
 
   const queries = [
-    searchCommitsMultiScope(SCOPES, authorQ, `committer-date:${today}`, token),
-    searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monday}`, token),
-    searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monthStart}`, token),
-    searchCommitsMultiScope(SCOPES, authorQ, `committer-date:${prevMondayStr}..${prevSundayStr}`, token),
-    searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${monday}`, token, 30),
-    ghFetch(`https://api.github.com/users/${USER}/events?per_page=100`, token),
-    searchIssues(`${issueScopes} is:issue is:open assignee:${USER}`, token).catch(() => ({ total_count: 0 })),
-    searchIssues(`${issueScopes} is:pr is:open author:${USER}`, token).catch(() => ({ total_count: 0 })),
+    searchCommitItemsAcross(scopes, authorQueries, `committer-date:${today}`, token),
+    searchCommitItemsAcross(scopes, authorQueries, `committer-date:>=${monday}`, token),
+    searchCommitItemsAcross(scopes, authorQueries, `committer-date:>=${rolling30Since}`, token),
+    searchCommitItemsAcross(scopes, authorQueries, `committer-date:${prevMondayStr}..${prevSundayStr}`, token),
+    searchIssuesAcross(issueScopes, identity.authorLogins, login => `is:issue is:open assignee:${login}`, token),
+    searchIssuesAcross(issueScopes, identity.authorLogins, login => `is:pr is:open author:${login}`, token),
   ];
 
   if (rangeSince) {
-    queries.push(
-      searchCommitsMultiScope(SCOPES, authorQ, `committer-date:>=${rangeSince}`, token)
-    );
+    queries.push(searchCommitItemsAcross(scopes, authorQueries, `committer-date:>=${rangeSince}`, token));
   }
 
   const results = await Promise.all(queries);
-  const [todayData, weekData, monthData, prevWeekData, recentData, events, openIssues, openPRs] = results;
-  const rangeData = rangeSince ? results[8] : null;
+  const [todayData, weekData, monthData, prevWeekData, openIssues, openPRs] = results;
+  const rangeData = rangeSince ? results[6] : null;
 
-  const allEvents = Array.isArray(events) ? events : [];
-  const pushEvents = allEvents.filter(e => e.type === 'PushEvent');
-
-  const lastPush = pushEvents[0];
-  const lastCommit = lastPush ? {
-    message: (lastPush.payload.commits?.slice(-1)[0]?.message || '').split('\n')[0],
-    repo: lastPush.repo.name,
-    time: lastPush.created_at,
+  const last = monthData.items[0] || weekData.items[0] || todayData.items[0] || null;
+  const lastCommit = last ? {
+    message: (last.commit?.message || '').split('\n')[0],
+    repo: last.repository?.full_name || last.repository?.name || '',
+    time: commitDate(last),
   } : null;
 
-  const recentCommits = (recentData.items || [])
+  const recentCommits = monthData.items
     .filter(item => {
       const msg = (item.commit?.message || '').split('\n')[0];
       return !msg.startsWith('Merge') && !msg.startsWith('chore: update dashboard');
     })
     .slice(0, 10)
-    .map(item => {
-      const msg = (item.commit?.message || '').split('\n')[0];
-      const repo = item.repository?.full_name || '';
-      return {
-        sha: item.sha?.slice(0, 7),
-        message: msg.length > 72 ? msg.slice(0, 69) + '…' : msg,
-        repo,
-        time: item.commit?.committer?.date || item.commit?.author?.date,
-        url: item.html_url,
-      };
-    });
-
-  const weekRepos = {};
-  pushEvents.forEach(e => {
-    const d = e.created_at?.split('T')[0];
-    if (d && d >= monday) {
-      const repo = e.repo.name;
-      const count = e.payload.size || e.payload.distinct_size || (e.payload.commits ? e.payload.commits.length : 0) || 1;
-      weekRepos[repo] = (weekRepos[repo] || 0) + count;
-    }
-  });
-
-  const streakDates = new Set();
-  pushEvents.forEach(e => {
-    if (e.created_at) streakDates.add(e.created_at.split('T')[0]);
-  });
-  let streak = 0;
-  const checkDate = new Date(now);
-  if (!streakDates.has(today)) checkDate.setDate(checkDate.getDate() - 1);
-  while (true) {
-    const ds = checkDate.toISOString().split('T')[0];
-    if (streakDates.has(ds)) {
-      streak++;
-      checkDate.setDate(checkDate.getDate() - 1);
-    } else break;
-  }
+    .map(toRecentCommit);
 
   const weekCount = weekData.total_count || 0;
   const prevWeekCount = prevWeekData.total_count || 0;
@@ -208,23 +301,10 @@ module.exports = async function fetchGithubStats(opts = {}) {
     : (weekCount > 0 ? 100 : 0);
 
   const monthCount = monthData.total_count || 0;
-  const dayOfMonth = now.getDate();
-  const avgPerDay = dayOfMonth > 0 ? +(monthCount / dayOfMonth).toFixed(1) : 0;
-
-  // Daily commit counts for sparkline (last N days based on range or default 30)
+  const avgPerDay = +(monthCount / 30).toFixed(1);
   const sparkDays = Math.min(rangeDays || 30, 90);
-  const dailyCommits = [];
-  for (let i = sparkDays - 1; i >= 0; i--) {
-    const d = new Date(now.getTime() - i * 86400000).toISOString().split('T')[0];
-    dailyCommits.push({ date: d, count: 0 });
-  }
-  pushEvents.forEach(e => {
-    const d = e.created_at?.split('T')[0];
-    const entry = dailyCommits.find(dc => dc.date === d);
-    if (entry) {
-      entry.count += e.payload.size || e.payload.distinct_size || (e.payload.commits ? e.payload.commits.length : 0) || 1;
-    }
-  });
+  const sparkItems = rangeData?.items || monthData.items;
+  const sparkline = dailyCounts(sparkItems, now, sparkDays).map(dc => dc.count);
 
   const result = {
     today: todayData.total_count || 0,
@@ -237,13 +317,34 @@ module.exports = async function fetchGithubStats(opts = {}) {
     openPRs: openPRs.total_count || 0,
     lastCommit,
     recentCommits,
-    activeRepos: Object.entries(weekRepos)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([name, commits]) => ({ name, commits })),
-    streak,
-    orgs: ORGS,
-    sparkline: dailyCommits.map(dc => dc.count),
+    activeRepos: repoCounts(weekData.items),
+    streak: currentStreak(monthData.items, now, today),
+    orgs: source.owners.orgs,
+    scope: source.scope,
+    dataSources: {
+      scope: source.scope,
+      orgs: source.owners.orgs,
+      repoOwners: source.owners.repoOwners,
+      searchScopes: scopes.map(scope => scope || 'global-accessible'),
+      commitIdentity: identity.public,
+      note: 'scope=all searches every configured org plus explicit repo owner for the configured author mapping. Item lists are deduplicated; KPI totals use GitHub search total_count per configured author query.',
+    },
+    identity: identity.public,
+    queryStats: {
+      commitSearchMaxPages: COMMIT_SEARCH_MAX_PAGES,
+      todayQueries: todayData.queryCount,
+      weekQueries: weekData.queryCount,
+      monthQueries: monthData.queryCount,
+      sampledWeekItems: itemCount(weekData.items),
+      sampledMonthItems: itemCount(monthData.items),
+      truncated:
+        todayData.truncated ||
+        weekData.truncated ||
+        monthData.truncated ||
+        prevWeekData.truncated ||
+        Boolean(rangeData?.truncated),
+    },
+    sparkline,
     timestamp: now.toISOString(),
   };
 

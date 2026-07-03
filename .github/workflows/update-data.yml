@@ -24,6 +24,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           GITHUB_USER: ${{ secrets.COCKPIT_USER }}
           GITHUB_ORGS: ${{ secrets.COCKPIT_ORGS }}
+          GITHUB_AUTHOR_LOGINS: ${{ secrets.COCKPIT_AUTHOR_LOGINS }}
+          GITHUB_AUTHOR_EMAILS: ${{ secrets.COCKPIT_AUTHOR_EMAILS }}
+          GITHUB_REPO_OWNERS: ${{ secrets.COCKPIT_REPO_OWNERS }}
+          GITHUB_ZVV_ORGS: ${{ secrets.COCKPIT_ZVV_ORGS }}
+          GITHUB_SCOPE: all
           GITHUB_HUMAN_AUTHORS: ${{ secrets.COCKPIT_HUMAN_AUTHORS }}
         run: node scripts/generate-data.mjs
 
