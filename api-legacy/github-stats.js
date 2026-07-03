@@ -19,8 +19,12 @@ module.exports = async function handler(req, res) {
 
   try {
     const data = await fetchGithubStats({ ...(range ? { range } : {}), ...(scope ? { scope } : {}) });
+    if (data?.error) {
+      res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
+    }
     return res.status(200).json(data);
   } catch (err) {
+    res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
     return res.status(200).json({
       error: err.message,
       today: 0, week: 0, month: 0, lastCommit: null,

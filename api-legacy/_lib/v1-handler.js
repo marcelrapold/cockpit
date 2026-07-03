@@ -36,8 +36,12 @@ function createV1Handler(cacheBaseKey, fetcher, fallbackData) {
         ...(scope ? { scope } : {}),
       };
       const data = await fetcher(opts);
+      if (data?.error) {
+        res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
+      }
       return res.json(data);
     } catch (err) {
+      res.setHeader('Cache-Control', 'private, no-cache, max-age=0, must-revalidate');
       return res.status(200).json(fallbackData
         ? { ...fallbackData, error: err.message, timestamp: new Date().toISOString() }
         : { error: err.message, timestamp: new Date().toISOString() }
