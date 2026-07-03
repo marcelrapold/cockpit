@@ -20,6 +20,36 @@ import { classifyFreshness, combineFreshness } from '@/lib/data/freshness';
 const FALLBACK_TEASER =
   'Engineering-Cockpit für Marcels Portfolio — Live-Commits, Deployments, Uptime und Sprachen-Verteilung über alle Projekte.';
 
+const MAX_NARRATIVE_STALENESS_MS = 1000 * 60 * 60 * 24 * 7;
+
+function fmt(n: number | null | undefined): string {
+  if (n == null || Number.isNaN(n)) return '—';
+  return n.toLocaleString('de-CH');
+}
+
+function liveTeaser(gh: Awaited<ReturnType<typeof readGithubStats>>): string {
+  if (!gh) return FALLBACK_TEASER;
+  const topRepos = (gh.activeRepos || [])
+    .slice(0, 3)
+    .map((repo) => repo.name)
+    .join(', ');
+  const source = gh.scope ? `Scope ${gh.scope}` : 'aktuellem Scope';
+  const repos = topRepos ? ` Top-Repos: ${topRepos}.` : '';
+  return `${fmt(gh.week)} Commits in den letzten 7 Tagen und ${fmt(gh.month)} in 30 Tagen — persönliche Engineering-Velocity nach ${source}.${repos}`;
+}
+
+function isNarrativeFreshEnough(
+  narrativeGeneratedAt: string | undefined,
+  statsTimestamp: string | undefined,
+): boolean {
+  if (!narrativeGeneratedAt) return false;
+  if (!statsTimestamp) return true;
+  const narrativeTime = new Date(narrativeGeneratedAt).getTime();
+  const statsTime = new Date(statsTimestamp).getTime();
+  if (!Number.isFinite(narrativeTime) || !Number.isFinite(statsTime)) return true;
+  return statsTime - narrativeTime <= MAX_NARRATIVE_STALENESS_MS;
+}
+
 type Props = {
   /** Wenn `true`, wird der "Insights →"-Link nicht gerendert (z.B. auf der Insights-Seite selbst). */
   hideInsightsLink?: boolean;
@@ -35,7 +65,10 @@ export async function NarrativeHero({ hideInsightsLink = false }: Props = {}) {
   const [narrative, gh] = await Promise.all([readNarrative(), readGithubStats()]);
   const build = getBuildInfo();
 
-  const teaser = narrative?.teaser?.trim() || FALLBACK_TEASER;
+  const useNarrative = isNarrativeFreshEnough(narrative?.generatedAt, gh?.timestamp);
+  const teaser = useNarrative
+    ? narrative?.teaser?.trim() || FALLBACK_TEASER
+    : liveTeaser(gh);
   const generated = narrative?.generatedAt ? new Date(narrative.generatedAt) : null;
   const generatedLabel = generated
     ? new Intl.DateTimeFormat('de-CH', {
