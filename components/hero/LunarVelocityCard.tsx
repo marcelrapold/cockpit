@@ -44,6 +44,7 @@ type CardState =
 
 const STATIC_SUMMARY_URL = '/data-lunar-velocity.json';
 const LIVE_SUMMARY_URL = process.env.NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?.trim();
+const SAME_ORIGIN_SUMMARY_URL = '/api/summary';
 
 const EVIDENCE_STYLE: Record<Evidence, string> = {
   weak: 'border-slate-500/40 bg-slate-500/10 text-slate-300',
@@ -83,6 +84,7 @@ function withWindowParam(source: string): string {
 async function loadSummary(): Promise<CardState> {
   const candidates = [
     ...(LIVE_SUMMARY_URL ? [{ url: LIVE_SUMMARY_URL, source: 'live' as const }] : []),
+    { url: SAME_ORIGIN_SUMMARY_URL, source: 'live' as const },
     { url: STATIC_SUMMARY_URL, source: 'static' as const },
   ];
 

@@ -72,7 +72,8 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
   response.headers.set('X-Cockpit-Mode', 'private');
-  response.headers.set('Cache-Control', 'private, no-store');
+  if (request.nextUrl.pathname !== '/api/summary') {
+    response.headers.set('Cache-Control', 'private, no-store');
+  }
   return response;
 }
-

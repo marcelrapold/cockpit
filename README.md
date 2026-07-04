@@ -88,7 +88,7 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `LUNAR_GITHUB_TOKEN` | No | Optional separate PAT for Lunar Velocity; falls back to `GITHUB_TOKEN` |
 | `LUNAR_GITHUB_ORGS` | No | Optional org owners included in Lunar repo scan; falls back to `GITHUB_ORGS` |
 | `LUNAR_CACHE_DIR` | No | Local JSON cache directory, defaults to `.lunar-cache` |
-| `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL` | No | Deployed Lunar `/api/summary` endpoint for the Cockpit home-card; falls back to `public/data-lunar-velocity.json` |
+| `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL` | No | Optional external Lunar `/api/summary` endpoint for the Cockpit home-card; defaults to same-origin `/api/summary`, then falls back to `public/data-lunar-velocity.json` |
 | `VERCEL_API_KEY` | No | Vercel REST API token |
 | `VERCEL_TEAM_IDS` | No | Comma-separated Vercel Team IDs |
 | `SUPABASE_ACCESS_TOKEN` | No | Supabase Management API token |
@@ -150,7 +150,7 @@ Lunar Velocity asks: **“Does Marcel ship more when the moon is full?”**
 Cockpit home-card contract:
 
 - Client fetches `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?window=2` when configured.
-- If no deployed URL exists yet, it falls back to `public/data-lunar-velocity.json`.
+- Otherwise it fetches same-origin `/api/summary?window=2`, then falls back to `public/data-lunar-velocity.json`.
 - Expected endpoint shape:
 
 ```json
