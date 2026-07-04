@@ -1,9 +1,24 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useEffect, useMemo, useState } from 'react';
 
 type Evidence = 'weak' | 'moderate' | 'strong';
 type Direction = 'higher' | 'lower' | 'none';
+
+const MoonSignal3D = dynamic(
+  () => import('./MoonSignal3D').then((mod) => mod.MoonSignal3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="relative h-[170px] min-w-[230px] overflow-hidden rounded-md border border-white/10 bg-[#050816] md:h-[190px] md:w-[270px]">
+        <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_50%_45%,rgba(251,191,36,0.16),rgba(15,23,42,0)_60%)]">
+          <div className="h-24 w-24 rounded-full bg-[radial-gradient(circle_at_35%_30%,#f8fafc,#94a3b8_46%,#111827_72%)] shadow-[0_0_70px_rgba(251,191,36,0.25)]" />
+        </div>
+      </div>
+    ),
+  },
+);
 
 type LunarSummary = {
   generatedAt: string;
@@ -116,6 +131,14 @@ function formatShare(value: number): string {
   return `${Math.round(value)}%`;
 }
 
+function impactCountFor(summary: LunarSummary): number {
+  const velocityLift = Math.abs(summary.velocityPctDiff ?? 0);
+  const topDaySignal = Number.isFinite(summary.topDaysInFullMoonShare)
+    ? summary.topDaysInFullMoonShare
+    : 0;
+  return 12 + velocityLift / 4 + topDaySignal / 5;
+}
+
 export function LunarVelocityCard() {
   const [state, setState] = useState<CardState>({ status: 'loading' });
 
@@ -144,6 +167,8 @@ export function LunarVelocityCard() {
         actionUrl: '/lunar',
         actionLabel: 'Open Lab',
         metricLabel: 'moon signal',
+        impactCount: 12,
+        signalTone: 'pending' as const,
       };
     }
 
@@ -161,6 +186,8 @@ export function LunarVelocityCard() {
         actionUrl: '/lunar',
         actionLabel: 'Open Lab',
         metricLabel: 'moon lift',
+        impactCount: 10,
+        signalTone: 'offline' as const,
       };
     }
 
@@ -179,6 +206,8 @@ export function LunarVelocityCard() {
       actionUrl: summary.detailUrl || '/lunar',
       actionLabel: summary.detailUrl ? 'Details' : 'Open Lab',
       metricLabel: isPending ? 'moon signal' : 'moon lift',
+      impactCount: impactCountFor(summary),
+      signalTone: isPending ? ('pending' as const) : ('live' as const),
     };
   }, [state]);
 
@@ -209,25 +238,28 @@ export function LunarVelocityCard() {
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center justify-between gap-3 md:justify-end">
-            <div className="text-right">
-              <div className="font-mono text-3xl font-semibold tabular-nums text-amber-100">
-                {content.velocity}
+          <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center md:justify-end">
+            <MoonSignal3D impactCount={content.impactCount} signalTone={content.signalTone} />
+            <div className="flex items-center justify-between gap-3 sm:flex-col sm:items-end">
+              <div className="text-right">
+                <div className="font-mono text-3xl font-semibold tabular-nums text-amber-100">
+                  {content.velocity}
+                </div>
+                <div className="text-[10px] uppercase tracking-wider text-slate-500">
+                  {content.metricLabel}
+                </div>
               </div>
-              <div className="text-[10px] uppercase tracking-wider text-slate-500">
-                {content.metricLabel}
-              </div>
+              {content.actionUrl ? (
+                <a
+                  href={content.actionUrl}
+                  target={content.actionUrl.startsWith('http') ? '_blank' : undefined}
+                  rel={content.actionUrl.startsWith('http') ? 'noreferrer' : undefined}
+                  className="rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-300 transition hover:border-amber-200/40 hover:text-amber-100"
+                >
+                  {content.actionLabel}
+                </a>
+              ) : null}
             </div>
-            {content.actionUrl ? (
-              <a
-                href={content.actionUrl}
-                target={content.actionUrl.startsWith('http') ? '_blank' : undefined}
-                rel={content.actionUrl.startsWith('http') ? 'noreferrer' : undefined}
-                className="rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-[10px] uppercase tracking-wider text-slate-300 transition hover:border-amber-200/40 hover:text-amber-100"
-              >
-                {content.actionLabel}
-              </a>
-            ) : null}
           </div>
         </div>
       </div>

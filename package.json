@@ -20,6 +20,8 @@
   },
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.104",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "ai": "^6.0.168",
     "astronomy-engine": "^2.1.19",
     "ioredis": "^5.10.1",
@@ -28,6 +30,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^3.9.1",
+    "three": "^0.184.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -35,6 +38,7 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.184.1",
     "eslint": "^9.16.0",
     "eslint-config-next": "^15.1.0",
     "postcss": "^8.4.49",
