@@ -45,6 +45,7 @@ type CardState =
 const STATIC_SUMMARY_URL = '/data-lunar-velocity.json';
 const LIVE_SUMMARY_URL = process.env.NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?.trim();
 const SAME_ORIGIN_SUMMARY_URL = '/api/summary';
+const LIVE_SUMMARY_TIMEOUT_MS = 120_000;
 
 const EVIDENCE_STYLE: Record<Evidence, string> = {
   weak: 'border-slate-500/40 bg-slate-500/10 text-slate-300',
@@ -81,37 +82,60 @@ function withWindowParam(source: string): string {
   return url.toString();
 }
 
-async function loadSummary(): Promise<CardState> {
+async function fetchSummary(
+  url: string,
+  source: 'live' | 'static',
+  timeoutMs?: number,
+): Promise<CardState> {
+  const controller = timeoutMs ? new AbortController() : null;
+  const timeout = controller
+    ? window.setTimeout(() => controller.abort(), timeoutMs)
+    : null;
+
+  try {
+    const response = await fetch(withWindowParam(url), {
+      cache: source === 'live' ? 'no-store' : 'no-cache',
+      signal: controller?.signal,
+    });
+    if (!response.ok) {
+      return { status: 'error', message: `Lunar summary returned HTTP ${response.status}.` };
+    }
+
+    const data: unknown = await response.json();
+    if (!isLunarSummary(data)) {
+      return {
+        status: 'error',
+        message: 'Lunar summary payload does not match the endpoint contract.',
+      };
+    }
+
+    return { status: 'ready', summary: data, source };
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Failed to load Lunar summary.',
+    };
+  } finally {
+    if (timeout != null) window.clearTimeout(timeout);
+  }
+}
+
+async function loadStaticSummary(): Promise<CardState> {
+  return fetchSummary(STATIC_SUMMARY_URL, 'static');
+}
+
+async function loadLiveSummary(): Promise<CardState> {
   const candidates = [
-    ...(LIVE_SUMMARY_URL ? [{ url: LIVE_SUMMARY_URL, source: 'live' as const }] : []),
-    { url: SAME_ORIGIN_SUMMARY_URL, source: 'live' as const },
-    { url: STATIC_SUMMARY_URL, source: 'static' as const },
+    ...(LIVE_SUMMARY_URL ? [LIVE_SUMMARY_URL] : []),
+    SAME_ORIGIN_SUMMARY_URL,
   ];
 
   let lastError = 'No Lunar Velocity summary source configured.';
-
-  for (const candidate of candidates) {
-    try {
-      const response = await fetch(withWindowParam(candidate.url), {
-        cache: candidate.source === 'live' ? 'no-store' : 'no-cache',
-      });
-      if (!response.ok) {
-        lastError = `Lunar summary returned HTTP ${response.status}.`;
-        continue;
-      }
-
-      const data: unknown = await response.json();
-      if (!isLunarSummary(data)) {
-        lastError = 'Lunar summary payload does not match the endpoint contract.';
-        continue;
-      }
-
-      return { status: 'ready', summary: data, source: candidate.source };
-    } catch (error) {
-      lastError = error instanceof Error ? error.message : 'Failed to load Lunar summary.';
-    }
+  for (const url of candidates) {
+    const next = await fetchSummary(url, 'live', LIVE_SUMMARY_TIMEOUT_MS);
+    if (next.status === 'ready') return next;
+    if (next.status === 'error') lastError = next.message;
   }
-
   return { status: 'error', message: lastError };
 }
 
@@ -146,9 +170,19 @@ export function LunarVelocityCard() {
 
   useEffect(() => {
     let cancelled = false;
-    loadSummary().then((next) => {
-      if (!cancelled) setState(next);
+    let liveApplied = false;
+
+    loadStaticSummary().then((next) => {
+      if (!cancelled && !liveApplied) setState(next);
     });
+
+    loadLiveSummary().then((next) => {
+      if (!cancelled && next.status === 'ready') {
+        liveApplied = true;
+        setState(next);
+      }
+    });
+
     return () => {
       cancelled = true;
     };
