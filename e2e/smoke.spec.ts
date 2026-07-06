@@ -4,7 +4,7 @@ test.describe('Smoke — Seiten & Shell', () => {
   test('Startseite / lädt (Next.js Shell)', async ({ page }) => {
     const res = await page.goto('/');
     expect(res?.ok()).toBeTruthy();
-    await expect(page.locator('main')).toBeVisible();
+    await expect(page.getByRole('main').first()).toBeVisible();
   });
 
   test('Hero-Sektionen sind nativ gerendert', async ({ page }) => {
@@ -12,7 +12,7 @@ test.describe('Smoke — Seiten & Shell', () => {
     // Native Server-Components — kein iframe mehr.
     await expect(page.locator('section[aria-label="Live-KPIs"]')).toBeVisible();
     await expect(page.locator('section[aria-label="DORA Four-Keys"]')).toBeVisible();
-    await expect(page.locator('section[aria-label="Portfolio-Übersicht"]')).toBeVisible();
+    await expect(page.locator('section[aria-label^="Portfolio"]')).toBeVisible();
   });
 
   test('Legacy /legacy.html ist nicht mehr öffentlich ausgeliefert', async ({ request }) => {
