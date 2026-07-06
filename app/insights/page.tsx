@@ -16,6 +16,10 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Link from 'next/link';
 
+import {
+  ActiveRepoInvestments,
+  ActiveRepoInvestmentsSkeleton,
+} from '@/components/hero/ActiveRepoInvestments';
 import { ExtendedNarrative } from '@/components/hero/ExtendedNarrative';
 import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
@@ -79,6 +83,10 @@ export default function InsightsPage() {
           <KpiStrip />
         </Suspense>
       </div>
+
+      <Suspense fallback={<ActiveRepoInvestmentsSkeleton />}>
+        <ActiveRepoInvestments />
+      </Suspense>
 
       <Suspense
         fallback={

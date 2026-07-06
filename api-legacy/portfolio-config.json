@@ -53,6 +53,14 @@
       "lcNote": "Side Project", "forecast": "Open",
       "vercel": "https://vercel.com/muraschal/mycvbuilder.app"
     },
+    "marcelrapold/dominicanoexpress.com": {
+      "name": "Dominicano Express",
+      "work": "Website, OCR-Scanner, API, E-Mail",
+      "mode": "build", "lc": "prod", "pt": "8–12", "ptMid": 10, "cat": "change",
+      "lcNote": "Produktionswebsite mit Scanner-Workflow und Vercel-Backend-Funktionen",
+      "forecast": "Ja — aktive Produktentwicklung",
+      "vercel": "https://vercel.com/muraschal/dominicanoexpress-com"
+    },
     "zvvch/zvv-entdeckungsreise": {
       "name": "ZVV Entdeckungsreise",
       "work": "Maintenance, Support",

@@ -840,17 +840,19 @@
     },
     "marcelrapold/dominicanoexpress.com": {
       "full": "marcelrapold/dominicanoexpress.com",
-      "oneLiner": "Statisches Monorepo für dominicanoexpress.com mit Hauptwebsite und KI-gestütztem ID-Scanner — zero Build-Step, Vercel-deployed, OCR via ocr.space API.",
-      "purpose": "Das Repository bündelt zwei Apps: die Marketing-Website von Dominicano Express und eine ID-Scanner-App, die OCR (ocr.space API) zur Dokumentenerfassung nutzt. Beide Apps sind reines HTML/CSS/JS ohne Compile-Schritt und werden per Vercel-Routing auf denselben Domain-Pfaden ausgeliefert. E-Mail-Versand erfolgt über Resend, OG-Image-Generierung über @vercel/og.",
-      "stack": "HTML · CSS · Vanilla JS · Vercel · Resend · @vercel/og · ocr.space API",
-      "audience": "Kunden von Dominicano Express (public)",
+      "oneLiner": "Produktionsplattform für Dominicano Express: trilinguale Website, eingebetteter ID-Scanner, OCR/MRZ-Profil-Engine, Vercel API Routes und Resend-Mail-Workflow.",
+      "purpose": "Das Repository bündelt die öffentliche Dominicano-Express-Website und einen operativen Scanner-Workflow für Ausweise, Pässe und Führerausweise. Neben der Marketing-/Conversion-Oberfläche enthält es modulare OCR/MRZ-Profile für mehrere Länder, Bild-Cropping, Auto-Capture, i18n, Vercel-Routing, OG-Image-Generation und eine Backend-Funktion für Scan-E-Mails via Resend.",
+      "stack": "HTML · CSS · TypeScript/ESM · esbuild · Vercel Functions · Resend · @vercel/og · ocr.space API",
+      "audience": "Kunden und Betreiber von Dominicano Express",
       "status": "active",
       "tags": [
-        "static-site",
+        "production",
+        "business-website",
         "ocr",
-        "monorepo",
-        "vercel",
-        "business-website"
+        "mrz",
+        "vercel-functions",
+        "resend",
+        "i18n"
       ]
     },
     "marcelrapold/belegfuchs": {
