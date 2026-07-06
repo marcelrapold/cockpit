@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { buildLunarAnalysis } from '@/lib/lunar/analyze';
+import { buildLunarAnalysis, LunarDemoDisabledError } from '@/lib/lunar/analyze';
 import { lunarDailyCsv } from '@/lib/lunar/export';
 
 export const runtime = 'nodejs';
@@ -33,12 +33,17 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    const status = error instanceof LunarDemoDisabledError ? error.status : 500;
     return NextResponse.json(
       {
         error: (error as Error).message,
+        hint:
+          status === 400
+            ? 'Remove demo=1. Cockpit exports live GitHub-backed Lunar data only.'
+            : 'Set GITHUB_TOKEN or LUNAR_GITHUB_TOKEN with access to the target repositories.',
         timestamp: new Date().toISOString(),
       },
-      { status: 500 },
+      { status },
     );
   }
 }

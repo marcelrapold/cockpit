@@ -7,14 +7,14 @@ Use this when another local/cloud coding agent needs to continue the Cockpit/Lun
 - Repository: `/Users/marcelrapold/DEV/marcelrapold/cockpit`
 - Local app: `http://localhost:3001`
 - Primary routes: `/`, `/lunar`, `/insights`
-- Current task: Cockpit now includes a Lunar Velocity analysis app, a home-page Lunar summary card, and a local static fallback so the home page is useful without Redis.
+- Current task: Cockpit includes a Lunar Velocity analysis app and a home-page Lunar summary card. The app now uses live GitHub-backed data only.
 
 ## Current State
 
-- `/lunar` is implemented as a Next.js App Router page with Recharts, CSV/JSON export, report view, demo/live modes, moon-phase analysis via `astronomy-engine`, and GitHub collection APIs.
-- The Lunar app defaults to clearly labeled demo data when no GitHub token is configured.
+- `/lunar` is implemented as a Next.js App Router page with Recharts, CSV/JSON export, report view, moon-phase analysis via `astronomy-engine`, and GitHub collection APIs.
+- The Lunar app requires live GitHub-backed data. `demo=1` is rejected instead of generating synthetic activity.
 - The Cockpit home page has a client-side Lunar card wired to the external `GET /api/summary?window=2` contract.
-- Until Lunar is deployed, the card reads `public/data-lunar-velocity.json` and the header keeps `Lunar TODO`.
+- Lunar is deployed inside Cockpit. The card reads `/api/summary?window=2` (or `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL`) and rejects `demoMode: true`.
 - Once deployed, set `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL=https://<lunar-deploy-url>/api/summary`.
 - `lib/data/static-fallback.ts` reads `data/private/data*.json` when Redis is absent or empty; these files are deliberately not served as public static assets.
 - `lib/data/cache-reader.ts` now falls back to static GitHub stats, narrative, repos, portfolio, and language stats.
@@ -26,7 +26,7 @@ Use this when another local/cloud coding agent needs to continue the Cockpit/Lun
 cd /Users/marcelrapold/DEV/marcelrapold/cockpit
 npm run build
 npm run dev -- --port 3001
-curl "http://localhost:3001/api/lunar/analyze?demo=1&user=marcel&window=2"
+curl "http://localhost:3001/api/lunar/analyze?user=marcel&window=2"
 ```
 
 ## Remaining Notes

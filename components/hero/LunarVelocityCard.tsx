@@ -39,10 +39,9 @@ type LunarSummary = {
 
 type CardState =
   | { status: 'loading' }
-  | { status: 'ready'; summary: LunarSummary; source: 'live' | 'static' }
+  | { status: 'ready'; summary: LunarSummary }
   | { status: 'error'; message: string };
 
-const STATIC_SUMMARY_URL = '/data-lunar-velocity.json';
 const LIVE_SUMMARY_URL = process.env.NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?.trim();
 const SAME_ORIGIN_SUMMARY_URL = '/api/summary';
 const LIVE_SUMMARY_TIMEOUT_MS = 120_000;
@@ -82,11 +81,7 @@ function withWindowParam(source: string): string {
   return url.toString();
 }
 
-async function fetchSummary(
-  url: string,
-  source: 'live' | 'static',
-  timeoutMs?: number,
-): Promise<CardState> {
+async function fetchSummary(url: string, timeoutMs?: number): Promise<CardState> {
   const controller = timeoutMs ? new AbortController() : null;
   const timeout = controller
     ? window.setTimeout(() => controller.abort(), timeoutMs)
@@ -94,7 +89,7 @@ async function fetchSummary(
 
   try {
     const response = await fetch(withWindowParam(url), {
-      cache: source === 'live' ? 'no-store' : 'no-cache',
+      cache: 'no-store',
       signal: controller?.signal,
     });
     if (!response.ok) {
@@ -109,7 +104,14 @@ async function fetchSummary(
       };
     }
 
-    return { status: 'ready', summary: data, source };
+    if (data.demoMode) {
+      return {
+        status: 'error',
+        message: 'Lunar summary reported demoMode=true; Cockpit only displays live GitHub data.',
+      };
+    }
+
+    return { status: 'ready', summary: data };
   } catch (error) {
     return {
       status: 'error',
@@ -120,10 +122,6 @@ async function fetchSummary(
   }
 }
 
-async function loadStaticSummary(): Promise<CardState> {
-  return fetchSummary(STATIC_SUMMARY_URL, 'static');
-}
-
 async function loadLiveSummary(): Promise<CardState> {
   const candidates = [
     ...(LIVE_SUMMARY_URL ? [LIVE_SUMMARY_URL] : []),
@@ -132,7 +130,7 @@ async function loadLiveSummary(): Promise<CardState> {
 
   let lastError = 'No Lunar Velocity summary source configured.';
   for (const url of candidates) {
-    const next = await fetchSummary(url, 'live', LIVE_SUMMARY_TIMEOUT_MS);
+    const next = await fetchSummary(url, LIVE_SUMMARY_TIMEOUT_MS);
     if (next.status === 'ready') return next;
     if (next.status === 'error') lastError = next.message;
   }
@@ -170,15 +168,9 @@ export function LunarVelocityCard() {
 
   useEffect(() => {
     let cancelled = false;
-    let liveApplied = false;
-
-    loadStaticSummary().then((next) => {
-      if (!cancelled && !liveApplied) setState(next);
-    });
 
     loadLiveSummary().then((next) => {
-      if (!cancelled && next.status === 'ready') {
-        liveApplied = true;
+      if (!cancelled) {
         setState(next);
       }
     });
@@ -193,9 +185,9 @@ export function LunarVelocityCard() {
       return {
         velocity: '...',
         evidence: 'weak' as Evidence,
-        verdict: 'Lunar Velocity summary wird geladen.',
+        verdict: 'Lunar Velocity summary wird live aus GitHub geladen.',
         detailUrl: '',
-        sourceLabel: 'loading',
+        sourceLabel: 'live only',
         meta: 'window +/-2d',
         repo: 'pending',
         share: '--',
@@ -212,11 +204,11 @@ export function LunarVelocityCard() {
       return {
         velocity: '—',
         evidence: 'weak' as Evidence,
-        verdict: `Moon signal kurz nicht erreichbar. ${state.message}`,
+        verdict: `Moon signal nicht erreichbar. Keine Demo-Daten werden angezeigt. ${state.message}`,
         detailUrl: '',
         sourceLabel: 'offline',
         meta: 'live signal unavailable',
-        repo: 'fallback',
+        repo: 'no fallback',
         share: '--',
         pValue: 'p=--',
         actionUrl: '/lunar',
@@ -227,14 +219,14 @@ export function LunarVelocityCard() {
       };
     }
 
-    const { summary, source } = state;
+    const { summary } = state;
     const isPending = summary.velocityPctDiff == null || !summary.detailUrl;
     return {
       velocity: formatVelocity(summary.velocityPctDiff, summary.direction),
       evidence: summary.evidence,
       verdict: summary.verdict,
       detailUrl: summary.detailUrl,
-      sourceLabel: isPending ? 'signal pending' : source === 'live' ? 'live endpoint' : 'snapshot',
+      sourceLabel: isPending ? 'signal pending' : 'live endpoint',
       meta: `${summary.periodStart} - ${summary.periodEnd} / +/-${summary.fullMoonWindowDays}d`,
       repo: summary.mostAffectedRepo || 'awaiting deploy',
       share: formatShare(summary.topDaysInFullMoonShare),

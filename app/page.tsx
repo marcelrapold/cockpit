@@ -35,6 +35,7 @@ import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
 import { LiveActivity, LiveActivitySkeleton } from '@/components/hero/LiveActivity';
 import { LunarVelocityCard } from '@/components/hero/LunarVelocityCard';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
+import { AtlasNavigation } from '@/components/layout/AtlasNavigation';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import {
   PortfolioBoard,
@@ -81,39 +82,42 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function Home() {
   return (
-    <main className="min-h-[100svh] w-full bg-[#0b1120] text-slate-100">
-      <div className="border-b border-white/5 bg-gradient-to-b from-[#0d1426] to-[#0b1120] pb-2">
-        <Suspense fallback={<NarrativeHeroSkeleton />}>
-          <NarrativeHero />
-        </Suspense>
-        <Suspense fallback={<KpiStripSkeleton />}>
-          <KpiStrip />
-        </Suspense>
-        <LunarVelocityCard />
-        <Suspense fallback={<DoraStripSkeleton />}>
-          <DoraStrip />
-        </Suspense>
-        <Suspense fallback={<InfraHealthSkeleton />}>
-          <InfraHealth />
-        </Suspense>
-        <Suspense fallback={<LiveActivitySkeleton />}>
-          <LiveActivity />
-        </Suspense>
-      </div>
+    <>
+      <AtlasNavigation active="dashboard" />
+      <main className="min-h-[100svh] w-full bg-[#0b1120] text-slate-100">
+        <div className="border-b border-white/5 bg-gradient-to-b from-[#0d1426] to-[#0b1120] pb-2">
+          <Suspense fallback={<NarrativeHeroSkeleton />}>
+            <NarrativeHero hideInsightsLink />
+          </Suspense>
+          <Suspense fallback={<KpiStripSkeleton />}>
+            <KpiStrip />
+          </Suspense>
+          <LunarVelocityCard />
+          <Suspense fallback={<DoraStripSkeleton />}>
+            <DoraStrip />
+          </Suspense>
+          <Suspense fallback={<InfraHealthSkeleton />}>
+            <InfraHealth />
+          </Suspense>
+          <Suspense fallback={<LiveActivitySkeleton />}>
+            <LiveActivity />
+          </Suspense>
+        </div>
 
-      <Suspense fallback={<ActivityHeatmapSkeleton />}>
-        <ActivityHeatmap />
-      </Suspense>
+        <Suspense fallback={<ActivityHeatmapSkeleton />}>
+          <ActivityHeatmap />
+        </Suspense>
 
-      <Suspense fallback={<LanguageDonutSkeleton />}>
-        <LanguageDonut />
-      </Suspense>
+        <Suspense fallback={<LanguageDonutSkeleton />}>
+          <LanguageDonut />
+        </Suspense>
 
-      <Suspense fallback={<PortfolioBoardSkeleton />}>
-        <PortfolioBoard />
-      </Suspense>
+        <Suspense fallback={<PortfolioBoardSkeleton />}>
+          <PortfolioBoard />
+        </Suspense>
 
-      <SiteFooter />
-    </main>
+        <SiteFooter />
+      </main>
+    </>
   );
 }

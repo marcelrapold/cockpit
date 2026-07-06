@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { buildLunarAnalysis } from '@/lib/lunar/analyze';
+import { buildLunarAnalysis, LunarDemoDisabledError } from '@/lib/lunar/analyze';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -18,13 +18,17 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    const status = error instanceof LunarDemoDisabledError ? error.status : 500;
     return NextResponse.json(
       {
         error: (error as Error).message,
-        hint: 'Set GITHUB_TOKEN or LUNAR_GITHUB_TOKEN in .env.local, or add ?demo=1 for clearly marked synthetic demo data.',
+        hint:
+          status === 400
+            ? 'Remove demo=1. Cockpit is configured for live GitHub-backed Lunar data only.'
+            : 'Set GITHUB_TOKEN or LUNAR_GITHUB_TOKEN in .env.local with access to private and organization repositories.',
         timestamp: new Date().toISOString(),
       },
-      { status: 500 },
+      { status },
     );
   }
 }

@@ -88,7 +88,7 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `LUNAR_GITHUB_TOKEN` | No | Optional separate PAT for Lunar Velocity; falls back to `GITHUB_TOKEN` |
 | `LUNAR_GITHUB_ORGS` | No | Optional org owners included in Lunar repo scan; falls back to `GITHUB_ORGS` |
 | `LUNAR_CACHE_DIR` | No | Local JSON cache directory, defaults to `.lunar-cache` |
-| `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL` | No | Optional external Lunar `/api/summary` endpoint for the Cockpit home-card; defaults to same-origin `/api/summary`, then falls back to `public/data-lunar-velocity.json` |
+| `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL` | No | Optional external Lunar `/api/summary` endpoint for the Cockpit home-card; defaults to same-origin `/api/summary` |
 | `VERCEL_API_KEY` | No | Vercel REST API token |
 | `VERCEL_TEAM_IDS` | No | Comma-separated Vercel Team IDs |
 | `SUPABASE_ACCESS_TOKEN` | No | Supabase Management API token |
@@ -150,7 +150,8 @@ Lunar Velocity asks: **“Does Marcel ship more when the moon is full?”**
 Cockpit home-card contract:
 
 - Client fetches `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?window=2` when configured.
-- Otherwise it fetches same-origin `/api/summary?window=2`, then falls back to `public/data-lunar-velocity.json`.
+- Otherwise it fetches same-origin `/api/summary?window=2`.
+- Cockpit rejects `demoMode: true` and does not display synthetic Lunar data.
 - Expected endpoint shape:
 
 ```json
@@ -210,9 +211,9 @@ Statistics:
 
 Exports:
 
-- JSON: `/api/lunar/export?format=json&demo=1`
-- CSV: `/api/lunar/export?format=csv&demo=1`
-- Use the dashboard export buttons to include the current filters.
+- JSON: `/api/lunar/export?format=json`
+- CSV: `/api/lunar/export?format=csv`
+- Use the dashboard export buttons to include the current live-data filters.
 
 Limitations:
 

@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertTriangle,
@@ -8,9 +7,7 @@ import {
   BarChart3,
   CalendarDays,
   Download,
-  FlaskConical,
   GitPullRequest,
-  Home,
   Moon,
   RefreshCw,
   Rocket,
@@ -39,6 +36,7 @@ import type {
   WeekdayPhaseHeatmapCell,
   WindowComparison,
 } from '@/lib/lunar/types';
+import { AtlasNavigation } from '@/components/layout/AtlasNavigation';
 
 type Props = {
   initialUser: string;
@@ -56,7 +54,6 @@ type DashboardParams = {
   includeForks: boolean;
   includeLines: boolean;
   excludeBots: boolean;
-  demo: boolean;
 };
 
 const phaseColor: Record<MoonPhaseKind, string> = {
@@ -100,7 +97,6 @@ function buildQuery(params: DashboardParams, force = false) {
     includeForks: params.includeForks ? '1' : '0',
     includeLines: params.includeLines ? '1' : '0',
     excludeBots: params.excludeBots ? '1' : '0',
-    demo: params.demo ? '1' : '0',
   });
   if (force) query.set('force', '1');
   return query;
@@ -451,13 +447,7 @@ function TopDays({ analysis }: { analysis: LunarAnalysis }) {
   );
 }
 
-function EmptyState({
-  error,
-  onDemo,
-}: {
-  error: string | null;
-  onDemo: () => void;
-}) {
+function EmptyState({ error }: { error: string | null }) {
   return (
     <div className="rounded-lg border border-[#ff6b57]/40 bg-[#2a1714] p-5 text-[#f4f1e8]">
       <div className="mb-3 flex items-center gap-2 text-[#ff9b8d]">
@@ -467,14 +457,9 @@ function EmptyState({
       <p className="text-sm leading-relaxed text-[#d8cdb9]">
         {error || 'The API did not return an analysis.'}
       </p>
-      <button
-        type="button"
-        onClick={onDemo}
-        className="mt-4 inline-flex h-9 items-center gap-2 rounded-md border border-[#d7ff45] bg-[#d7ff45] px-3 text-sm font-medium text-[#14130f]"
-      >
-        <FlaskConical className="h-4 w-4" />
-        Run demo mode
-      </button>
+      <p className="mt-3 text-xs uppercase tracking-[0.16em] text-[#ffb1a7]">
+        Real data only · no synthetic fallback
+      </p>
     </div>
   );
 }
@@ -494,7 +479,6 @@ export function LunarDashboard({
     includeForks: false,
     includeLines: false,
     excludeBots: true,
-    demo: true,
   });
   const [analysis, setAnalysis] = useState<LunarAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
@@ -541,15 +525,10 @@ export function LunarDashboard({
           'linear-gradient(180deg, #100f0d 0%, #181410 52%, #0f100d 100%)',
       }}
     >
-      <header className="sticky top-0 z-40 border-b border-[#3a3328] bg-[#14130f]/95 backdrop-blur">
+      <AtlasNavigation active="lunar" />
+
+      <header className="border-b border-[#3a3328] bg-[#14130f]/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-[1500px] items-center gap-3 px-4 md:px-6">
-          <Link
-            href="/"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[#a69b88] hover:bg-[#211d18] hover:text-[#f4f1e8]"
-            aria-label="Cockpit home"
-          >
-            <Home className="h-4 w-4" />
-          </Link>
           <div className="flex h-8 w-8 items-center justify-center rounded-md border border-[#d7ff45]/40 bg-[#d7ff45]/10 text-[#d7ff45]">
             <Moon className="h-4 w-4" />
           </div>
@@ -560,11 +539,6 @@ export function LunarDashboard({
             </div>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            {analysis?.meta.source === 'demo' ? (
-              <span className="hidden rounded-md border border-[#ff6b57]/40 bg-[#ff6b57]/10 px-2 py-1 text-xs text-[#ffb1a7] sm:inline-flex">
-                Demo data
-              </span>
-            ) : null}
             <button
               type="button"
               onClick={() => void load(true)}
@@ -651,11 +625,6 @@ export function LunarDashboard({
             </div>
 
             <div className="space-y-2">
-              <Toggle
-                label="Demo"
-                checked={params.demo}
-                onChange={(demo) => setParams((current) => ({ ...current, demo }))}
-              />
               <Toggle
                 label="New moon"
                 checked={params.includeNewMoon}
@@ -756,12 +725,7 @@ export function LunarDashboard({
             </div>
           ) : null}
 
-          {!loading && !analysis ? (
-            <EmptyState
-              error={error}
-              onDemo={() => setParams((current) => ({ ...current, demo: true }))}
-            />
-          ) : null}
+          {!loading && !analysis ? <EmptyState error={error} /> : null}
 
           {chartReady && comparison ? (
             <>
@@ -818,14 +782,14 @@ export function LunarDashboard({
                 </Section>
               </div>
 
-              <Section title="Run Metadata" icon={<FlaskConical className="h-4 w-4" />}>
+              <Section title="Run Metadata" icon={<RefreshCw className="h-4 w-4" />}>
                 <div className="grid gap-3 md:grid-cols-4">
                   <StatTile
                     label="Source"
                     value={analysis.meta.source}
                     detail={analysis.meta.generatedAt.slice(0, 16).replace('T', ' ')}
-                    icon={<FlaskConical className="h-4 w-4" />}
-                    tone={analysis.meta.source === 'demo' ? 'coral' : 'teal'}
+                    icon={<RefreshCw className="h-4 w-4" />}
+                    tone="teal"
                   />
                   <StatTile
                     label="Repos Scanned"

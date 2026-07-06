@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { buildLunarAnalysis, isDegradedGitHubAnalysis } from '@/lib/lunar/analyze';
+import {
+  buildLunarAnalysis,
+  isDegradedGitHubAnalysis,
+  LunarDemoDisabledError,
+} from '@/lib/lunar/analyze';
 import type { LunarAnalysis } from '@/lib/lunar/types';
 import { publicOrigin } from '@/lib/security/exposure';
 
@@ -59,7 +63,7 @@ function detailUrlFor(request: NextRequest, analysis: LunarAnalysis) {
 function toSummaryContract(request: NextRequest, analysis: LunarAnalysis) {
   return {
     generatedAt: analysis.meta.generatedAt,
-    demoMode: analysis.params.demo || analysis.meta.source === 'demo',
+    demoMode: false,
     username: analysis.params.user,
     periodStart: analysis.params.startDate,
     periodEnd: analysis.params.endDate,
@@ -112,14 +116,18 @@ export async function GET(request: NextRequest) {
       headers: responseHeaders(),
     });
   } catch (error) {
+    const status = error instanceof LunarDemoDisabledError ? error.status : 500;
     return NextResponse.json(
       {
         error: (error as Error).message,
-        hint: 'Set GITHUB_TOKEN or LUNAR_GITHUB_TOKEN, or add ?demo=1 for clearly marked synthetic demo data.',
+        hint:
+          status === 400
+            ? 'Remove demo=1. Cockpit is configured for live GitHub-backed Lunar data only.'
+            : 'Set GITHUB_TOKEN or LUNAR_GITHUB_TOKEN with access to the target private and organization repositories.',
         timestamp: new Date().toISOString(),
       },
       {
-        status: 500,
+        status,
         headers: {
           ...responseHeaders(),
           'Cache-Control': 'no-store',

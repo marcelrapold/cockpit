@@ -37,6 +37,9 @@ export function SiteFooter() {
           <Link href="/insights" className="hover:text-sky-300">
             Insights
           </Link>
+          <Link href="/lunar" className="hover:text-sky-300">
+            Lunar
+          </Link>
           <a
             href="https://github.com/marcelrapold/cockpit"
             target="_blank"

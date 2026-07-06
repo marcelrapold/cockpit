@@ -139,7 +139,7 @@ export type TopDay = {
 export type EvidenceLevel = 'weak' | 'moderate' | 'strong';
 
 export type GitHubCollectionMeta = {
-  source: 'github' | 'demo';
+  source: 'github';
   user: string;
   repositoriesScanned: number;
   repositoriesSkipped: number;

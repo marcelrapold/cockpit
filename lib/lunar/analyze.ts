@@ -9,7 +9,6 @@ import {
 import { finalizeDailyActivity } from './activity';
 import { lunarCacheKey, readLunarCache, writeLunarCache } from './cache';
 import { clampDateRange, defaultDateRange } from './date';
-import { generateDemoActivity } from './demo';
 import { fetchGitHubActivity } from './github';
 import { annotateMoonPhases, getMoonEvents } from './moon';
 import {
@@ -24,7 +23,6 @@ import {
 } from './statistics';
 import type {
   AnalysisParams,
-  GitHubCollectionMeta,
   LunarAnalysis,
   WindowComparison,
 } from './types';
@@ -51,6 +49,15 @@ function normalizeWindow(windowDays: number) {
   return DEFAULT_FULL_MOON_WINDOW_DAYS;
 }
 
+export class LunarDemoDisabledError extends Error {
+  status = 400;
+
+  constructor() {
+    super('Lunar demo mode is disabled. Cockpit only serves live GitHub-backed moon data.');
+    this.name = 'LunarDemoDisabledError';
+  }
+}
+
 export function normalizeAnalysisParams(input: ParamInput): AnalysisParams {
   const defaults = defaultDateRange();
   const range = clampDateRange(
@@ -73,18 +80,6 @@ export function normalizeAnalysisParams(input: ParamInput): AnalysisParams {
     excludeBots: boolParam(input.excludeBots, true),
     demo: boolParam(input.demo, false),
     force: boolParam(input.force, false),
-  };
-}
-
-function demoMeta(params: AnalysisParams): GitHubCollectionMeta {
-  return {
-    source: 'demo',
-    user: params.user,
-    repositoriesScanned: 6,
-    repositoriesSkipped: 0,
-    apiRequests: 0,
-    warnings: ['Demo mode uses deterministic synthetic activity. It is not evidence.'],
-    generatedAt: new Date().toISOString(),
   };
 }
 
@@ -132,6 +127,10 @@ export function isDegradedGitHubAnalysis(analysis: LunarAnalysis) {
 
 export async function buildLunarAnalysis(input: ParamInput): Promise<LunarAnalysis> {
   const params = normalizeAnalysisParams(input);
+  if (params.demo) {
+    throw new LunarDemoDisabledError();
+  }
+
   const cacheKey = lunarCacheKey({ params, weights: DEFAULT_VELOCITY_WEIGHTS });
 
   if (!params.force) {
@@ -141,12 +140,7 @@ export async function buildLunarAnalysis(input: ParamInput): Promise<LunarAnalys
 
   const moonEvents = getMoonEvents(params.startDate, params.endDate);
 
-  const collected = params.demo
-    ? {
-        days: generateDemoActivity(params, moonEvents.fullMoons),
-        meta: demoMeta(params),
-      }
-    : await fetchGitHubActivity(params);
+  const collected = await fetchGitHubActivity(params);
 
   const dailyActivity = finalizeDailyActivity(collected.days, DEFAULT_VELOCITY_WEIGHTS);
   annotateMoonPhases(
