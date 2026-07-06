@@ -117,13 +117,26 @@ function buildSummary(
   };
 }
 
+export function isDegradedGitHubAnalysis(analysis: LunarAnalysis) {
+  const rateLimitWarning = analysis.meta.warnings.some((warning) =>
+    warning.toLowerCase().includes('rate limit'),
+  );
+
+  return (
+    analysis.meta.source === 'github' &&
+    analysis.meta.repositoriesScanned === 0 &&
+    analysis.summary.totalScore === 0 &&
+    (analysis.meta.rateLimitRemaining === 0 || rateLimitWarning)
+  );
+}
+
 export async function buildLunarAnalysis(input: ParamInput): Promise<LunarAnalysis> {
   const params = normalizeAnalysisParams(input);
   const cacheKey = lunarCacheKey({ params, weights: DEFAULT_VELOCITY_WEIGHTS });
 
   if (!params.force) {
     const cached = await readLunarCache<LunarAnalysis>(cacheKey);
-    if (cached) return cached;
+    if (cached && !isDegradedGitHubAnalysis(cached)) return cached;
   }
 
   const moonEvents = getMoonEvents(params.startDate, params.endDate);
@@ -181,6 +194,9 @@ export async function buildLunarAnalysis(input: ParamInput): Promise<LunarAnalys
     meta: collected.meta,
   };
 
-  await writeLunarCache(cacheKey, analysis);
+  if (!isDegradedGitHubAnalysis(analysis)) {
+    await writeLunarCache(cacheKey, analysis);
+  }
+
   return analysis;
 }

@@ -14,6 +14,10 @@ type MoonSignal3DProps = {
   signalTone: 'pending' | 'live' | 'offline';
 };
 
+type MoonMeshProps = MoonSignal3DProps & {
+  reduceMotion: boolean;
+};
+
 function positiveModulo(value: number, modulo: number) {
   return ((value % modulo) + modulo) % modulo;
 }
@@ -52,7 +56,82 @@ function pointOnMoon(index: number) {
   );
 }
 
-function MoonMesh({ impactCount, signalTone }: MoonSignal3DProps) {
+function webglAvailable() {
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    const loseContext = context?.getExtension('WEBGL_lose_context');
+    loseContext?.loseContext();
+    return Boolean(context);
+  } catch {
+    return false;
+  }
+}
+
+function usePrefersReducedMotion() {
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const sync = () => setReduceMotion(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
+
+  return reduceMotion;
+}
+
+function CommitFlow({ impactCount, signalTone, reduceMotion }: MoonMeshProps) {
+  const flowRef = useRef<THREE.Group>(null);
+  const beadCount = Math.max(8, Math.min(18, Math.round(impactCount / 2)));
+  const color =
+    signalTone === 'live' ? '#34d399' : signalTone === 'offline' ? '#60a5fa' : '#fbbf24';
+  const beads = useMemo(
+    () =>
+      Array.from({ length: beadCount }, (_, index) => {
+        const angle = (index / beadCount) * Math.PI * 2;
+        const radius = 1.28 + seededUnit(index + 101) * 0.08;
+        return {
+          position: new THREE.Vector3(
+            Math.cos(angle) * radius,
+            Math.sin(angle * 1.7) * 0.08,
+            Math.sin(angle) * radius * 0.32,
+          ),
+          scale: 0.008 + seededUnit(index + 131) * 0.009,
+        };
+      }),
+    [beadCount],
+  );
+
+  useFrame((state) => {
+    if (!flowRef.current || reduceMotion) return;
+    flowRef.current.rotation.y = state.clock.elapsedTime * 0.18;
+    flowRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.27) * 0.08;
+  });
+
+  return (
+    <group ref={flowRef} rotation={[0.42, 0, -0.16]}>
+      <mesh>
+        <torusGeometry args={[1.28, 0.0035, 8, 128]} />
+        <meshBasicMaterial color={color} transparent opacity={0.36} />
+      </mesh>
+      {beads.map((bead, index) => (
+        <mesh key={index} position={bead.position}>
+          <sphereGeometry args={[bead.scale, 8, 8]} />
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={1.8}
+            roughness={0.25}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function MoonMesh({ impactCount, signalTone, reduceMotion }: MoonMeshProps) {
   const moonRef = useRef<THREE.Group>(null);
   const glowRef = useRef<THREE.Group>(null);
   const colorMap = useLoader(THREE.TextureLoader, '/moon/lroc_color_2k.jpg');
@@ -88,6 +167,7 @@ function MoonMesh({ impactCount, signalTone }: MoonSignal3DProps) {
     signalTone === 'live' ? '#34d399' : signalTone === 'offline' ? '#60a5fa' : '#fbbf24';
 
   useFrame((state) => {
+    if (reduceMotion) return;
     const t = state.clock.elapsedTime;
     if (moonRef.current) {
       moonRef.current.rotation.y = t * 0.055;
@@ -138,6 +218,11 @@ function MoonMesh({ impactCount, signalTone }: MoonSignal3DProps) {
           ))}
         </group>
       </group>
+      <CommitFlow
+        impactCount={impactCount}
+        signalTone={signalTone}
+        reduceMotion={reduceMotion}
+      />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.17, 0]} receiveShadow>
         <circleGeometry args={[1.35, 96]} />
@@ -156,6 +241,13 @@ function MoonFallback() {
 }
 
 export function MoonSignal3D({ impactCount, signalTone }: MoonSignal3DProps) {
+  const [canUseWebGL, setCanUseWebGL] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    setCanUseWebGL(webglAvailable());
+  }, []);
+
   return (
     <div
       aria-label="Realtime 3D moon surface"
@@ -164,26 +256,32 @@ export function MoonSignal3D({ impactCount, signalTone }: MoonSignal3DProps) {
     >
       <MoonFallback />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(251,191,36,0.14),transparent_34%),radial-gradient(circle_at_15%_82%,rgba(14,165,233,0.18),transparent_30%)]" />
-      <Canvas
-        className="relative z-10"
-        shadows
-        camera={{ position: [0, 0.22, 3.15], fov: 38 }}
-        dpr={[1, 1.8]}
-        gl={{ antialias: true, alpha: true }}
-      >
-        <Suspense fallback={null}>
-          <MoonMesh impactCount={impactCount} signalTone={signalTone} />
-          <OrbitControls
-            enablePan={false}
-            enableZoom={false}
-            rotateSpeed={0.42}
-            autoRotate
-            autoRotateSpeed={0.18}
-            minPolarAngle={Math.PI / 2.8}
-            maxPolarAngle={Math.PI / 1.8}
-          />
-        </Suspense>
-      </Canvas>
+      {canUseWebGL ? (
+        <Canvas
+          className="relative z-10"
+          shadows
+          camera={{ position: [0, 0.22, 3.15], fov: 38 }}
+          dpr={[1, 1.8]}
+          gl={{ antialias: true, alpha: true }}
+        >
+          <Suspense fallback={null}>
+            <MoonMesh
+              impactCount={impactCount}
+              signalTone={signalTone}
+              reduceMotion={reduceMotion}
+            />
+            <OrbitControls
+              enablePan={false}
+              enableZoom={false}
+              rotateSpeed={0.42}
+              autoRotate={!reduceMotion}
+              autoRotateSpeed={0.18}
+              minPolarAngle={Math.PI / 2.8}
+              maxPolarAngle={Math.PI / 1.8}
+            />
+          </Suspense>
+        </Canvas>
+      ) : null}
     </div>
   );
 }

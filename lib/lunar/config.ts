@@ -19,7 +19,7 @@ export const DEFAULT_VELOCITY_WEIGHTS: VelocityWeights = {
   tags: 4,
 };
 
-export const LUNAR_CACHE_VERSION = 'lunar-v1';
+export const LUNAR_CACHE_VERSION = 'lunar-v2';
 export const LUNAR_CACHE_TTL_MS = 1000 * 60 * 60 * 12;
 export const LUNAR_BOOTSTRAP_ITERATIONS = 4000;
 export const LUNAR_MAX_LINE_COMMITS = 250;

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { buildLunarAnalysis } from '@/lib/lunar/analyze';
+import { buildLunarAnalysis, isDegradedGitHubAnalysis } from '@/lib/lunar/analyze';
 import type { LunarAnalysis } from '@/lib/lunar/types';
 import { publicOrigin } from '@/lib/security/exposure';
 
@@ -88,6 +88,26 @@ export async function GET(request: NextRequest) {
 
   try {
     const analysis = await buildLunarAnalysis(params);
+
+    if (isDegradedGitHubAnalysis(analysis)) {
+      return NextResponse.json(
+        {
+          error:
+            'Lunar summary unavailable: GitHub rate limit was exhausted before any repositories were scanned.',
+          generatedAt: analysis.meta.generatedAt,
+          rateLimitReset: analysis.meta.rateLimitReset,
+          warnings: analysis.meta.warnings,
+        },
+        {
+          status: 503,
+          headers: {
+            ...responseHeaders(),
+            'Cache-Control': 'no-store',
+          },
+        },
+      );
+    }
+
     return NextResponse.json(toSummaryContract(request, analysis), {
       headers: responseHeaders(),
     });
