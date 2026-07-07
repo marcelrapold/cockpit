@@ -1,5 +1,6 @@
 const USER = process.env.GITHUB_USER || 'muraschal';
 const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
+const { filterRepos, isExcludedRepo } = require('./repo-exclusions');
 
 async function ghFetch(url, token) {
   const res = await fetch(url, {
@@ -209,6 +210,7 @@ module.exports = async function fetchLanguageStats() {
   }
 
   if (allRepos.length > 0) {
+    allRepos = filterRepos(allRepos);
     const langResults = await Promise.all(
       allRepos.map(async (repo) => {
         const fullName = repo.full_name;
@@ -239,7 +241,10 @@ module.exports = async function fetchLanguageStats() {
       token
     );
     const list = Array.isArray(raw) ? raw : [];
-    const formatted = list.map(formatTickerEvent).slice(0, 30);
+    const formatted = list
+      .filter(event => !isExcludedRepo(event.repo?.name))
+      .map(formatTickerEvent)
+      .slice(0, 30);
     events = await Promise.all(formatted.map(e => enrichPushEvent(e, token)));
   } catch (err) {
     errors.push({ step: 'userEvents', message: err.message });

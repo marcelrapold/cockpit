@@ -29,21 +29,21 @@ export async function adaptLegacy(
   const headers: Record<string, string | undefined> = {};
   request.headers.forEach((v, k) => { headers[k.toLowerCase()] = v; });
 
-  const mockReq: LegacyRequest = { method: request.method, query, headers };
+  const legacyReq: LegacyRequest = { method: request.method, query, headers };
 
   let statusCode = 200;
   const respHeaders: Record<string, string> = {};
   let body: unknown;
   let ended = false;
 
-  const mockRes: LegacyResponse = {
+  const legacyRes: LegacyResponse = {
     setHeader(name, value) { respHeaders[String(name)] = String(value); },
-    status(code) { statusCode = code; return mockRes; },
-    json(data) { body = data; return mockRes; },
-    end() { ended = true; return mockRes; },
+    status(code) { statusCode = code; return legacyRes; },
+    json(data) { body = data; return legacyRes; },
+    end() { ended = true; return legacyRes; },
   };
 
-  await handler(mockReq, mockRes);
+  await handler(legacyReq, legacyRes);
 
   const hdrs = new Headers();
   Object.entries(respHeaders).forEach(([k, v]) => hdrs.set(k, v));

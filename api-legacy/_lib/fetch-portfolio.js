@@ -1,4 +1,5 @@
 const CONFIG = require('../portfolio-config.json');
+const { isExcludedRepo } = require('./repo-exclusions');
 
 const TOKEN = process.env.GITHUB_TOKEN;
 const USER = process.env.GITHUB_USER || 'muraschal';
@@ -6,7 +7,6 @@ const ORGS = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filte
 
 const MODE_LABELS = { build: 'Build', run: 'Run', improve: 'Improve', govern: 'Govern' };
 const LC_LABELS = { prod: 'Production', pilot: 'Prototype', spec: 'Specification', tool: 'Tooling', jw: 'Recurring', archive: 'Archived' };
-const EXCLUDE_SET = new Set(CONFIG.exclude || []);
 
 async function ghFetch(url) {
   const res = await fetch(url, {
@@ -140,7 +140,7 @@ module.exports = async function fetchPortfolio() {
 
   for (const repo of repos) {
     if (repo.archived || repo.fork) continue;
-    if (EXCLUDE_SET.has(repo.full_name)) continue;
+    if (isExcludedRepo(repo.full_name)) continue;
 
     const override = CONFIG.overrides[repo.full_name] || null;
     if (override) usedOverrides.add(repo.full_name);

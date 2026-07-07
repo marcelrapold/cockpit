@@ -12,9 +12,9 @@ Use this when another local/cloud coding agent needs to continue the Cockpit/Lun
 ## Current State
 
 - `/lunar` is implemented as a Next.js App Router page with Recharts, CSV/JSON export, report view, moon-phase analysis via `astronomy-engine`, and GitHub collection APIs.
-- The Lunar app requires live GitHub-backed data. `demo=1` is rejected instead of generating synthetic activity.
+- The Lunar app requires live GitHub-backed data. There is no generated Lunar activity path.
 - The Cockpit home page has a client-side Lunar card wired to the external `GET /api/summary?window=2` contract.
-- Lunar is deployed inside Cockpit. The card reads `/api/summary?window=2` (or `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL`) and rejects `demoMode: true`.
+- Lunar is deployed inside Cockpit. The card reads `/api/summary?window=2` or `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL`.
 - Once deployed, set `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL=https://<lunar-deploy-url>/api/summary`.
 - `lib/data/static-fallback.ts` reads `data/private/data*.json` when Redis is absent or empty; these files are deliberately not served as public static assets.
 - `lib/data/cache-reader.ts` now falls back to static GitHub stats, narrative, repos, portfolio, and language stats.

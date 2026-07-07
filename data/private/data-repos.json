@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-04-27T07:37:11.244Z",
   "model": "anthropic/claude-sonnet-4-6",
-  "count": 87,
+  "count": 84,
   "orgs": [
     "zvvch",
     "marcelrapold",
@@ -56,7 +56,7 @@
     "zvvch/zvv-fund-pilot": {
       "full": "zvvch/zvv-fund-pilot",
       "oneLiner": "Offlinefähige Next.js-Web-App und einbettbares Web-Component-Widget zur Ermittlung des zuständigen ZVV-Fundbüros anhand der Liniennummer.",
-      "purpose": "ZVV-FundPilot löst das Problem der unklaren Fundbürozuständigkeit im ZVV-Netz: Nutzer suchen eine Liniennummer und erhalten sofort das zuständige Fundbüro. Die Lösung besteht aus einer Next.js-Demo-App und einem Shadow-DOM-Web-Component (`<zvv-fundpilot>`), das direkt in zvv.ch / AEM einbettbar ist. Stammdaten werden aus einer Excel-Quellliste importiert und als JSON im Monorepo versioniert.",
+      "purpose": "ZVV-FundPilot löst das Problem der unklaren Fundbürozuständigkeit im ZVV-Netz: Nutzer suchen eine Liniennummer und erhalten sofort das zuständige Fundbüro. Die Lösung besteht aus einer Next.js-Web-App und einem Shadow-DOM-Web-Component (`<zvv-fundpilot>`), das direkt in zvv.ch / AEM einbettbar ist. Stammdaten werden aus einer Excel-Quellliste importiert und als JSON im Monorepo versioniert.",
       "stack": "next.js 15, vite 6, web components, shadow dom, javascript, vercel, monorepo",
       "audience": "ZVV-Fahrgäste (public), AEM-Redaktion (intern)",
       "status": "pilot",
@@ -71,7 +71,7 @@
     "zvvch/zvv-testimonials": {
       "full": "zvvch/zvv-testimonials",
       "oneLiner": "Responsiver Testimonial-Slider-Prototyp für das ZVV-Employer-Branding, gebaut auf Next.js und Tailwind CSS.",
-      "purpose": "Das Projekt stellt einen animierten Karussell-Slider für Mitarbeiter-Testimonials bereit, der HR- und Recruiting-Kommunikation des ZVV visuell unterstützt. Es handelt sich um einen mit v0.dev generierten Prototyp/Mockup-Stand ohne produktive Backend-Anbindung. Die UI setzt auf Radix-UI-Primitiven und eine vollständige shadcn/ui-Komponentenbibliothek.",
+      "purpose": "Das Projekt stellt einen animierten Karussell-Slider für Mitarbeiter-Testimonials bereit, der HR- und Recruiting-Kommunikation des ZVV visuell unterstützt. Es handelt sich um einen mit v0.dev generierten Prototyp/Prototyp-Stand ohne produktive Backend-Anbindung. Die UI setzt auf Radix-UI-Primitiven und eine vollständige shadcn/ui-Komponentenbibliothek.",
       "stack": "next.js, typescript, tailwind css, shadcn/ui, radix-ui, v0.dev",
       "audience": "ZVV HR / Unternehmenskommunikation (intern)",
       "status": "experimental",
@@ -117,7 +117,7 @@
     "zvvch/zvv-app-modal": {
       "full": "zvvch/zvv-app-modal",
       "oneLiner": "Einbettbares Next.js-Widget zur animierten Präsentation der ZVV-App-Features auf zvv.ch, mit Framer-Motion-Animationen und AEM-Integration.",
-      "purpose": "Das Projekt rendert ein interaktives Smartphone-Mockup mit neun App-Screens und flüssigen Framer-Motion-Übergängen, das Besucher der ZVV-Website über die Funktionen der mobilen ZVV-App informiert. Es ist als eigenständige Next.js-App konzipiert, die nahtlos in die bestehende AEM-Infrastruktur von zvv.ch eingebettet werden kann. Dark/Light-Mode und responsives Design sind integriert.",
+      "purpose": "Das Projekt rendert ein interaktives Smartphone-Vorschau mit neun App-Screens und flüssigen Framer-Motion-Übergängen, das Besucher der ZVV-Website über die Funktionen der mobilen ZVV-App informiert. Es ist als eigenständige Next.js-App konzipiert, die nahtlos in die bestehende AEM-Infrastruktur von zvv.ch eingebettet werden kann. Dark/Light-Mode und responsives Design sind integriert.",
       "stack": "next.js 15, typescript, tailwind css, framer-motion, shadcn/ui, radix-ui, vercel",
       "audience": "ZVV-Website-Besucher (public), AEM-Redaktion (intern)",
       "status": "active",
@@ -241,8 +241,8 @@
     },
     "zvvch/zvv-kundenkonto": {
       "full": "zvvch/zvv-kundenkonto",
-      "oneLiner": "Next.js-15-Prototyp (v0-Mockup) für das ZVV Kundenkonto 2026 – pixel-perfektes Self-Service-Frontend zur Verwaltung von SwissPass, Abos, Tickets und Zahlungsmitteln, ohne Backend-Anbindung.",
-      "purpose": "Das Repository enthält ausschliesslich das UI-Frontend des künftigen ZVV-Kundenkontos als vollständig responsive, accessible Referenzimplementierung mit shadcn/ui und Radix UI. Alle angezeigten Daten (Kartennummern, Abos, Belege, Zahlungsmittel) sind Mock-Daten im Komponenten-State – keine Authentifizierung, kein Backend. Die Anbindung an reale Services (SwissPass, Ticketing, Payment) ist für separate Repositories vorgesehen.",
+      "oneLiner": "Next.js-15-Prototyp (v0-Prototyp) für das ZVV Kundenkonto 2026 – pixel-perfektes Self-Service-Frontend zur Verwaltung von SwissPass, Abos, Tickets und Zahlungsmitteln, ohne Backend-Anbindung.",
+      "purpose": "Das Repository enthält ausschliesslich das UI-Frontend des künftigen ZVV-Kundenkontos als vollständig responsive, accessible Referenzimplementierung mit shadcn/ui und Radix UI. Alle angezeigten Daten (Kartennummern, Abos, Belege, Zahlungsmittel) sind UI-Referenzdaten im Komponenten-State – keine Authentifizierung, kein Backend. Die Anbindung an reale Services (SwissPass, Ticketing, Payment) ist für separate Repositories vorgesehen.",
       "stack": "Next.js 15 · React 19 · TypeScript · Tailwind CSS · shadcn/ui · Radix UI",
       "audience": "ZVV-Kunden (zukünftig, öffentlich); aktuell ZVV-Produktteam und UX-Reviewer",
       "status": "pilot",
@@ -444,7 +444,7 @@
     "marcelrapold/aeon-homepage": {
       "full": "marcelrapold/aeon-homepage",
       "oneLiner": "Statische Single-Page-Homepage für das AI-Operator-Persona ÆON (Marcel Rapold) — Glassmorphism-Dark-Theme, Zero-Dependencies, deployed auf Vercel.",
-      "purpose": "Die Seite präsentiert ÆON als klonbaren AI-Operator und Senior Sparring Partner mit animiertem Terminal-Demo, Glassmorphism-Karten und Scroll-Animationen via IntersectionObserver. Es gibt keinen Build-Schritt und keine externen Abhängigkeiten; das Deployment erfolgt durch direkten Vercel-Auto-Deploy bei Push auf main. OG-Meta-Tags und ein SVG-Favicon sind für Social-Sharing konfiguriert.",
+      "purpose": "Die Seite präsentiert ÆON als klonbaren AI-Operator und Senior Sparring Partner mit animiertem Terminal-Showcase, Glassmorphism-Karten und Scroll-Animationen via IntersectionObserver. Es gibt keinen Build-Schritt und keine externen Abhängigkeiten; das Deployment erfolgt durch direkten Vercel-Auto-Deploy bei Push auf main. OG-Meta-Tags und ein SVG-Favicon sind für Social-Sharing konfiguriert.",
       "stack": "HTML5, CSS, Vanilla JS, Vercel",
       "audience": "Öffentlichkeit / potenzielle Kollaborationspartner von ÆON",
       "status": "stable",
@@ -608,22 +608,6 @@
         "benchmark",
         "comparison",
         "experimental"
-      ]
-    },
-    "marcelrapold/copycat-seetreff": {
-      "full": "marcelrapold/copycat-seetreff",
-      "oneLiner": "KI-generierter Pixel-Rebuild von seetreff.ch als CopyCat-Pipeline-Demo, realisiert mit Next.js 15, Tailwind CSS 4 und TypeScript auf Vercel.",
-      "purpose": "Demonstriert ÆONs CopyCat-Skill-Pipeline: Die originale Restaurant-Website seetreff.ch wurde automatisiert analysiert (Recon, Screenshots, Lighthouse, Asset-Extraktion) und vollständig neu gebaut. Das Ergebnis ist eine 5-seitige Next.js-App mit Dark Mode, Mobile-First-Design und einer dedizierten Compare-Seite für einen Side-by-Side-Vergleich Original vs. Rebuild. Dient als öffentliche Referenzimplementierung des CopyCat-Workflows.",
-      "stack": "next.js 15, react 19, tailwind css 4, typescript, vercel",
-      "audience": "Öffentlich (Demo/Portfolio); intern als CopyCat-Skill-Referenz",
-      "status": "stable",
-      "tags": [
-        "copycat",
-        "nextjs",
-        "tailwindcss",
-        "aeon",
-        "website-clone",
-        "demo"
       ]
     },
     "marcelrapold/dezentralschweiz-ep66-bitcoin-baden": {
@@ -871,20 +855,6 @@
         "saas"
       ]
     },
-    "ALPA-one/velozweb_demo": {
-      "full": "ALPA-one/velozweb_demo",
-      "oneLiner": "Statische Demo-Website für die Veloz Cycling Platform mit Express-Backend für Kontaktformular-Versand via Resend — kein Build-Step, reine HTML/CSS/JS-Webapp.",
-      "purpose": "Das Repo liefert eine schlanke statische Demo-Seite für die Veloz Cycling Platform. Ein minimaler Express-Server übernimmt den serverseitigen E-Mail-Versand über die Resend-API für das Kontaktformular. Entwicklungsrichtlinien orientieren sich laut README an den Google Engineering Practices.",
-      "stack": "HTML · CSS · Vanilla JS · Express · Resend",
-      "audience": "Internes Team / Veloz-Stakeholder (Demo)",
-      "status": "dormant",
-      "tags": [
-        "static-site",
-        "demo",
-        "cycling",
-        "contact-form"
-      ]
-    },
     "muraschal/austin-tech-beer-map": {
       "full": "muraschal/austin-tech-beer-map",
       "oneLiner": "Minimales HTML-Stub-Repository — Zweck aus README nicht ableitbar, vermutlich frühe Rohfassung einer Karten-App für Austin.",
@@ -936,8 +906,8 @@
     },
     "muraschal/hwz-cas-bitcoin-lightning": {
       "full": "muraschal/hwz-cas-bitcoin-lightning",
-      "oneLiner": "Kursunterlagen (Präsentationen, Demos, Praxisbeispiele) zum Bitcoin Lightning Network für den HWZ CAS Bitcoin Economy, kuratiert von Marcel Rapold.",
-      "purpose": "Das Repo bündelt Lernmaterialien für einen Kurstag im HWZ CAS Bitcoin Economy: Es deckt L1-Limitierungen, Lightning-Grundlagen, Node-Setup, Liquidity-Strategien sowie Use Cases ab. Die Inhalte sind als Tagesstruktur mit Live-Demos, Gruppenübungen und einem Abschluss-Quiz aufgebaut.",
+      "oneLiner": "Kursunterlagen (Präsentationen, Praxisbeispiele, Praxisbeispiele) zum Bitcoin Lightning Network für den HWZ CAS Bitcoin Economy, kuratiert von Marcel Rapold.",
+      "purpose": "Das Repo bündelt Lernmaterialien für einen Kurstag im HWZ CAS Bitcoin Economy: Es deckt L1-Limitierungen, Lightning-Grundlagen, Node-Setup, Liquidity-Strategien sowie Use Cases ab. Die Inhalte sind als Tagesstruktur mit Live-Beispiele, Gruppenübungen und einem Abschluss-Quiz aufgebaut.",
       "stack": "markdown",
       "audience": "HWZ CAS-Studenten (Bitcoin Economy)",
       "status": "stable",
@@ -1079,7 +1049,7 @@
         "react",
         "frontend",
         "audio",
-        "demo"
+        "showcase"
       ]
     },
     "muraschal/meta": {
@@ -1213,22 +1183,6 @@
         "frontend"
       ]
     },
-    "muraschal/v0-zvv-navi-demo": {
-      "full": "muraschal/v0-zvv-navi-demo",
-      "oneLiner": "KI-generierter UI-Prototyp einer ZVV-Navigationsapp, via v0.dev aus Screenshot synthetisiert und automatisch auf Vercel deployt.",
-      "purpose": "Demonstriert den v0.dev-Workflow: UI wird per KI aus einem Screenshot rekonstruiert, automatisch in dieses Repository synchronisiert und auf Vercel ausgeliefert. Das Repo enthält keinen manuell gepflegten Produktionscode – es ist reiner Ausgabe-Artefakt des v0.dev-Generierungsprozesses. Einsatzbereich ist die Evaluation von KI-gestütztem UI-Prototyping im ZVV-Kontext.",
-      "stack": "Next.js · Radix UI · React Hook Form · TypeScript · Vercel · v0.dev",
-      "audience": "Internes Team / Stakeholder (Demo)",
-      "status": "experimental",
-      "tags": [
-        "prototype",
-        "ai-generated",
-        "ui",
-        "transit",
-        "zvv",
-        "vercel"
-      ]
-    },
     "muraschal/zvv-landingpage": {
       "full": "muraschal/zvv-landingpage",
       "oneLiner": "Sammlung von Marketing- und Kampagnen-Landingpage-Templates für den Zürcher Verkehrsverbund (ZVV).",
@@ -1245,8 +1199,8 @@
     },
     "muraschal/zvv-lnticket": {
       "full": "muraschal/zvv-lnticket",
-      "oneLiner": "PoC-Webapp für ZVV-Ticketkauf via gemocktem Bitcoin-Lightning-Payment mit Apple-Wallet-Export (.pkpass), gebaut auf Next.js und shadcn/ui.",
-      "purpose": "Demonstriert einen vollständigen, UX-fokussierten Ticketkauf-Flow: Nutzer wählt ein ZVV-Ticket, bezahlt via simuliertem Lightning-Payment und erhält das Ticket als .pkpass-Datei mit personalisierten QR-Code direkt in die Apple Wallet. Die Lightning-Integration ist bewusst gemockt; der Fokus liegt auf der Machbarkeitsdemonstration der Wallet-Integration mittels passkit-generator. Deployment erfolgt auf Vercel.",
+      "oneLiner": "PoC-Webapp für ZVV-Ticketkauf via abstrahiertem Bitcoin-Lightning-Payment mit Apple-Wallet-Export (.pkpass), gebaut auf Next.js und shadcn/ui.",
+      "purpose": "Zeigt einen vollständigen, UX-fokussierten Ticketkauf-Flow: Nutzer wählt ein ZVV-Ticket, bezahlt via prototypischem Lightning-Payment und erhält das Ticket als .pkpass-Datei mit personalisierten QR-Code direkt in die Apple Wallet. Die Lightning-Integration ist bewusst abstrahiert; der Fokus liegt auf der Machbarkeitspruefung der Wallet-Integration mittels passkit-generator. Deployment erfolgt auf Vercel.",
       "stack": "Next.js · shadcn/ui · Tailwind CSS · passkit-generator · qrcode.react · React Hook Form · TypeScript · Vercel",
       "audience": "Technische Stakeholder / Evaluatoren (PoC, öffentlich)",
       "status": "pilot",

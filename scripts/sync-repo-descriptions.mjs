@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { isExcludedRepo } = require('../api-legacy/_lib/repo-exclusions.js');
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const APPLY = String(process.env.APPLY || '').toLowerCase() === 'true';
@@ -33,7 +37,8 @@ function truncate(s, max) {
 
 async function main() {
   const reposFile = JSON.parse(readFileSync('data/private/data-repos.json', 'utf8'));
-  const entries = Object.entries(reposFile.repos || {});
+  const entries = Object.entries(reposFile.repos || {})
+    .filter(([full]) => !isExcludedRepo(full));
   console.log(`[sync-desc] loaded ${entries.length} repo summaries (${APPLY ? 'APPLY' : 'DRY-RUN'})`);
 
   const changes = [];

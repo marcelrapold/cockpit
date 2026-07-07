@@ -57,7 +57,6 @@ export type AnalysisParams = {
   includeForks: boolean;
   includeLines: boolean;
   excludeBots: boolean;
-  demo: boolean;
   force: boolean;
 };
 

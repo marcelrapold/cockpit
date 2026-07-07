@@ -44,6 +44,11 @@ type PortfolioConfig = {
   exclude?: string[];
 };
 
+function isExcludedRepo(fullName: string, config: PortfolioConfig): boolean {
+  const repo = fullName.split('/').pop()?.toLowerCase() ?? '';
+  return Boolean(config.exclude?.includes(fullName)) || repo.includes('demo');
+}
+
 async function readJson<T>(file: string): Promise<T | null> {
   try {
     const raw = await readFile(path.join(process.cwd(), 'data', 'private', file), 'utf8');
@@ -154,8 +159,10 @@ export async function readStaticGithubStats(): Promise<GithubStats | null> {
   const prevWeekEnd = dateAdd(latestDate, -7);
   const prevWeek = sumRange(data.calendar, prevWeekEnd, 7);
   const currentMonth = latestDate.slice(0, 7);
+  const config = await readPortfolioConfig();
 
   const activeRepos = Object.entries(data.repoMonthly ?? {})
+    .filter(([name]) => !isExcludedRepo(name, config))
     .map(([name, months]) => ({ name, commits: months[currentMonth] ?? 0 }))
     .filter((repo) => repo.commits > 0)
     .sort((a, b) => b.commits - a.commits)
@@ -195,16 +202,22 @@ export async function readStaticNarrative(): Promise<NarrativePayload | null> {
 export async function readStaticRepos(): Promise<ReposPayload | null> {
   if (!isPrivateMode()) return null;
 
-  const data = await readJson<StaticReposData>('data-repos.json');
+  const [data, config] = await Promise.all([
+    readJson<StaticReposData>('data-repos.json'),
+    readPortfolioConfig(),
+  ]);
   if (!data?.repos) return null;
+  const repos = Object.fromEntries(
+    Object.entries(data.repos).filter(([fullName]) => !isExcludedRepo(fullName, config)),
+  );
   return {
     generatedAt: data.generatedAt,
     model: data.model,
-    count: data.count,
+    count: Object.keys(repos).length,
     listHash: data.listHash || 'static-local',
     orgs: data.orgs,
     user: data.user,
-    repos: data.repos,
+    repos,
   };
 }
 
@@ -214,9 +227,8 @@ export async function readStaticPortfolio(): Promise<PortfolioCache | null> {
   const [reposData, config] = await Promise.all([readStaticRepos(), readPortfolioConfig()]);
   if (!reposData?.repos) return null;
 
-  const excluded = new Set(config.exclude ?? []);
   const projects: PortfolioProject[] = Object.entries(reposData.repos)
-    .filter(([fullName]) => !excluded.has(fullName))
+    .filter(([fullName]) => !isExcludedRepo(fullName, config))
     .map(([fullName, repo]) =>
       normalizeProject(fullName, repo, config.overrides?.[fullName]),
     );

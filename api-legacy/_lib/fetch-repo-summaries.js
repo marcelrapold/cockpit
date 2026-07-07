@@ -1,5 +1,6 @@
 const { createHash } = require('crypto');
 const { get, getRaw, setWithTtl, setRaw, KEYS, TTL_LLM } = require('./cache');
+const { isExcludedRepo } = require('./repo-exclusions');
 
 const MODEL_ID = 'anthropic/claude-sonnet-4-6';
 const README_MAX = 1800;
@@ -185,7 +186,7 @@ async function fetchRepoSummaries(opts = {}) {
   const orgs = (process.env.GITHUB_ORGS || '').split(',').map(s => s.trim()).filter(Boolean);
 
   const repos = await listAllRepos(token, user, orgs);
-  const relevant = repos.filter(r => !r.fork);
+  const relevant = repos.filter(r => !r.fork && !isExcludedRepo(r.full_name));
   const listHash = buildRepoListSignature(relevant);
 
   if (!opts.force) {

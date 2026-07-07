@@ -6,6 +6,10 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const { isExcludedRepo } = require('../api-legacy/_lib/repo-exclusions.js');
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const USER = process.env.GITHUB_USER || 'muraschal';
@@ -54,6 +58,7 @@ function scanLocal(root) {
 
   for (const dir of dirs) {
     const name = dir.name;
+    if (isExcludedRepo(name)) continue;
     const gitDir = join(root, name, '.git');
     if (existsSync(gitDir)) {
       try {
@@ -179,6 +184,7 @@ async function scanGitHub() {
 
   for (const repo of allRepos) {
     if (SKIP.has(repo.name)) continue;
+    if (isExcludedRepo(repo.full_name)) continue;
     try {
       if (MY_AUTHORS.length > 0) {
         const contribRes = await fetch(

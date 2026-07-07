@@ -151,13 +151,12 @@ Cockpit home-card contract:
 
 - Client fetches `NEXT_PUBLIC_LUNAR_VELOCITY_SUMMARY_URL?window=2` when configured.
 - Otherwise it fetches same-origin `/api/summary?window=2`.
-- Cockpit rejects `demoMode: true` and does not display synthetic Lunar data.
+- Cockpit displays live GitHub-backed Lunar data only.
 - Expected endpoint shape:
 
 ```json
 {
   "generatedAt": "...",
-  "demoMode": false,
   "username": "marcel",
   "periodStart": "YYYY-MM-DD",
   "periodEnd": "YYYY-MM-DD",

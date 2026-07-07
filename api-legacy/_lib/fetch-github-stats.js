@@ -2,6 +2,7 @@ const {
   buildCommitSearchScopes,
   getGithubIdentity,
 } = require('./github-identity');
+const { isExcludedRepo } = require('./repo-exclusions');
 
 const COMMIT_SEARCH_MAX_PAGES = Number(process.env.GITHUB_COMMIT_SEARCH_MAX_PAGES || 1);
 
@@ -63,13 +64,14 @@ async function searchCommitItemsAcross(scopes, authorQueries, dateQ, token, opts
 
   const seen = new Map();
   const truncatedQueries = [];
-  let totalCount = 0;
+  let rawTotalCount = 0;
 
   for (const chunk of chunks) {
     if (chunk.truncated) truncatedQueries.push(chunk.part.query);
-    totalCount += chunk.totalCount || 0;
+    rawTotalCount += chunk.totalCount || 0;
     for (const item of chunk.items) {
       const repo = item.repository?.full_name || item.repository?.name || 'unknown';
+      if (isExcludedRepo(repo)) continue;
       const key = `${repo}:${item.sha}`;
       if (item.sha && !seen.has(key)) seen.set(key, item);
     }
@@ -82,7 +84,8 @@ async function searchCommitItemsAcross(scopes, authorQueries, dateQ, token, opts
   });
 
   return {
-    total_count: totalCount,
+    total_count: items.length,
+    raw_total_count: rawTotalCount,
     items,
     queryCount: queryParts.length,
     truncated: truncatedQueries.length > 0,
@@ -327,7 +330,7 @@ module.exports = async function fetchGithubStats(opts = {}) {
       repoOwners: source.owners.repoOwners,
       searchScopes: scopes.map(scope => scope || 'global-accessible'),
       commitIdentity: identity.public,
-      note: 'scope=all searches every configured org plus explicit repo owner for the configured author mapping. Item lists are deduplicated; KPI totals use GitHub search total_count per configured author query.',
+      note: 'scope=all searches every configured org plus explicit repo owner for the configured author mapping. KPI totals use deduplicated commits after the same repo exclusions as portfolio, heatmap, language and DORA views.',
     },
     identity: identity.public,
     queryStats: {

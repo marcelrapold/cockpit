@@ -458,7 +458,7 @@ function EmptyState({ error }: { error: string | null }) {
         {error || 'The API did not return an analysis.'}
       </p>
       <p className="mt-3 text-xs uppercase tracking-[0.16em] text-[#ffb1a7]">
-        Real data only · no synthetic fallback
+        Live GitHub data required
       </p>
     </div>
   );

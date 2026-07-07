@@ -8,7 +8,7 @@
  *
  * Empty-State (wie KpiStrip):
  *   - configMissing | beide null → einzeiliger Cold-Hint statt 4× '—'.
- *   - Einzelner tier='unknown'   → 'unknown'-Badge statt fake 'elite'.
+ *   - Einzelner tier='unknown'   → 'unknown'-Badge statt irreführendem 'elite'.
  */
 
 import type { DoraTier } from '@/lib/data/cache-reader';

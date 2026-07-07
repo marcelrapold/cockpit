@@ -49,15 +49,6 @@ function normalizeWindow(windowDays: number) {
   return DEFAULT_FULL_MOON_WINDOW_DAYS;
 }
 
-export class LunarDemoDisabledError extends Error {
-  status = 400;
-
-  constructor() {
-    super('Lunar demo mode is disabled. Cockpit only serves live GitHub-backed moon data.');
-    this.name = 'LunarDemoDisabledError';
-  }
-}
-
 export function normalizeAnalysisParams(input: ParamInput): AnalysisParams {
   const defaults = defaultDateRange();
   const range = clampDateRange(
@@ -78,7 +69,6 @@ export function normalizeAnalysisParams(input: ParamInput): AnalysisParams {
     includeForks: boolParam(input.includeForks, false),
     includeLines: boolParam(input.includeLines, false),
     excludeBots: boolParam(input.excludeBots, true),
-    demo: boolParam(input.demo, false),
     force: boolParam(input.force, false),
   };
 }
@@ -127,10 +117,6 @@ export function isDegradedGitHubAnalysis(analysis: LunarAnalysis) {
 
 export async function buildLunarAnalysis(input: ParamInput): Promise<LunarAnalysis> {
   const params = normalizeAnalysisParams(input);
-  if (params.demo) {
-    throw new LunarDemoDisabledError();
-  }
-
   const cacheKey = lunarCacheKey({ params, weights: DEFAULT_VELOCITY_WEIGHTS });
 
   if (!params.force) {

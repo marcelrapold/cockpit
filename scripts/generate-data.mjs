@@ -8,6 +8,7 @@ const {
   getGithubIdentity,
 } = require('../api-legacy/_lib/github-identity.js');
 const { redactRepoName } = require('../api-legacy/_lib/exposure.js');
+const { isExcludedRepo } = require('../api-legacy/_lib/repo-exclusions.js');
 
 const TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
 const IDENTITY = getGithubIdentity();
@@ -112,6 +113,7 @@ function buildPublicGithubStats(data) {
   const prevWeek = sumRange(data.calendar, prevWeekEnd, 7);
   const currentMonth = latestDate.slice(0, 7);
   const activeRepos = Object.entries(data.repoMonthly || {})
+    .filter(([name]) => !isExcludedRepo(name))
     .map(([name, months]) => ({ name: redactRepoName(name), commits: months[currentMonth] || 0 }))
     .filter(repo => repo.commits > 0)
     .sort((a, b) => b.commits - a.commits)
@@ -184,6 +186,7 @@ async function main() {
           let added = 0;
           for (const c of items) {
             const repo = c.repository?.full_name || c.repository?.name || 'unknown';
+            if (isExcludedRepo(repo)) continue;
             const key = `${repo}:${c.sha}`;
             if (c.sha && !seen.has(key)) {
               seen.add(key);

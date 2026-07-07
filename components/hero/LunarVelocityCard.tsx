@@ -22,7 +22,6 @@ const MoonSignal3D = dynamic(
 
 type LunarSummary = {
   generatedAt: string;
-  demoMode: boolean;
   username: string;
   periodStart: string;
   periodEnd: string;
@@ -57,7 +56,6 @@ function isLunarSummary(value: unknown): value is LunarSummary {
   return Boolean(
     data &&
       typeof data.generatedAt === 'string' &&
-      typeof data.demoMode === 'boolean' &&
       typeof data.username === 'string' &&
       typeof data.periodStart === 'string' &&
       typeof data.periodEnd === 'string' &&
@@ -101,13 +99,6 @@ async function fetchSummary(url: string, timeoutMs?: number): Promise<CardState>
       return {
         status: 'error',
         message: 'Lunar summary payload does not match the endpoint contract.',
-      };
-    }
-
-    if (data.demoMode) {
-      return {
-        status: 'error',
-        message: 'Lunar summary reported demoMode=true; Cockpit only displays live GitHub data.',
       };
     }
 
@@ -204,7 +195,7 @@ export function LunarVelocityCard() {
       return {
         velocity: '—',
         evidence: 'weak' as Evidence,
-        verdict: `Moon signal nicht erreichbar. Keine Demo-Daten werden angezeigt. ${state.message}`,
+        verdict: `Moon signal nicht erreichbar. Es werden nur Live-GitHub-Daten angezeigt. ${state.message}`,
         detailUrl: '',
         sourceLabel: 'offline',
         meta: 'live signal unavailable',
