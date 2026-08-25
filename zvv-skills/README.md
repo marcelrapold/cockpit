@@ -31,6 +31,7 @@ skills/_template/SKILL.md       ← Vorlage für neue Skills
 
 app/                            ← Next.js App Router: Website + maschinenlesbare Endpunkte
 lib/                            ← Loader, Frontmatter-Parser, Typen
+lib/*.test.ts                   ← Unit-Tests, ohne Test-Framework: node --test
 scripts/validate-skills.mjs     ← Formatprüfung, läuft in CI und vor jedem Build
 scripts/sync-skills.mjs         ← Skills in ein lokales .claude/skills-Verzeichnis kopieren
 ```
@@ -80,6 +81,7 @@ node scripts/sync-skills.mjs ~/.claude/skills
 npm install
 npm run dev        # http://localhost:3000
 npm run validate   # Formatprüfung aller Skills
+npm test           # Unit-Tests für Parser und Pfadauflösung
 npm run build      # validiert und baut
 ```
 

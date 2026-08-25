@@ -27,5 +27,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # Deckt den Frontmatter-Parser und resolveRawFile ab. Letzteres entscheidet,
+      # welche Dateien der Roh-Endpunkt ausliefert — dort ist eine Regression teuer.
+      - name: Tests
+        run: npm test
+
       - name: Build
         run: npm run build

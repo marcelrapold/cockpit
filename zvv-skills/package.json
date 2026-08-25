@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "next lint",
     "validate": "node scripts/validate-skills.mjs",
+    "test": "node --test lib/*.test.ts",
     "sync": "node scripts/sync-skills.mjs"
   },
   "dependencies": {

@@ -57,7 +57,7 @@ Reifegrade: `draft` (im Aufbau) → `review` (in Erprobung) → `stable` (verlä
 
 ## Review
 
-Ein Pull Request wird zusammengeführt, wenn `npm run validate` durchläuft und jemand aus
-dem fachlich zuständigen Team den Ablauf einmal nachvollzogen hat. Bei Analytics-Skills
+Ein Pull Request wird zusammengeführt, wenn `npm run validate` und `npm test` durchlaufen
+und jemand aus dem fachlich zuständigen Team den Ablauf einmal nachvollzogen hat. Bei Analytics-Skills
 heisst das: die Abfrage tatsächlich absetzen und das Ergebnis gegen die jeweilige
 Oberfläche halten.

@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { parseFrontmatter, type FrontmatterValue } from '@/lib/frontmatter';
-import type { Skill, SkillMeta, SkillReference, SkillStatus, SkillSummary } from '@/lib/types';
+import { parseFrontmatter, type FrontmatterValue } from './frontmatter.ts';
+import type { Skill, SkillMeta, SkillReference, SkillStatus, SkillSummary } from './types.ts';
 
 export const SKILLS_DIR = path.join(process.cwd(), 'skills');
 
