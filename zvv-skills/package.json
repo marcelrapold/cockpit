@@ -4,7 +4,7 @@
   "private": true,
   "description": "ZVV Skills — LLM-optimierte Business-Workflows als versionierte Agent Skills. Ausgeliefert unter skills.zvv.dev.",
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev --turbopack",

@@ -51,18 +51,27 @@ vercel domains add skills.zvv.dev --scope zvv
 vercel --prod
 ```
 
-Einstellungen: Framework `nextjs`, Build `npm run build`, Install `npm install`,
-Production Branch `main`. Alles davon steht bereits in `vercel.json` beziehungsweise
+Einstellungen: Framework `nextjs`, Node **24.x** (wie `zvv-atlas`), Build `npm run build`,
+Install `npm install`, Production Branch `main`. Alles davon steht bereits in `vercel.json` beziehungsweise
 ergibt sich aus dem Repo.
 
 Environment-Variablen braucht die Site **keine**. `NEXT_PUBLIC_SITE_URL` kann auf
 `https://skills.zvv.dev` gesetzt werden; ohne die Variable erkennt `lib/skills.ts` die
 Produktionsumgebung selbst und fällt sonst auf die Deployment-URL zurück.
 
-Öffentlich erreichbar heisst: Vercel Authentication im Projekt **aus**. Das ist eine
-bewusste Entscheidung — der Inhalt ist Betriebswissen ohne Zugangsdaten, und Agenten
-sollen die Endpunkte ohne Anmeldung lesen können. Falls der Atlas etwas anderes
-vorschreibt, siehe [ATLAS.md](../ATLAS.md).
+Deployment-Schutz wie beim Atlas: **Vercel Authentication an**, Geltungsbereich
+**„All except custom domains"**. Damit liegen Preview- und `*.vercel.app`-URLs hinter
+SSO, während `skills.zvv.dev` offen bleibt — Agenten müssen die Endpunkte ohne Anmeldung
+lesen können, interne Zwischenstände nicht.
+
+Zu prüfen mit:
+
+```bash
+vercel project inspect zvv-skills --scope zvv
+```
+
+Erwartet ist `ssoProtection: { enabled: true, deploymentType: "all_except_custom_domains" }`
+— dieselbe Einstellung wie beim Projekt `zvv-atlas`.
 
 ---
 
