@@ -1,0 +1,36 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Formatpruefung braucht keine Dependencies und laeuft deshalb zuerst:
+      # Ein kaputter Skill soll nicht erst nach dem Install auffallen.
+      - name: Skills prüfen
+        run: node scripts/validate-skills.mjs
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Deckt den Frontmatter-Parser und resolveRawFile ab. Letzteres entscheidet,
+      # welche Dateien der Roh-Endpunkt ausliefert — dort ist eine Regression teuer.
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
