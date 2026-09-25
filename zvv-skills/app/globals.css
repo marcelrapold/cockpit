@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ATLAS-Brand-Tokens.
+ * Alle Farb- und Typo-Entscheidungen laufen ueber diese Variablen, damit die
+ * Angleichung an atlas.zvv.dev genau eine Datei betrifft. Siehe ATLAS.md.
+ */
+:root {
+  --zvv-blue: #0069b4;
+  --zvv-blue-strong: #00518b;
+  --zvv-ink: #10161d;
+  --zvv-muted: #5b6875;
+  --zvv-paper: #ffffff;
+  --zvv-surface: #f4f6f8;
+  --zvv-border: #dde3e9;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --zvv-blue: #4aa8e8;
+    --zvv-blue-strong: #7cc4f2;
+    --zvv-ink: #e7edf3;
+    --zvv-muted: #94a3b1;
+    --zvv-paper: #0b0f14;
+    --zvv-surface: #131a22;
+    --zvv-border: #24303c;
+  }
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--zvv-paper);
+  color: var(--zvv-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Markdown-Rendering der SKILL.md-Bodies. */
+.prose-zvv {
+  line-height: 1.7;
+}
+.prose-zvv > * + * {
+  margin-top: 1rem;
+}
+.prose-zvv h2 {
+  margin-top: 2.5rem;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.prose-zvv h3 {
+  margin-top: 1.75rem;
+  font-size: 1.03rem;
+  font-weight: 650;
+}
+.prose-zvv h4 {
+  margin-top: 1.5rem;
+  font-weight: 650;
+}
+.prose-zvv p,
+.prose-zvv li {
+  color: var(--zvv-ink);
+}
+.prose-zvv a {
+  color: var(--zvv-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-zvv ul,
+.prose-zvv ol {
+  padding-left: 1.25rem;
+}
+.prose-zvv ul {
+  list-style: disc;
+}
+.prose-zvv ol {
+  list-style: decimal;
+}
+.prose-zvv li + li {
+  margin-top: 0.35rem;
+}
+.prose-zvv code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--zvv-surface);
+  border: 1px solid var(--zvv-border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+.prose-zvv pre {
+  background: var(--zvv-surface);
+  border: 1px solid var(--zvv-border);
+  border-radius: 10px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+.prose-zvv pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.prose-zvv blockquote {
+  border-left: 3px solid var(--zvv-blue);
+  padding-left: 1rem;
+  color: var(--zvv-muted);
+}
+.prose-zvv table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+}
+.prose-zvv th,
+.prose-zvv td {
+  border: 1px solid var(--zvv-border);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.prose-zvv th {
+  background: var(--zvv-surface);
+  font-weight: 650;
+}
+.prose-zvv hr {
+  border: 0;
+  border-top: 1px solid var(--zvv-border);
+}
