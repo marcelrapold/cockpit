@@ -29,3 +29,6 @@ Thumbs.db
 .idea/
 .env*.local
 .lunar-cache/
+
+# TypeScript
+*.tsbuildinfo
