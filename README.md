@@ -290,6 +290,11 @@ Die Middleware wählt den Mechanismus anhand der Umgebung:
 | `AUTH_URL` | Öffentliche Basis-URL für die Redirect-URI, z. B. `https://cockpit.rapold.io` (Standard: Origin des Requests) |
 | `OIDC_ALLOWED_GROUPS` | Erlaubte Gruppen, Komma-Liste (Standard `admins`) |
 
+Mit OIDC zeigt die Navigation oben rechts das zentrale Kontomenü von auth.rapold.io
+(`<rapold-account>`, Script `https://auth.rapold.io/atlas/account.js`). Abmelden gibt es nur dort:
+`/api/auth/logout` löscht die Cockpit-Session und leitet zum Logout bei auth.rapold.io weiter. Mit
+Basic Auth fehlt eine SSO-Identität, deshalb erscheint das Menü dann nicht.
+
 Einrichtung in Authelia und Vercel, Tests und Rückfall: [docs/login-auth-rapold-io.md](docs/login-auth-rapold-io.md).
 
 ---

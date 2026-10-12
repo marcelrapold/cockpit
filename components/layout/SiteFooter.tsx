@@ -4,20 +4,17 @@
  * Minimaler nativer Footer:
  *   - Build-Info (Version + Commit + Branch + Env)
  *   - Externe Links (GitHub, Atlas, marcelrapold.com, Insights)
- *   - Abmelden, sobald der Login über auth.rapold.io aktiv ist
  *   - Verweis auf Legacy-Archiv und API-Endpoints
  */
 
 import Link from 'next/link';
 
-import { isOidcEnabled } from '@/lib/auth/config';
 import { getBuildInfo } from '@/lib/data/build-info';
 import { isPrivateMode } from '@/lib/security/exposure';
 
 export function SiteFooter() {
   const build = getBuildInfo();
   const privateMode = isPrivateMode();
-  const oidcLogin = privateMode && isOidcEnabled();
   return (
     <footer className="mt-8 border-t border-white/5 bg-[#0a0f1c] px-4 py-6 md:px-6">
       <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 text-[11px] text-slate-500 md:flex-row md:items-center md:justify-between">
@@ -75,11 +72,6 @@ export function SiteFooter() {
               className="hover:text-sky-300"
             >
               API
-            </a>
-          ) : null}
-          {oidcLogin ? (
-            <a href="/api/auth/logout" className="hover:text-sky-300">
-              Abmelden
             </a>
           ) : null}
         </nav>

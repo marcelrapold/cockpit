@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { RapoldAccount } from '@/components/auth/RapoldAccount';
 import { BarChart3, GitBranch, Home, Moon, ShieldCheck } from 'lucide-react';
 
 type ActiveNav = 'dashboard' | 'insights' | 'lunar';
@@ -15,7 +16,11 @@ const primaryLinks = [
   badge?: string;
 }>;
 
-export function AtlasNavigation({ active }: { active: ActiveNav }) {
+/**
+ * `accountMenu` kommt vom Server (isAccountMenuEnabled), weil die Komponente auch in
+ * Client-Komponenten (Lunar) gerendert wird und dort keine Server-Umgebung lesen kann.
+ */
+export function AtlasNavigation({ active, accountMenu = false }: { active: ActiveNav; accountMenu?: boolean }) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0b1120]/88 backdrop-blur-xl">
       <div className="mx-auto flex min-h-14 max-w-screen-2xl flex-wrap items-center gap-3 px-4 py-2 md:flex-nowrap md:px-6">
@@ -84,6 +89,7 @@ export function AtlasNavigation({ active }: { active: ActiveNav }) {
           >
             <GitBranch className="h-3.5 w-3.5" />
           </a>
+          <RapoldAccount enabled={accountMenu} />
         </div>
       </div>
     </header>

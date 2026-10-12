@@ -64,6 +64,15 @@ export function isOidcEnabled(): boolean {
   return getOidcConfig() !== null;
 }
 
+const DEFAULT_ISSUER = 'https://auth.rapold.io';
+const SSO_LOGOUT_RETURN = 'https://auth.rapold.io/';
+
+/** Logout bei auth.rapold.io (beendet die SSO-Sitzung), danach zurück auf dessen Startseite. */
+export function ssoLogoutUrl(issuer: string | null | undefined): string {
+  const base = String(issuer || DEFAULT_ISSUER).replace(/\/+$/, '');
+  return `${base}/logout?rd=${encodeURIComponent(SSO_LOGOUT_RETURN)}`;
+}
+
 export function redirectUri(config: OidcConfig, requestOrigin: string): string {
   return `${config.baseUrl || requestOrigin}${CALLBACK_PATH}`;
 }

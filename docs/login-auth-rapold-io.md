@@ -21,7 +21,9 @@ Diese Anleitung enthält keine Secrets. Klartext-Secret und `AUTH_SECRET` gehör
 | ID-Token | Signatur über `https://auth.rapold.io/jwks.json`, `iss`, `aud = cockpit`, `exp`, `nonce` |
 | Gruppen | aus dem UserInfo-Endpoint; Zugang nur mit Gruppe `admins` (änderbar über `OIDC_ALLOWED_GROUPS`) |
 | Session | HttpOnly-Cookie `cockpit_session`, HS256-signiert mit `AUTH_SECRET`, 12 Stunden gültig |
-| Routen | `/api/auth/login`, `/api/auth/callback`, `/api/auth/logout` (Footer-Link «Abmelden») |
+| Routen | `/api/auth/login`, `/api/auth/callback`, `/api/auth/logout` |
+| Kontomenü | `<rapold-account>` aus `https://auth.rapold.io/atlas/account.js` oben rechts in der Navigation (Avatar, Dienste, Konto & Sicherheit, Abmelden); nur im privaten Modus mit OIDC, nicht bei Basic Auth |
+| Abmelden | nur im Kontomenü: `/api/auth/logout` löscht `cockpit_session` und leitet direkt (`302`) auf `https://auth.rapold.io/logout?rd=https%3A%2F%2Fauth.rapold.io%2F` weiter; das beendet auch die SSO-Sitzung |
 | Ohne Session | Seiten leiten zum Login weiter; API-Aufrufe erhalten `401` als JSON (keine Basic-Abfrage mehr) |
 | Ausgenommen | Favicons, Manifest, `robots.txt`, `/brand/*`, `/_next/*`, `/api/cron/*` (eigenes `CRON_SECRET`) |
 
@@ -164,9 +166,11 @@ Commit auf `main` pushen.
 4. Öffentlich bleiben: `curl -sI https://cockpit.rapold.io/favicon.svg` und `/manifest.json` → `200`.
 5. Im Browser (privates Fenster) `https://cockpit.rapold.io/lunar` öffnen → Anmeldung bei
    auth.rapold.io mit Passwort und zweitem Faktor → zurück auf `/lunar`, Dashboard im privaten
-   Modus (Footer zeigt «Abmelden»).
-6. «Abmelden» → Seite «Abgemeldet». Erneuter Aufruf führt wieder über auth.rapold.io (ohne
-   Passwort, solange die SSO-Sitzung dort läuft; «Auch bei auth.rapold.io abmelden» beendet sie).
+   Modus, oben rechts das Kontomenü mit Avatar und Namen.
+6. Kontomenü → «Abmelden» → direkt weiter zu auth.rapold.io, Startseite dort ohne Anmeldung.
+   `curl -sI https://cockpit.rapold.io/api/auth/logout` → `302`, `location:
+   https://auth.rapold.io/logout?rd=https%3A%2F%2Fauth.rapold.io%2F`, `set-cookie: cockpit_session=; Max-Age=0`.
+   Erneuter Aufruf von Cockpit verlangt wieder Passwort und zweiten Faktor.
 7. Gegenprobe ohne Gruppe `admins` (falls ein Testkonto existiert): Seite «Kein Zugriff», `403`.
 
 Fehlerbilder:
@@ -176,6 +180,7 @@ Fehlerbilder:
 | Authelia: «invalid redirect uri» | `redirect_uris` in `oidc.yml` stimmt nicht exakt mit `AUTH_URL` + `/api/auth/callback` überein |
 | Cockpit: «Anmeldung fehlgeschlagen» | Secret falsch (Vercel-Log: `Token-Endpoint antwortete mit 401`) oder UserInfo nicht als JSON |
 | Cockpit: «Kein Zugriff» | Konto nicht in Gruppe `admins` bzw. Scope `groups` fehlt im Client |
+| Kein Kontomenü sichtbar | Basic-Auth-Modus (gewollt), oder `account.js` blockiert (Browser-Konsole); die Seiten sind statisch, nach Env-Änderungen braucht es ein Redeploy |
 | Endlosschleife zum Login | `AUTH_SECRET` zwischen Deployments geändert oder Cookies blockiert |
 
 ## Rückfall

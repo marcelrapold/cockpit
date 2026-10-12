@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
+import { ACCOUNT_MENU_SCRIPT, isAccountMenuEnabled } from '@/lib/auth/account-menu';
+
 export const metadata: Metadata = {
   title: 'Cockpit | Marcel Rapold',
   description:
@@ -22,8 +24,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Kontomenü von auth.rapold.io nur laden, wenn es angezeigt wird (privat + OIDC).
+  const accountMenu = isAccountMenuEnabled();
   return (
     <html lang="de">
+      {accountMenu ? (
+        <head>
+          <script type="module" src={ACCOUNT_MENU_SCRIPT} async />
+        </head>
+      ) : null}
       <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
