@@ -1,8 +1,38 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="public/brand/cockpit.svg">
+  <img src="public/brand/cockpit-light.svg" alt="" width="96" height="96">
+</picture>
+
 # Cockpit
 
-Cross-platform engineering dashboard that tracks **GitHub**, **Vercel** and **Supabase** activity in a single view. Built with Next.js and server-side API routes, with cached data pipelines for portfolio, infrastructure and engineering velocity analysis.
+Engineering-Dashboard von Marcel Rapold: Commits, Deployments, Uptime, Sprachen und Portfolio
+aus **GitHub**, **Vercel** und **Supabase** in einer Ansicht. Next.js (App Router) auf Vercel,
+Daten aus gecachten Pipelines (Redis, GitHub Actions) mit öffentlichem und privatem Modus.
 
-**Live:** [cockpit.rapold.io](https://cockpit.rapold.io)
+[![E2E Tests](https://github.com/marcelrapold/mra-cockpit/actions/workflows/e2e.yml/badge.svg)](https://github.com/marcelrapold/mra-cockpit/actions/workflows/e2e.yml)
+[![Update Dashboard Data](https://github.com/marcelrapold/mra-cockpit/actions/workflows/update-data.yml/badge.svg)](https://github.com/marcelrapold/mra-cockpit/actions/workflows/update-data.yml)
+[![Live](https://img.shields.io/badge/live-cockpit.rapold.io-009DFF)](https://cockpit.rapold.io)
+[![Login](https://img.shields.io/badge/login-auth.rapold.io-6f42c1)](docs/login-auth-rapold-io.md)
+[![Atlas](https://img.shields.io/badge/design-Atlas-050B19)](https://atlas.rapold.io)
+[![Next.js](https://img.shields.io/badge/next.js-15-000000)](package.json)
+[![Node](https://img.shields.io/badge/node-22.x-339933)](.nvmrc)
+[![Lizenz](https://img.shields.io/badge/lizenz-MIT-lightgrey)](LICENSE)
+
+> [!NOTE]
+> **Kurzfassung.** Cockpit zeigt auf einen Blick, woran in über 70 Repositories gearbeitet wird:
+> KPI-Kacheln, Commit-Kalender, aktive Repos, Deployments, Health-Checks, Abhängigkeiten und die
+> Lunar-Velocity-Analyse. Im **öffentlichen Modus** sind Geschäfts-Repos anonymisiert; der
+> **private Modus** zeigt die volle Betriebssicht und ist geschützt – heute per Basic Auth,
+> künftig per Login über [auth.rapold.io](https://auth.rapold.io)
+> ([Anleitung](docs/login-auth-rapold-io.md)).
+
+| | |
+|---|---|
+| Live | [cockpit.rapold.io](https://cockpit.rapold.io) |
+| Repository | [marcelrapold/mra-cockpit](https://github.com/marcelrapold/mra-cockpit) |
+| Login (IdP) | [auth.rapold.io](https://auth.rapold.io) · Repo [mra-auth](https://github.com/marcelrapold/mra-auth) · [Anleitung](docs/login-auth-rapold-io.md) |
+| Designsystem | [Atlas](https://atlas.rapold.io) · Repo [mra-atlas](https://github.com/marcelrapold/mra-atlas) |
+| API | `/api/v1/*` (Bearer-Token), Übersicht unter `/api/v1/summary` |
 
 ---
 
@@ -29,16 +59,19 @@ Multi-org support: track commits, issues and deployments across **multiple GitHu
 ## Architecture
 
 ```
+middleware.ts         ← Zugriffsschutz (Basic Auth oder OIDC)
+
 app/
   page.tsx            ← Cockpit dashboard
   lunar/page.tsx      ← Lunar Velocity dashboard
-  api/                ← Next.js API routes
+  api/                ← Next.js API routes (api/auth/* = Login mit auth.rapold.io)
 
 components/
   hero/               ← Cockpit KPI and narrative sections
   lunar/              ← Lunar Velocity client dashboard
 
 lib/
+  auth/               ← OIDC-Client, signierte Session-Cookies
   lunar/              ← GitHub collector, moon phases, scoring, stats, exports
 
 api-legacy/
@@ -47,7 +80,7 @@ api-legacy/
 scripts/
   generate-data.mjs   ← Batch commit fetcher (runs in CI)
   scan-deps.mjs       ← Dependency scanner (runs in CI)
-  generate-assets.mjs ← SVG favicon, OG image, touch icon
+  generate-assets.mjs ← Favicon/App-Icons aus dem Atlas-Signet, OG image
 
 .github/workflows/
   update-data.yml     ← Scheduled data refresh (3×/day)
@@ -81,7 +114,8 @@ Set these in **Vercel → Project Settings → Environment Variables** (or copy 
 | `GITHUB_ZVV_ORGS` | No | Orgs included by `scope=zvv`, defaults to org names containing `zvv` |
 | `GITHUB_SCOPE` | No | Default contribution scope: `all`, `private`, `organizations`, or `zvv` |
 | `COCKPIT_EXPOSURE_MODE` | No | `public` redacts business/internal details; `private` shows the full operating view |
-| `COCKPIT_PRIVATE_BASIC_AUTH` | Required for private mode | `username:password` credentials for the same-domain private Cockpit |
+| `COCKPIT_PRIVATE_BASIC_AUTH` | Required for private mode without OIDC | `username:password` credentials for the same-domain private Cockpit |
+| `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `AUTH_SECRET` | No | Login via auth.rapold.io instead of Basic Auth, see [Zugriffsschutz](#zugriffsschutz-privater-modus) |
 | `COCKPIT_PUBLIC_REDACT_OWNERS` | No | Comma-separated repo owners redacted in public mode |
 | `COCKPIT_CORS_ORIGIN` | No | Allowed browser origin for public API CORS, defaults to `https://cockpit.rapold.io` |
 | `LUNAR_GITHUB_USER` | No | GitHub login for Lunar Velocity, defaults to `marcel` |
@@ -108,7 +142,7 @@ GitHub token scopes:
 ```bash
 node scripts/generate-data.mjs    # → data/private/data.json + data-history.json
 node scripts/scan-deps.mjs        # → data/private/data-deps.json
-node scripts/generate-assets.mjs  # → public/og-image.svg, favicon.svg, apple-touch-icon.svg
+node scripts/generate-assets.mjs  # → public/favicon.svg, favicon*.png/.ico, apple-touch-icon.png, android-chrome-*.png, og-image.*
 ```
 
 ### 4. GitHub Actions (optional)
@@ -138,6 +172,9 @@ cp .env.example .env.local
 
 npm run dev
 ```
+
+Checks: `npm run lint`, `npm run typecheck`, `npm run test:unit` (Middleware-Weiche und
+OIDC-Ablauf, ohne Browser), `npm run build`, `npm run test:e2e` (Playwright).
 
 Open `http://localhost:3000`. Lunar Velocity is available at `http://localhost:3000/lunar`.
 
@@ -226,11 +263,45 @@ Limitations:
 
 ## Customisation
 
-- **Portfolio table & project links** — edit the `DATA` array in `public/index.html`
-- **Branding & colors** — `scripts/generate-assets.mjs`, then regenerate
-- **Health targets** — set `HEALTH_TARGETS` env var or edit `api/health-check.js`
+- **Portfolio overrides & exclusions** — edit `api-legacy/portfolio-config.json` (keys are current `owner/repo` names)
+- **Branding** — signet from Atlas in `public/brand/`, icons via `scripts/generate-assets.mjs`
+- **Health targets** — set `HEALTH_TARGETS` env var or edit `api-legacy/_lib/fetch-health-check.js`
 - **Tracked orgs** — update `GITHUB_ORGS` (env var), no code changes needed
 - **Lunar scoring** — edit `DEFAULT_VELOCITY_WEIGHTS` in `lib/lunar/config.ts`
+
+---
+
+## Zugriffsschutz (privater Modus)
+
+`COCKPIT_EXPOSURE_MODE=private` schützt alle Seiten und APIs in [`middleware.ts`](middleware.ts).
+Die Middleware wählt den Mechanismus anhand der Umgebung:
+
+| Bedingung | Schutz |
+|---|---|
+| `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET` und `AUTH_SECRET` (≥ 32 Zeichen) gesetzt | Login über auth.rapold.io (Authorization Code + PKCE, nur Gruppe `admins`) |
+| sonst | HTTP Basic Auth mit `COCKPIT_PRIVATE_BASIC_AUTH` |
+
+| Variable | Zweck |
+|---|---|
+| `OIDC_ISSUER` | `https://auth.rapold.io` |
+| `OIDC_CLIENT_ID` | `cockpit` |
+| `OIDC_CLIENT_SECRET` | Klartext-Secret des Clients (sensitiv) |
+| `AUTH_SECRET` | Schlüssel für das signierte Session-Cookie (sensitiv, z. B. `openssl rand -base64 48`) |
+| `AUTH_URL` | Öffentliche Basis-URL für die Redirect-URI, z. B. `https://cockpit.rapold.io` (Standard: Origin des Requests) |
+| `OIDC_ALLOWED_GROUPS` | Erlaubte Gruppen, Komma-Liste (Standard `admins`) |
+
+Einrichtung in Authelia und Vercel, Tests und Rückfall: [docs/login-auth-rapold-io.md](docs/login-auth-rapold-io.md).
+
+---
+
+## Marke
+
+Signet, Favicon und App-Icons verwenden das freigegebene Cockpit-Signet aus dem Designsystem
+[Atlas](https://atlas.rapold.io) ([mra-atlas](https://github.com/marcelrapold/mra-atlas),
+`brands/rapold/assets/logos/cockpit.svg`, freigegeben am 12.10.2026). Die SVG-Master liegen
+unverändert unter [`public/brand/`](public/brand); `node scripts/generate-assets.mjs` erzeugt daraus
+`favicon.svg` (hell/dunkel nach Farbschema) und die PNG-Icons. Das Signet ist nicht Teil der
+MIT-Lizenz dieses Repos: Atlas-Marken © Marcel Rapold, alle Rechte vorbehalten.
 
 ---
 
