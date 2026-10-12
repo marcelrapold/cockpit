@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { LunarDashboard } from '@/components/lunar/LunarDashboard';
+import { isAccountMenuEnabled } from '@/lib/auth/account-menu';
 import { DEFAULT_FULL_MOON_WINDOW_DAYS, DEFAULT_LUNAR_USER } from '@/lib/lunar/config';
 import { defaultDateRange } from '@/lib/lunar/date';
 
@@ -18,6 +19,7 @@ export default function LunarPage() {
       initialStartDate={range.startDate}
       initialEndDate={range.endDate}
       initialWindowDays={DEFAULT_FULL_MOON_WINDOW_DAYS}
+      accountMenu={isAccountMenuEnabled()}
     />
   );
 }

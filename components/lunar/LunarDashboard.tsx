@@ -43,6 +43,8 @@ type Props = {
   initialStartDate: string;
   initialEndDate: string;
   initialWindowDays: number;
+  /** Kontomenü von auth.rapold.io (vom Server bestimmt, nur privat + OIDC). */
+  accountMenu?: boolean;
 };
 
 type DashboardParams = {
@@ -469,6 +471,7 @@ export function LunarDashboard({
   initialStartDate,
   initialEndDate,
   initialWindowDays,
+  accountMenu = false,
 }: Props) {
   const [params, setParams] = useState<DashboardParams>({
     user: initialUser,
@@ -525,7 +528,7 @@ export function LunarDashboard({
           'linear-gradient(180deg, #100f0d 0%, #181410 52%, #0f100d 100%)',
       }}
     >
-      <AtlasNavigation active="lunar" />
+      <AtlasNavigation active="lunar" accountMenu={accountMenu} />
 
       <header className="border-b border-[#3a3328] bg-[#14130f]/95 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-[1500px] items-center gap-3 px-4 md:px-6">

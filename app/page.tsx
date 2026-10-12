@@ -41,6 +41,7 @@ import {
   PortfolioBoard,
   PortfolioBoardSkeleton,
 } from '@/components/portfolio/PortfolioBoard';
+import { isAccountMenuEnabled } from '@/lib/auth/account-menu';
 import { readNarrative } from '@/lib/data/cache-reader';
 
 export const revalidate = 60;
@@ -83,7 +84,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Home() {
   return (
     <>
-      <AtlasNavigation active="dashboard" />
+      <AtlasNavigation active="dashboard" accountMenu={isAccountMenuEnabled()} />
       <main className="min-h-[100svh] w-full bg-[#0b1120] text-slate-100">
         <div className="border-b border-white/5 bg-gradient-to-b from-[#0d1426] to-[#0b1120] pb-2">
           <Suspense fallback={<NarrativeHeroSkeleton />}>

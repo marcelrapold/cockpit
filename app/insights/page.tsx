@@ -25,6 +25,7 @@ import { KpiStrip, KpiStripSkeleton } from '@/components/hero/KpiStrip';
 import { NarrativeHero, NarrativeHeroSkeleton } from '@/components/hero/NarrativeHero';
 import { RepoIndex } from '@/components/hero/RepoIndex';
 import { AtlasNavigation } from '@/components/layout/AtlasNavigation';
+import { isAccountMenuEnabled } from '@/lib/auth/account-menu';
 import { readNarrative } from '@/lib/data/cache-reader';
 
 export const revalidate = 300;
@@ -67,7 +68,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function InsightsPage() {
   return (
     <>
-      <AtlasNavigation active="insights" />
+      <AtlasNavigation active="insights" accountMenu={isAccountMenuEnabled()} />
       <main className="min-h-[100dvh] w-full bg-[#0b1120] text-slate-100">
         <div className="border-b border-white/5 bg-gradient-to-b from-[#0d1426] to-[#0b1120]">
           <Suspense fallback={<NarrativeHeroSkeleton />}>
