@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img">
+  <title>Cockpit – Signet</title>
+  <desc>Gefaltete Skala aus drei kräftigen Segmenten, eine rautenförmige Achse und eine helle Nadel, die nach rechts oben ausschlägt. Messinstrument ohne Ziffern. Transparente Vektorgrafik ohne sichtbare Schrift. Variante: default.</desc>
+  <path data-part="body" fill="#009DFF" fill-rule="evenodd" d="M 20.148 158.348 L 69.179 73.424 L 85.518 98.584 L 50.107 159.918 Z M 78.969 67.771 L 177.031 67.771 L 163.411 94.501 L 92.589 94.501 Z M 186.821 73.424 L 235.852 158.348 L 205.893 159.918 L 170.482 98.584 Z M 128 140 L 152 164 L 128 188 L 104 164 Z"/>
+  <polygon data-part="facet-1" fill="#A8EDFF" points="119.771,152.674 143.657,140.787 184.631,122.855 154.915,156.282 136.229,175.326"/>
+</svg>

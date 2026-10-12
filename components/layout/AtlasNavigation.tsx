@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Activity, BarChart3, GitBranch, Home, Moon, ShieldCheck } from 'lucide-react';
+import { BarChart3, GitBranch, Home, Moon, ShieldCheck } from 'lucide-react';
 
 type ActiveNav = 'dashboard' | 'insights' | 'lunar';
 
@@ -20,8 +20,10 @@ export function AtlasNavigation({ active }: { active: ActiveNav }) {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0b1120]/88 backdrop-blur-xl">
       <div className="mx-auto flex min-h-14 max-w-screen-2xl flex-wrap items-center gap-3 px-4 py-2 md:flex-nowrap md:px-6">
         <Link href="/" className="group flex min-w-0 items-center gap-3" aria-label="Cockpit Dashboard">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-sky-300/25 bg-sky-300/10 text-sky-200 shadow-[0_0_28px_rgba(14,165,233,0.12)]">
-            <Activity className="h-4 w-4" />
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-sky-300/25 bg-[#050B19] shadow-[0_0_28px_rgba(14,165,233,0.12)]">
+            {/* Freigegebenes Cockpit-Signet aus Atlas (mra-atlas, brands/rapold/assets/logos/cockpit.svg) */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/cockpit.svg" alt="" width={28} height={28} className="h-7 w-7" />
           </span>
           <span className="min-w-0">
             <span className="block truncate text-sm font-semibold leading-tight text-slate-100 group-hover:text-sky-100">
@@ -74,7 +76,7 @@ export function AtlasNavigation({ active }: { active: ActiveNav }) {
             API
           </a>
           <a
-            href="https://github.com/marcelrapold/cockpit"
+            href="https://github.com/marcelrapold/mra-cockpit"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-slate-400 transition hover:border-sky-300/35 hover:text-sky-100"

@@ -3,7 +3,7 @@
  * Generates all brand assets: favicon (SVG+PNG+ICO), apple-touch-icon,
  * android chrome icons, and OG image. Uses sharp for SVG→PNG conversion.
  */
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import sharp from 'sharp';
 
 const OUT = 'public';
@@ -11,63 +11,50 @@ const APP_NAME = process.env.APP_NAME || 'Cockpit';
 const APP_DOMAIN = process.env.APP_DOMAIN || 'cockpit.rapold.io';
 
 // ---------------------------------------------------------------------------
-// Favicon: stylized gauge / tachometer icon
+// Signet: freigegebenes Cockpit-Signet aus Atlas (marcelrapold/mra-atlas,
+// brands/rapold/assets/logos/cockpit.svg und light/cockpit.svg), unverändert
+// nach public/brand/ übernommen. Hier nur zusammengesetzt, nicht neu gezeichnet.
 // ---------------------------------------------------------------------------
-function faviconSvg(size) {
-  const s = size;
-  const cx = s / 2, cy = s / 2;
-  const r = s * 0.38;
-  const needleLen = s * 0.28;
-  const tickR = s * 0.32;
-  const innerR = s * 0.06;
-  const cornerR = s * 0.1875;
+const TILE = '#050B19'; // Rapold dark background (Atlas, Brand "rapold")
 
-  const ticks = [];
-  for (let deg = 210; deg >= -30; deg -= 30) {
-    const rad = (deg * Math.PI) / 180;
-    const x1 = cx + tickR * Math.cos(rad);
-    const y1 = cy - tickR * Math.sin(rad);
-    const x2 = cx + r * Math.cos(rad);
-    const y2 = cy - r * Math.sin(rad);
-    ticks.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#475569" stroke-width="${Math.max(1, s * 0.04)}" stroke-linecap="round"/>`);
-  }
-
-  const needleAngle = 30;
-  const rad = (needleAngle * Math.PI) / 180;
-  const nx = cx + needleLen * Math.cos(rad);
-  const ny = cy - needleLen * Math.sin(rad);
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${s} ${s}" width="${s}" height="${s}">
-  <rect width="${s}" height="${s}" rx="${cornerR}" fill="#0f172a"/>
-  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1e293b" stroke-width="${Math.max(2, s * 0.06)}"/>
-  ${ticks.join('\n  ')}
-  <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="#3b82f6" stroke-width="${Math.max(1.5, s * 0.05)}" stroke-linecap="round"/>
-  <circle cx="${cx}" cy="${cy}" r="${innerR}" fill="#3b82f6"/>
-  <rect x="${s * 0.15}" y="${s * 0.82}" width="${s * 0.7}" height="${s * 0.07}" rx="${s * 0.035}" fill="#005093"/>
-</svg>`;
+function signetShapes(file) {
+  const svg = readFileSync(`${OUT}/brand/${file}`, 'utf8');
+  const shapes = svg.match(/<(path|polygon)\b[^>]*\/>/g);
+  if (!shapes || shapes.length < 2) throw new Error(`Signet ${file}: Formen nicht gefunden`);
+  return shapes;
 }
 
-// ---------------------------------------------------------------------------
-// Apple touch icon: gauge + label
-// ---------------------------------------------------------------------------
-const appleSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
-  <rect width="180" height="180" rx="36" fill="#0f172a"/>
-  <g transform="translate(90, 72)">
-    <circle cx="0" cy="0" r="42" fill="none" stroke="#1e293b" stroke-width="6"/>
-    ${(() => {
-      const ticks = [];
-      for (let deg = 210; deg >= -30; deg -= 30) {
-        const rad = (deg * Math.PI) / 180;
-        ticks.push(`<line x1="${(36 * Math.cos(rad)).toFixed(1)}" y1="${(-36 * Math.sin(rad)).toFixed(1)}" x2="${(42 * Math.cos(rad)).toFixed(1)}" y2="${(-42 * Math.sin(rad)).toFixed(1)}" stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>`);
-      }
-      return ticks.join('\n    ');
-    })()}
-    <line x1="0" y1="0" x2="${(30 * Math.cos((30 * Math.PI) / 180)).toFixed(1)}" y2="${(-30 * Math.sin((30 * Math.PI) / 180)).toFixed(1)}" stroke="#3b82f6" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="0" cy="0" r="5" fill="#3b82f6"/>
+const darkShapes = signetShapes('cockpit.svg');
+const lightShapes = signetShapes('cockpit-light.svg');
+
+function withClass(shape, cls) {
+  return shape.replace(/ fill="[^"]*"/, '').replace(/^<(path|polygon)/, `<$1 class="${cls}"`);
+}
+
+// favicon.svg: transparent, Farbvariante folgt dem Farbschema des Browsers.
+const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Cockpit</title>
+  <style>
+    .body{fill:${lightShapes[0].match(/fill="([^"]+)"/)[1]}}.facet{fill:${lightShapes[1].match(/fill="([^"]+)"/)[1]}}
+    @media (prefers-color-scheme: dark){.body{fill:${darkShapes[0].match(/fill="([^"]+)"/)[1]}}.facet{fill:${darkShapes[1].match(/fill="([^"]+)"/)[1]}}}
+  </style>
+  ${withClass(lightShapes[0], 'body')}
+  ${withClass(lightShapes[1], 'facet')}
+</svg>
+`;
+
+// PNG-Icons: dunkle Kachel mit dem Standard-Signet (für dunkle Flächen freigegeben).
+function tileSvg(size, { rounded = true, scale = 0.84 } = {}) {
+  const radius = rounded ? size * 0.1875 : 0;
+  const inner = size * scale;
+  const offset = (size - inner) / 2;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+  <rect width="${size}" height="${size}" rx="${radius}" fill="${TILE}"/>
+  <g transform="translate(${offset} ${offset}) scale(${inner / 256})">
+    ${darkShapes.join('\n    ')}
   </g>
-  <rect x="30" y="130" width="120" height="6" rx="3" fill="#005093"/>
-  <text x="90" y="158" font-family="system-ui, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#94a3b8" text-anchor="middle">${APP_NAME}</text>
 </svg>`;
+}
 
 // ---------------------------------------------------------------------------
 // OG Image (1200x630)
@@ -141,32 +128,21 @@ const ogSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"
 // Write SVGs + convert to PNGs
 // ---------------------------------------------------------------------------
 async function main() {
-  const fav32Svg = faviconSvg(32);
-  const fav16Svg = faviconSvg(16);
-  const fav192Svg = faviconSvg(192);
-  const fav512Svg = faviconSvg(512);
-
-  writeFileSync(`${OUT}/favicon.svg`, faviconSvg(32));
+  writeFileSync(`${OUT}/favicon.svg`, faviconSvg);
   console.log('  favicon.svg');
 
   const convert = async (svg, outFile, width, height) => {
-    const buf = Buffer.from(svg);
-    const opts = { width, height };
-    if (outFile.endsWith('.png')) {
-      await sharp(buf).resize(opts).png().toFile(`${OUT}/${outFile}`);
-    } else if (outFile.endsWith('.ico')) {
-      await sharp(buf).resize(opts).png().toFile(`${OUT}/${outFile}`);
-    }
+    await sharp(Buffer.from(svg), { density: 300 }).resize({ width, height }).png().toFile(`${OUT}/${outFile}`);
     console.log(`  ${outFile}`);
   };
 
   await Promise.all([
-    convert(fav32Svg, 'favicon.ico', 32, 32),
-    convert(fav16Svg, 'favicon-16x16.png', 16, 16),
-    convert(fav32Svg, 'favicon-32x32.png', 32, 32),
-    convert(appleSvg, 'apple-touch-icon.png', 180, 180),
-    convert(fav192Svg, 'android-chrome-192x192.png', 192, 192),
-    convert(fav512Svg, 'android-chrome-512x512.png', 512, 512),
+    convert(tileSvg(32, { scale: 0.96 }), 'favicon.ico', 32, 32),
+    convert(tileSvg(16, { scale: 1 }), 'favicon-16x16.png', 16, 16),
+    convert(tileSvg(32, { scale: 0.96 }), 'favicon-32x32.png', 32, 32),
+    convert(tileSvg(180, { rounded: false, scale: 0.8 }), 'apple-touch-icon.png', 180, 180),
+    convert(tileSvg(192), 'android-chrome-192x192.png', 192, 192),
+    convert(tileSvg(512), 'android-chrome-512x512.png', 512, 512),
     convert(ogSvg, 'og-image.png', 1200, 630),
   ]);
 
