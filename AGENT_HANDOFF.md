@@ -4,7 +4,7 @@ Use this when another local/cloud coding agent needs to continue the Cockpit/Lun
 
 ## Scope
 
-- Repository: `/Users/marcelrapold/DEV/marcelrapold/cockpit`
+- Repository: `/Users/marcelrapold/DEV/marcelrapold/mra-cockpit`
 - Local app: `http://localhost:3001`
 - Primary routes: `/`, `/lunar`, `/insights`
 - Current task: Cockpit includes a Lunar Velocity analysis app and a home-page Lunar summary card. The app now uses live GitHub-backed data only.
@@ -23,7 +23,7 @@ Use this when another local/cloud coding agent needs to continue the Cockpit/Lun
 ## Useful Commands
 
 ```bash
-cd /Users/marcelrapold/DEV/marcelrapold/cockpit
+cd /Users/marcelrapold/DEV/marcelrapold/mra-cockpit
 npm run build
 npm run dev -- --port 3001
 curl "http://localhost:3001/api/lunar/analyze?user=marcel&window=2"

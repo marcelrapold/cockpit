@@ -200,7 +200,7 @@
       "lcNote": "Infrastruktur-Service für Downstream-Apps",
       "forecast": "Ja — solange Downstream läuft"
     },
-    "marcelrapold/cockpit": {
+    "marcelrapold/mra-cockpit": {
       "name": "Cockpit",
       "work": "GitHub, Vercel, Supabase APIs",
       "mode": "build",
@@ -376,7 +376,7 @@
       "ptMid": 1,
       "cat": "change"
     },
-    "marcelrapold/cv-marcelrapold": {
+    "marcelrapold/mra-cv": {
       "name": "CV Marcel Rapold",
       "work": "Portfolio, CV",
       "mode": "build",
@@ -394,7 +394,7 @@
       "ptMid": 1,
       "cat": "steward"
     },
-    "marcelrapold/news.rapold.io": {
+    "marcelrapold/mra-news": {
       "name": "News Rapold",
       "work": "Content, Blog",
       "mode": "build",
