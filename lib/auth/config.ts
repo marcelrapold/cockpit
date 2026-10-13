@@ -32,8 +32,39 @@ export interface OidcConfig {
   baseUrl: string;
 }
 
-function env(name: string): string {
-  return String(process.env[name] || '').trim();
+type OidcEnvName =
+  | 'OIDC_ISSUER'
+  | 'OIDC_CLIENT_ID'
+  | 'OIDC_CLIENT_SECRET'
+  | 'AUTH_SECRET'
+  | 'OIDC_ALLOWED_GROUPS'
+  | 'AUTH_URL';
+
+/**
+ * Jede Variable statisch lesen: In der Edge-Middleware ersetzt Next.js nur
+ * `process.env.NAME`-Ausdrücke; ein Zugriff mit berechnetem Schlüssel bleibt dort
+ * leer, und OIDC wäre in Produktion nie aktiv (gemessen 14.10.2026: alle vier
+ * Variablen gesetzt, cockpit.rapold.io antwortete trotzdem mit Basic Auth).
+ */
+function readEnv(name: OidcEnvName): string | undefined {
+  switch (name) {
+    case 'OIDC_ISSUER':
+      return process.env.OIDC_ISSUER;
+    case 'OIDC_CLIENT_ID':
+      return process.env.OIDC_CLIENT_ID;
+    case 'OIDC_CLIENT_SECRET':
+      return process.env.OIDC_CLIENT_SECRET;
+    case 'AUTH_SECRET':
+      return process.env.AUTH_SECRET;
+    case 'OIDC_ALLOWED_GROUPS':
+      return process.env.OIDC_ALLOWED_GROUPS;
+    case 'AUTH_URL':
+      return process.env.AUTH_URL;
+  }
+}
+
+function env(name: OidcEnvName): string {
+  return String(readEnv(name) || '').trim();
 }
 
 export function getOidcConfig(): OidcConfig | null {
