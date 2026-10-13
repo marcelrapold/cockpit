@@ -158,8 +158,10 @@ Commit auf `main` pushen.
 
 ## 6. Testen
 
-1. Ohne Session: `curl -sI https://cockpit.rapold.io/` → `302`, `location: /api/auth/login?returnTo=%2F`
-   (kein `WWW-Authenticate: Basic` mehr).
+1. Ohne Session, wie ein Browser: `curl -s -o /dev/null -w '%{http_code} %{redirect_url}
+' -H 'Accept: text/html' https://cockpit.rapold.io/`
+   → `302` auf `/api/auth/login?returnTo=%2F` (kein `WWW-Authenticate: Basic` mehr). Ohne
+   `Accept: text/html` gilt der Aufruf als API-Zugriff und bekommt absichtlich `401` als JSON.
 2. `curl -sI https://cockpit.rapold.io/api/auth/login` → `302` auf
    `https://auth.rapold.io/api/oidc/authorization?…&redirect_uri=https%3A%2F%2Fcockpit.rapold.io%2Fapi%2Fauth%2Fcallback&…&code_challenge_method=S256`.
 3. API ohne Session: `curl -s https://cockpit.rapold.io/api/summary` → `401` mit JSON-Fehler.
@@ -197,3 +199,10 @@ OIDC-Login eine Weile stabil läuft. Kontrolle nach dem Rückfall:
 `curl -sI https://cockpit.rapold.io/` → `401` mit `WWW-Authenticate: Basic realm="Cockpit Private"`.
 
 Den Client in Authelia muss man für den Rückfall nicht entfernen.
+
+## Stand
+
+Aktiviert am 14.10.2026: Client `cockpit` in `/etc/authelia/oidc.yml` (CT 109), vier
+Variablen in Vercel Production. Geprüft: Browser-Aufruf → Login → auth.rapold.io, API ohne
+Session `401`. Der erste Versuch scheiterte daran, dass `lib/auth/config.ts` die Variablen in
+der Edge-Middleware dynamisch las (Fix `5ef9b99`). Preview-Variablen sind bewusst nicht gesetzt.
